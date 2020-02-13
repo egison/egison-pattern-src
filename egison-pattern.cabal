@@ -36,7 +36,10 @@ library
   hs-source-dirs:     src
 
   -- cabal-fmt: expand src
-  exposed-modules:  Language.Egison.Syntax.Pattern
+  exposed-modules:
+    Language.Egison.Syntax.Pattern
+    Language.Egison.Syntax.Pattern.Base
+    Language.Egison.Syntax.Pattern.Expr
 
   if impl(ghc >=7.8)
     ghc-options: -j4
