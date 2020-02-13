@@ -133,12 +133,10 @@ lexeme = L.lexeme space
 name :: Source s => Parse n e s n
 name = do
   ParseMode { parseName } <- ask
-  n                       <- liftP parseName
-  pure n
+  liftP parseName
 
 -- | Parser for @e@ in @Parse n e s@ monad.
 valueExpr :: Source s => Parse n e s e
 valueExpr = do
   ParseMode { parseValueExpr } <- ask
-  e                            <- liftP parseValueExpr
-  pure e
+  liftP parseValueExpr

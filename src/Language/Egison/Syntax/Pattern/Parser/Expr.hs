@@ -57,7 +57,7 @@ buildOperatorTable primInfixes = do
  where
   go (Fixity assoc prec p) =
     IntMap.insertWith (++) (Prec.toInt prec) [makeOperator assoc p]
-  makeOperator assoc p = infixCtor assoc (Infix <$> (lexeme $ liftP p))
+  makeOperator assoc p = infixCtor assoc $ Infix <$> lexeme (liftP p)
   infixCtor Assoc.Left  = InfixL
   infixCtor Assoc.Right = InfixR
   infixCtor Assoc.None  = InfixN
