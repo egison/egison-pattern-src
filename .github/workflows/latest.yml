@@ -28,13 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: docker run -v $(pwd):/work coorde/hlint:2.2.11 hlint .
+      - run: docker run -v $(pwd):/work coorde/hlint:2.2.11 hlint src test
   hs-fmt:
     name: check .hs style
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: find . -name '*.hs' | xargs docker run -v $(pwd):/work herpinc/brittany:0.12.1.1 brittany --check-mode
+      - run: find src test -name '*.hs' | xargs docker run -v $(pwd):/work herpinc/brittany:0.12.1.1 brittany --check-mode
   cabal-fmt:
     name: check .cabal style
     runs-on: ubuntu-latest
