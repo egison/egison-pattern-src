@@ -7,3 +7,6 @@ import           Language.Egison.Syntax.Pattern.Expr
                                                as X
 import           Language.Egison.Syntax.Pattern.Base
                                                as X
+
+import           Language.Egison.Syntax.Pattern.Parser
+                                               as X

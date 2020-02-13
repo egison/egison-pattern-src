@@ -30,8 +30,14 @@ custom-setup
 
 library
   build-depends:
-      base               >=4.12 && <4.13
+      base                >=4.12 && <4.13
+    , containers
+    , free
+    , megaparsec
+    , mtl
+    , parser-combinators
     , recursion-schemes
+    , transformers
 
   hs-source-dirs:     src
 
@@ -40,6 +46,13 @@ library
     Language.Egison.Syntax.Pattern
     Language.Egison.Syntax.Pattern.Base
     Language.Egison.Syntax.Pattern.Expr
+    Language.Egison.Syntax.Pattern.Parser
+    Language.Egison.Syntax.Pattern.Parser.Associativity
+    Language.Egison.Syntax.Pattern.Parser.Combinator
+    Language.Egison.Syntax.Pattern.Parser.Expr
+    Language.Egison.Syntax.Pattern.Parser.Precedence
+    Language.Egison.Syntax.Pattern.Parser.Prim
+    Language.Egison.Syntax.Pattern.Parser.Token
 
   if impl(ghc >=7.8)
     ghc-options: -j4
