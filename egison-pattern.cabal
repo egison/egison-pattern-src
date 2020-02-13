@@ -9,7 +9,7 @@ description:
 
 bug-reports:        https://github.com/egison/egison-pattern/issues
 homepage:           https://github.com/egison/egison-pattern#readme
-license:            MIT
+license:            BSD3
 license-file:       LICENSE
 author:             coord_e
 maintainer:         coord_e <me@coord-e.com>, Satoshi Egi <egi@egison.org>
