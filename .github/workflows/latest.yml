@@ -40,5 +40,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: docker run -v $(pwd):/work coorde/cabal-fmt:0.1.2 cabal-fmt -i egison-pattern.cabal
+      - run: docker run -v $(pwd):/work coorde/cabal-fmt:0.1.2 cabal-fmt -i egison-pattern-src.cabal
       - run: git diff --exit-code

@@ -1,4 +1,4 @@
-# Revision history for egison-pattern
+# Revision history for egison-pattern-src
 
 ## 0.1.0.0 -- YYYY-mm-dd
 

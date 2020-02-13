@@ -1,4 +1,4 @@
-PACKAGE_NAME := egison-pattern
+PACKAGE_NAME := egison-pattern-src
 
 CABAL ?= cabal
 CABAL_FMT ?= cabal-fmt

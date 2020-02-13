@@ -1,14 +1,14 @@
 cabal-version:      >=1.10
-name:               egison-pattern
+name:               egison-pattern-src
 version:            0.1.0.0
 synopsis:
   Manipulating Egison patterns: abstract syntax, parser, and pretty-printer
 
 description:
-  @egison-pattern@ provides a standalone syntax definition for patterns in [Egison programming language](https://egison.org/).
+  @egison-pattern-src@ provides a standalone syntax definition for patterns in [Egison programming language](https://egison.org/).
 
-bug-reports:        https://github.com/egison/egison-pattern/issues
-homepage:           https://github.com/egison/egison-pattern#readme
+bug-reports:        https://github.com/egison/egison-pattern-src/issues
+homepage:           https://github.com/egison/egison-pattern-src#readme
 license:            BSD3
 license-file:       LICENSE
 author:             coord_e
@@ -20,7 +20,7 @@ build-type:         Custom
 
 source-repository head
   type:     git
-  location: https://github.com/egison/egison-pattern
+  location: https://github.com/egison/egison-pattern-src
 
 custom-setup
   setup-depends:
@@ -94,7 +94,7 @@ test-suite doctest
   build-depends:
       base
     , doctest
-    , egison-pattern
+    , egison-pattern-src
     , QuickCheck
     , template-haskell
 
@@ -106,7 +106,7 @@ test-suite test
   default-language:   Haskell2010
   build-depends:
       base
-    , egison-pattern
+    , egison-pattern-src
     , QuickCheck
     , tasty
 
