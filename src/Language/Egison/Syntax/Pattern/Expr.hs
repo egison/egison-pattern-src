@@ -1,9 +1,19 @@
+-- |
+--
+-- Module:      Language.Egison.Syntax.Pattern.Base
+-- Description: An abstract syntax tree for Egison pattern expression
+-- Stability:   experimental
+--
+-- This module defines an AST (Abstract Syntax Tree) for Egison pattern expression.
+
 module Language.Egison.Syntax.Pattern.Expr
   ( Expr(..)
   )
 where
 
 -- | Egison pattern expressions.
+-- @n@ is a type for names in patterns, such as them in pattern variables.
+-- @e@ is a type for expressions in patterns, such as them in value patterns.
 data Expr n e
   -- | Wildcard pattern. Match with everything.
   = Wildcard
