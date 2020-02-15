@@ -110,10 +110,15 @@ predicate = do
   pure $ PredicateF e
 
 constr :: Source s => Parse n e s (ExprF n e (ExprL n e))
-constr = parens $ do
-  n  <- lexeme name
-  es <- many expr
-  pure $ PatternF n es
+constr = withArgs <|> withoutArgs
+ where
+  withArgs = parens $ do
+    n  <- lexeme name
+    es <- many expr
+    pure $ PatternF n es
+  withoutArgs = do
+    n <- lexeme name
+    pure $ PatternF n []
 
 atom :: Source s => Parse n e s (ExprF n e (ExprL n e))
 atom =
