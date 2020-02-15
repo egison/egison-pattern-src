@@ -9,9 +9,31 @@
 module Language.Egison.Syntax.Pattern.Parser
   ( parseExprWithLocation
   , parseExpr
+  -- * Re-exports
+  , module X
   )
 where
 
+-- re-exports
+import           Language.Egison.Syntax.Pattern.Parser.Prim
+                                               as X
+                                                ( Source
+                                                , ParseMode(..)
+                                                , Fixity(..)
+                                                )
+import           Language.Egison.Syntax.Pattern.Parser.Expr
+                                               as X
+                                                ( Precedence(..)
+                                                , Associativity(..)
+                                                , ExprL
+                                                )
+import           Language.Egison.Syntax.Pattern.Parser.Location
+                                               as X
+                                                ( Location(..)
+                                                , Position(..)
+                                                )
+
+-- main
 import           Control.Monad.Fail             ( MonadFail )
 import           Control.Applicative            ( (<|>) )
 import           Control.Monad.Combinators      ( many )
@@ -19,9 +41,7 @@ import           Control.Comonad.Cofree         ( unwrap )
 
 import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 ( Parse
-                                                , Source
                                                 , runParse
-                                                , ParseMode
                                                 , lexeme
                                                 , name
                                                 , valueExpr
@@ -33,9 +53,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Combinator
                                                 , parens
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Expr
-                                                ( ExprL
-                                                , exprParser
-                                                , Precedence(..)
+                                                ( exprParser
                                                 , Table(..)
                                                 , initTable
                                                 , addInfix
