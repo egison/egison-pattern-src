@@ -91,11 +91,11 @@ data Fixity n s =
 
 -- | Parser configuration.
 data ParseMode n e s
-  = ParseMode { filename       :: FilePath
-              , fixities       :: [Fixity n s]
-              , parseSpace     :: Parsec Void s ()
-              , parseName      :: Parsec Void s n
-              , parseValueExpr :: Parsec Void s e
+  = ParseMode { filename        :: FilePath
+              , fixities        :: [Fixity n s]
+              , spaceParser     :: Parsec Void s ()
+              , nameParser      :: Parsec Void s n
+              , valueExprParser :: Parsec Void s e
               }
 
 -- | A parser monad.
@@ -120,8 +120,8 @@ runParse parse mode@ParseMode { filename } content =
 -- | Skip one or more spaces.
 space :: Source s => Parse n e s ()
 space = do
-  ParseMode { parseSpace } <- ask
-  liftP parseSpace
+  ParseMode { spaceParser } <- ask
+  liftP spaceParser
 
 -- | Make an lexical token.
 -- @lexeme p@ first applies parser @p@ then 'space' parser.
@@ -131,14 +131,14 @@ lexeme = L.lexeme space
 -- | Parser for @n@ in @Parse n e s@ monad.
 name :: Source s => Parse n e s n
 name = do
-  ParseMode { parseName } <- ask
-  liftP parseName
+  ParseMode { nameParser } <- ask
+  liftP nameParser
 
 -- | Parser for @e@ in @Parse n e s@ monad.
 valueExpr :: Source s => Parse n e s e
 valueExpr = do
-  ParseMode { parseValueExpr } <- ask
-  liftP parseValueExpr
+  ParseMode { valueExprParser } <- ask
+  liftP valueExprParser
 
 
 makePosition :: Parsec.SourcePos -> Position

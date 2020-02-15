@@ -74,11 +74,11 @@ testParseValueExpr :: Parsec Void String ValueExpr
 testParseValueExpr = ValueExprInt <$> Parsec.decimal
 
 testMode :: ParseMode Name ValueExpr String
-testMode = ParseMode { filename       = "test"
-                     , fixities       = testFixities
-                     , parseSpace     = testParseSpace
-                     , parseName      = testParseName
-                     , parseValueExpr = testParseValueExpr
+testMode = ParseMode { filename        = "test"
+                     , fixities        = testFixities
+                     , spaceParser     = testParseSpace
+                     , nameParser      = testParseName
+                     , valueExprParser = testParseValueExpr
                      }
 
 testParseExpr :: MonadFail m => String -> m (Expr Name ValueExpr)
