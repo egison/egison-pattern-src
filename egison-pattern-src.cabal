@@ -43,14 +43,14 @@ library
     , transformers
 
   hs-source-dirs:     src
-
-  -- cabal-fmt: expand src
   exposed-modules:
     Language.Egison.Syntax.Pattern
     Language.Egison.Syntax.Pattern.Base
     Language.Egison.Syntax.Pattern.Combinator
     Language.Egison.Syntax.Pattern.Expr
     Language.Egison.Syntax.Pattern.Parser
+
+  other-modules:
     Language.Egison.Syntax.Pattern.Parser.Associativity
     Language.Egison.Syntax.Pattern.Parser.Combinator
     Language.Egison.Syntax.Pattern.Parser.Expr
