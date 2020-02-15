@@ -114,7 +114,13 @@ test-suite test
   build-depends:
       base
     , egison-pattern-src
-    , QuickCheck
+    , megaparsec
     , tasty
+    , tasty-hunit
+
+  -- cabal-fmt: expand test -Doctest
+  other-modules:
+    Language.Egison.Syntax.Pattern.ParserSpec
+    TestImport
 
   build-tool-depends: tasty-discover:tasty-discover -any
