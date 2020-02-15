@@ -18,19 +18,22 @@ category:           Language
 extra-source-files: CHANGELOG.md
 build-type:         Custom
 
+-- see .github/workflows/latest.yml
+tested-with:        GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.1
+
 source-repository head
   type:     git
   location: https://github.com/egison/egison-pattern-src
 
 custom-setup
   setup-depends:
-      base           >=4.12 && <4.13
+      base           >=4.5 && <5
     , Cabal
-    , cabal-doctest  >=1    && <1.1
+    , cabal-doctest  >=1   && <1.1
 
 library
   build-depends:
-      base                >=4.12 && <4.13
+      base                >=4.5 && <5
     , containers
     , free
     , megaparsec
