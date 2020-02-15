@@ -158,10 +158,12 @@ buildOperatorTable primInfixes = do
   ParseMode { fixities } <- ask
   pure . map snd . IntMap.toDescList $ foldr go prim fixities
  where
-  go (Fixity assoc prec p) = alterTable prec . addInfix assoc $ makeOperator p
+  go (Fixity assoc prec p) =
+    addPrecToTable prec . addInfix assoc $ makeOperator p
   makeOperator p = InfixF <$> lexeme (liftP p)
   prim = IntMap.fromList $ map (first Prec.toInt) primInfixes
-  alterTable prec f = IntMap.alter (Just . maybe initTable f) $ Prec.toInt prec
+  addPrecToTable prec f = adjustWithDefault f (f initTable) $ Prec.toInt prec
+  adjustWithDefault f def = IntMap.alter (Just . maybe def f)
 
 -- | Build an expression parser with location information, from an atom parser.
 exprParser
