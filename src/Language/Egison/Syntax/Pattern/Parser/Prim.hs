@@ -67,6 +67,9 @@ import qualified Text.Megaparsec               as Parsec
                                                 , Stream
                                                 , Token
                                                 , Tokens
+                                                , SourcePos(..)
+                                                , getSourcePos
+                                                , unPos
                                                 )
 
 import           Language.Egison.Syntax.Pattern.Parser.Associativity
@@ -78,6 +81,10 @@ import           Language.Egison.Syntax.Pattern.Parser.Token
 import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                as Token
                                                 ( isSpace )
+import           Language.Egison.Syntax.Pattern.Parser.Location
+                                                ( Position(..)
+                                                , Locate(..)
+                                                )
 
 
 -- | Constraint for parser stream.
@@ -140,3 +147,13 @@ valueExpr :: Source s => Parse n e s e
 valueExpr = do
   ParseMode { parseValueExpr } <- ask
   liftP parseValueExpr
+
+
+makePosition :: Parsec.SourcePos -> Position
+makePosition Parsec.SourcePos { Parsec.sourceLine, Parsec.sourceColumn } =
+  Position { line   = Parsec.unPos sourceLine
+           , column = Parsec.unPos sourceColumn
+           }
+
+instance Parsec.Stream s => Locate (Parse n e s) where
+  getPosition = makePosition <$> Parsec.getSourcePos

@@ -7,13 +7,15 @@
 -- A parser for Egison patterns.
 
 module Language.Egison.Syntax.Pattern.Parser
-  ( parseExpr
+  ( parseExprWithLocation
+  , parseExpr
   )
 where
 
 import           Control.Monad.Fail             ( MonadFail )
 import           Control.Applicative            ( (<|>) )
 import           Control.Monad.Combinators      ( many )
+import           Control.Comonad.Cofree         ( unwrap )
 
 import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 ( Parse
@@ -31,10 +33,17 @@ import           Language.Egison.Syntax.Pattern.Parser.Combinator
                                                 , parens
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Expr
-                                                ( exprParser
+                                                ( ExprL
+                                                , exprParser
                                                 , Precedence(..)
-                                                , Operator(..)
+                                                , Table(..)
+                                                , initTable
+                                                , addInfix
+                                                , addPrefix
                                                 )
+import qualified Language.Egison.Syntax.Pattern.Parser.Associativity
+                                               as Assoc
+                                                ( Associativity(..) )
 import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                as Token
                                                 ( underscore
@@ -46,46 +55,51 @@ import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                 , dollar
                                                 )
 import           Language.Egison.Syntax.Pattern.Expr
-                                                ( Expr(..) )
+                                                ( Expr )
+import           Language.Egison.Syntax.Pattern.Base
+                                                ( ExprF(..) )
+import           Language.Egison.Syntax.Pattern.Combinator
+                                                ( unAnnotate )
 
 
-primInfixes :: Source s => [(Precedence, [Operator (Parse n e s) (Expr n e)])]
+primInfixes
+  :: Source s => [(Precedence, Table (Parse n e s) (ExprF n e) (ExprL n e))]
 primInfixes =
-  [ (Precedence 5, [Prefix (Not <$ token Token.exclamation)])
-  , (Precedence 3, [InfixR (And <$ token Token.and)])
-  , (Precedence 2, [InfixR (Or <$ token Token.vertical)])
+  [ (Precedence 5, addPrefix (NotF <$ token Token.exclamation) initTable)
+  , (Precedence 3, addInfix Assoc.Right (AndF <$ token Token.and) initTable)
+  , (Precedence 2, addInfix Assoc.Right (OrF <$ token Token.vertical) initTable)
   ]
 
-wildcard :: Source s => Parse n e s (Expr n e)
-wildcard = Wildcard <$ token Token.underscore
+wildcard :: Source s => Parse n e s (ExprF n e a)
+wildcard = WildcardF <$ token Token.underscore
 
-variable :: Source s => Parse n e s (Expr n e)
+variable :: Source s => Parse n e s (ExprF n e a)
 variable = do
   token Token.dollar
   n <- lexeme name
-  pure $ Variable n
+  pure $ VariableF n
 
-value :: Source s => Parse n e s (Expr n e)
+value :: Source s => Parse n e s (ExprF n e a)
 value = do
   token Token.hash
   e <- lexeme valueExpr
-  pure $ Value e
+  pure $ ValueF e
 
-predicate :: Source s => Parse n e s (Expr n e)
+predicate :: Source s => Parse n e s (ExprF n e a)
 predicate = do
   token Token.question
   e <- lexeme valueExpr
-  pure $ Predicate e
+  pure $ PredicateF e
 
-constr :: Source s => Parse n e s (Expr n e)
+constr :: Source s => Parse n e s (ExprF n e (ExprL n e))
 constr = parens $ do
   n  <- lexeme name
   es <- many expr
-  pure $ Pattern n es
+  pure $ PatternF n es
 
-atom :: Source s => Parse n e s (Expr n e)
+atom :: Source s => Parse n e s (ExprF n e (ExprL n e))
 atom =
-  try (parens expr)
+  try (unwrap <$> parens expr) -- discarding location once
     <|> wildcard
     <|> variable
     <|> value
@@ -93,9 +107,14 @@ atom =
     <|> predicate
     <?> "atomic pattern"
 
-expr :: Source s => Parse n e s (Expr n e)
+expr :: Source s => Parse n e s (ExprL n e)
 expr = exprParser primInfixes atom
+
+-- | A parser for 'Expr' with locations annotated.
+parseExprWithLocation
+  :: (Source s, MonadFail m) => ParseMode n e s -> s -> m (ExprL n e)
+parseExprWithLocation = runParse expr
 
 -- | A parser for 'Expr'.
 parseExpr :: (Source s, MonadFail m) => ParseMode n e s -> s -> m (Expr n e)
-parseExpr = runParse expr
+parseExpr m = fmap unAnnotate . runParse expr m
