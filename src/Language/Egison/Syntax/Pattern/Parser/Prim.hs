@@ -47,21 +47,14 @@ import           Control.Monad.Reader           ( ReaderT
                                                 )
 import           Control.Monad.Trans.Class      ( lift )
 import           Control.Monad.Fail             ( MonadFail )
-import           Control.Monad                  ( MonadPlus
-                                                , void
-                                                )
-import           Control.Applicative            ( Alternative
-                                                , empty
-                                                )
+import           Control.Monad                  ( MonadPlus )
+import           Control.Applicative            ( Alternative )
 import qualified Text.Megaparsec.Char.Lexer    as L
-                                                ( lexeme
-                                                , space
-                                                )
+                                                ( lexeme )
 
 import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( parse
-                                                , takeWhile1P
                                                 , eof
                                                 , errorBundlePretty
                                                 , Stream
@@ -78,9 +71,6 @@ import           Language.Egison.Syntax.Pattern.Parser.Precedence
                                                 ( Precedence )
 import           Language.Egison.Syntax.Pattern.Parser.Token
                                                 ( IsToken )
-import qualified Language.Egison.Syntax.Pattern.Parser.Token
-                                               as Token
-                                                ( isSpace )
 import           Language.Egison.Syntax.Pattern.Parser.Location
                                                 ( Position(..)
                                                 , Locate(..)
@@ -101,9 +91,10 @@ data Fixity n s =
 
 -- | Parser configuration.
 data ParseMode n e s
-  = ParseMode { filename  :: FilePath
-              , fixities  :: [Fixity n s]
-              , parseName :: Parsec Void s n
+  = ParseMode { filename       :: FilePath
+              , fixities       :: [Fixity n s]
+              , parseSpace     :: Parsec Void s ()
+              , parseName      :: Parsec Void s n
               , parseValueExpr :: Parsec Void s e
               }
 
@@ -128,8 +119,9 @@ runParse parse mode@ParseMode { filename } content =
 
 -- | Skip one or more spaces.
 space :: Source s => Parse n e s ()
-space = L.space space1 empty empty
-  where space1 = void $ Parsec.takeWhile1P (Just "whitespace") Token.isSpace
+space = do
+  ParseMode { parseSpace } <- ask
+  liftP parseSpace
 
 -- | Make an lexical token.
 -- @lexeme p@ first applies parser @p@ then 'space' parser.

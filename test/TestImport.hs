@@ -13,19 +13,24 @@ import           Language.Egison.Syntax.Pattern.Expr
 
 -- main
 import           Data.Void                      ( Void )
+import           Control.Applicative            ( some
+                                                , empty
+                                                )
 import           Control.Monad.Fail             ( MonadFail )
 
-import           Text.Megaparsec                ( Parsec
-                                                , some
-                                                )
+import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( chunk
                                                 , single
                                                 )
 import qualified Text.Megaparsec.Char          as Parsec
-                                                ( letterChar )
+                                                ( letterChar
+                                                , space1
+                                                )
 import qualified Text.Megaparsec.Char.Lexer    as Parsec
-                                                ( decimal )
+                                                ( decimal
+                                                , space
+                                                )
 
 import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr(..) )
@@ -59,6 +64,9 @@ testFixities =
   rear  = Parsec.chunk "|>"
   front = Parsec.chunk "<|"
 
+testParseSpace :: Parsec Void String ()
+testParseSpace = Parsec.space Parsec.space1 empty empty
+
 testParseName :: Parsec Void String Name
 testParseName = Name <$> some Parsec.letterChar
 
@@ -68,6 +76,7 @@ testParseValueExpr = ValueExprInt <$> Parsec.decimal
 testMode :: ParseMode Name ValueExpr String
 testMode = ParseMode { filename       = "test"
                      , fixities       = testFixities
+                     , parseSpace     = testParseSpace
                      , parseName      = testParseName
                      , parseValueExpr = testParseValueExpr
                      }
