@@ -11,6 +11,12 @@ module Language.Egison.Syntax.Pattern.Expr
   )
 where
 
+import           GHC.Generics                   ( Generic )
+import           Data.Data                      ( Data
+                                                , Typeable
+                                                )
+
+
 -- | Egison pattern expressions.
 -- @n@ is a type for names in patterns, such as them in pattern variables.
 -- @e@ is a type for expressions in patterns, such as them in value patterns.
@@ -33,3 +39,4 @@ data Expr n e
   | Infix n (Expr n e) (Expr n e)
   -- | User-defined normal pattern.
   | Pattern n [Expr n e]
+  deriving (Eq, Ord, Show, Typeable, Data, Generic)
