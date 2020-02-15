@@ -32,6 +32,9 @@ import           Language.Egison.Syntax.Pattern.Parser.Location
                                                 ( Location(..)
                                                 , Position(..)
                                                 )
+import           Language.Egison.Syntax.Pattern.Parser.Token
+                                               as X
+                                                ( IsToken(..) )
 
 -- main
 import           Control.Monad.Fail             ( MonadFail )
