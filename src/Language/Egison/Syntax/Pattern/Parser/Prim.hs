@@ -15,6 +15,7 @@ module Language.Egison.Syntax.Pattern.Parser.Prim
   -- * Parser Configuration
     Fixity(..)
   , ParseMode(..)
+  , ExtParser
   -- * Parser Monad
   , Parse
   , runParse
@@ -62,9 +63,6 @@ import           Control.Monad.Trans.Class      ( lift )
 import           Control.Monad.Fail             ( MonadFail )
 import           Control.Monad                  ( MonadPlus )
 import           Control.Applicative            ( Alternative )
-import qualified Text.Megaparsec.Char.Lexer    as L
-                                                ( lexeme )
-
 import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( parse
@@ -81,6 +79,8 @@ import qualified Text.Megaparsec               as Parsec
                                                 , getSourcePos
                                                 , unPos
                                                 )
+import qualified Text.Megaparsec.Char.Lexer    as L
+                                                ( lexeme )
 
 import           Language.Egison.Syntax.Pattern.Parser.Associativity
                                                 ( Associativity )
@@ -102,6 +102,9 @@ import           Language.Egison.Syntax.Pattern.Parser.Error
 type Source s = (Parsec.Stream s, IsToken (Parsec.Token s))
 type Token s = Parsec.Token s
 type Tokens s = Parsec.Tokens s
+
+-- | @'ExtParser' s a' is a type for externally provided parser of @a@
+type ExtParser s a = s -> Either String a
 
 -- | Fixity of infix operators.
 data Fixity n s =
