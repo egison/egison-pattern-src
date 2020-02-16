@@ -16,7 +16,7 @@ import           Data.Void                      ( Void )
 import           Control.Applicative            ( some
                                                 , empty
                                                 )
-import           Control.Monad.Fail             ( MonadFail )
+import           Control.Monad.Except           ( MonadError )
 
 import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
@@ -38,6 +38,7 @@ import           Language.Egison.Syntax.Pattern.Parser
                                                 ( ParseMode(..)
                                                 , Fixity(..)
                                                 , Precedence(..)
+                                                , Errors
                                                 , parseExpr
                                                 )
 import qualified Language.Egison.Syntax.Pattern.Parser
@@ -81,5 +82,6 @@ testMode = ParseMode { filename        = "test"
                      , valueExprParser = testParseValueExpr
                      }
 
-testParseExpr :: MonadFail m => String -> m (Expr Name ValueExpr)
+testParseExpr
+  :: MonadError (Errors String) m => String -> m (Expr Name ValueExpr)
 testParseExpr = parseExpr testMode

@@ -20,6 +20,9 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 ( Source
                                                 , ParseMode(..)
                                                 , Fixity(..)
+                                                , Errors
+                                                , Error(..)
+                                                , ErrorItem(..)
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Expr
                                                as X
@@ -37,7 +40,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Token
                                                 ( IsToken(..) )
 
 -- main
-import           Control.Monad.Fail             ( MonadFail )
+import           Control.Monad.Except           ( MonadError )
 import           Control.Applicative            ( (<|>) )
 import           Control.Monad.Combinators      ( many )
 import           Control.Comonad.Cofree         ( unwrap )
@@ -138,9 +141,13 @@ expr = exprParser primInfixes atom
 
 -- | A parser for 'Expr' with locations annotated.
 parseExprWithLocation
-  :: (Source s, MonadFail m) => ParseMode n e s -> s -> m (ExprL n e)
+  :: (Source s, MonadError (Errors s) m)
+  => ParseMode n e s
+  -> s
+  -> m (ExprL n e)
 parseExprWithLocation = runParse expr
 
 -- | A parser for 'Expr'.
-parseExpr :: (Source s, MonadFail m) => ParseMode n e s -> s -> m (Expr n e)
+parseExpr
+  :: (Source s, MonadError (Errors s) m) => ParseMode n e s -> s -> m (Expr n e)
 parseExpr m = fmap unAnnotate . runParse expr m

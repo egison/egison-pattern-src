@@ -13,18 +13,25 @@ module Language.Egison.Syntax.Pattern.Parser.Location
   )
 where
 
+import           GHC.Generics                   ( Generic )
+import           Data.Data                      ( Data
+                                                , Typeable
+                                                )
+
 
 -- | A position in source code.
 data Position
   = Position { line   :: Int
              , column :: Int
              }
+  deriving (Show, Eq, Generic, Data, Typeable)
 
 -- | Location, a range of positions in source code.
 data Location
   = Location { begin :: Position
              , end   :: Position
              }
+  deriving (Show, Eq, Generic, Data, Typeable)
 
 -- | a 'Monad' that scans over a source code.
 class Monad m => Locate m where

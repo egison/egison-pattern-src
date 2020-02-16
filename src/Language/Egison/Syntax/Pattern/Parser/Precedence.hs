@@ -12,10 +12,16 @@ module Language.Egison.Syntax.Pattern.Parser.Precedence
   )
 where
 
+import           GHC.Generics                   ( Generic )
+import           Data.Data                      ( Data
+                                                , Typeable
+                                                )
+
 
 -- | A precedence of infix operators.
 newtype Precedence = Precedence Int
   deriving newtype (Eq, Ord)
+  deriving stock (Show, Generic, Data, Typeable)
 
 -- | Obtain an integer representation of 'Precedence'.
 toInt :: Precedence -> Int

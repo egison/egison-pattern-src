@@ -19,6 +19,12 @@ module Language.Egison.Syntax.Pattern.Parser.Associativity
   )
 where
 
+import           GHC.Generics                   ( Generic )
+import           Data.Data                      ( Data
+                                                , Typeable
+                                                )
+
 
 -- | An associativity of infix operators.
 data Associativity = Left | Right | None
+  deriving (Show, Eq, Generic, Data, Typeable)

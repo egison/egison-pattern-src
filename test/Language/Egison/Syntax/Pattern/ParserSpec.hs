@@ -12,9 +12,9 @@ import           Test.Tasty.HUnit
 
 
 assertParseExpr :: String -> Expr Name ValueExpr -> Assertion
-assertParseExpr content expected = do
-  got <- testParseExpr content
-  assertEqual ("while parsing \"" ++ content ++ "\"") expected got
+assertParseExpr content expected = case testParseExpr content of
+  Left  err -> fail $ show err
+  Right got -> assertEqual ("while parsing \"" ++ content ++ "\"") expected got
 
 test_atom_patterns :: [TestTree]
 test_atom_patterns =

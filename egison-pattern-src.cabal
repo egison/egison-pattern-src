@@ -53,6 +53,7 @@ library
   other-modules:
     Language.Egison.Syntax.Pattern.Parser.Associativity
     Language.Egison.Syntax.Pattern.Parser.Combinator
+    Language.Egison.Syntax.Pattern.Parser.Error
     Language.Egison.Syntax.Pattern.Parser.Expr
     Language.Egison.Syntax.Pattern.Parser.Location
     Language.Egison.Syntax.Pattern.Parser.Precedence
@@ -89,6 +90,8 @@ library
     NamedFieldPuns
     OverloadedStrings
     RankNTypes
+    ScopedTypeVariables
+    TypeApplications
     TypeFamilies
 
 test-suite doctest
@@ -115,8 +118,11 @@ test-suite test
       base
     , egison-pattern-src
     , megaparsec
+    , mtl
     , tasty
     , tasty-hunit
+
+  default-extensions: FlexibleContexts
 
   -- cabal-fmt: expand test
   other-modules:
