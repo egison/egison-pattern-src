@@ -20,6 +20,7 @@ import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( chunk
                                                 , single
+                                                , parse
                                                 )
 import qualified Text.Megaparsec.Char          as Parsec
                                                 ( letterChar )
@@ -46,12 +47,17 @@ newtype Name = Name String
 newtype ValueExpr = ValueExprInt Int
   deriving (Show, Eq)
 
+unParsec :: Parsec Void String a -> (String -> Either String a)
+unParsec p input = case Parsec.parse p "test" input of
+  Left  _ -> Left "error!"
+  Right x -> Right x
+
 testFixities :: [Fixity Name String]
 testFixities =
-  [ Fixity Assoc.Right (Precedence 5) (Name "++" <$ pp)
-  , Fixity Assoc.Right (Precedence 5) (Name ":" <$ col)
-  , Fixity Assoc.Left  (Precedence 4) (Name "|>" <$ rear)
-  , Fixity Assoc.Right (Precedence 4) (Name "<|" <$ front)
+  [ Fixity Assoc.Right (Precedence 5) (unParsec (Name "++" <$ pp))
+  , Fixity Assoc.Right (Precedence 5) (unParsec (Name ":" <$ col))
+  , Fixity Assoc.Left  (Precedence 4) (unParsec (Name "|>" <$ rear))
+  , Fixity Assoc.Right (Precedence 4) (unParsec (Name "<|" <$ front))
   ]
  where
   pp    = Parsec.chunk "++"
@@ -68,8 +74,8 @@ testParseValueExpr = ValueExprInt <$> Parsec.decimal
 testMode :: ParseMode Name ValueExpr String
 testMode = ParseMode { filename        = "test"
                      , fixities        = testFixities
-                     , nameParser      = testParseName
-                     , valueExprParser = testParseValueExpr
+                     , nameParser      = unParsec testParseName
+                     , valueExprParser = unParsec testParseValueExpr
                      }
 
 testParseExpr

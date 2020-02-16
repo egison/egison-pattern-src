@@ -46,7 +46,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 , ParseMode(..)
                                                 , Source
                                                 , Parse
-                                                , liftP
+                                                , extParser
                                                 , lexeme
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Associativity
@@ -160,7 +160,7 @@ buildOperatorTable primInfixes = do
  where
   go (Fixity assoc prec p) =
     addPrecToTable prec . addInfix assoc $ makeOperator p
-  makeOperator p = InfixF <$> lexeme (liftP p)
+  makeOperator p = InfixF <$> lexeme (extParser p)
   prim = IntMap.fromList $ map (first Prec.toInt) primInfixes
   addPrecToTable prec f = adjustWithDefault f (f initTable) $ Prec.toInt prec
   adjustWithDefault f def = IntMap.alter (Just . maybe def f)

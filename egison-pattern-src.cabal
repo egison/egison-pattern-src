@@ -40,7 +40,6 @@ library
     , mtl
     , parser-combinators
     , recursion-schemes
-    , transformers
 
   hs-source-dirs:     src
   exposed-modules:

@@ -19,8 +19,8 @@ module Language.Egison.Syntax.Pattern.Parser.Prim
   -- * Parser Monad
   , Parse
   , runParse
-  , liftP
   -- * Primitive Parsers
+  , extParser
   , space
   , lexeme
   , name
@@ -59,12 +59,11 @@ import           Control.Monad.Reader           ( ReaderT
                                                 , MonadReader(..)
                                                 , runReaderT
                                                 )
-import           Control.Monad.Trans.Class      ( lift )
 import           Control.Monad.Fail             ( MonadFail )
 import           Control.Monad                  ( MonadPlus
                                                 , void
                                                 )
-import           Control.Applicative            ( Alternative
+import           Control.Applicative            ( Alternative((<|>))
                                                 , empty
                                                 )
 import           Text.Megaparsec                ( Parsec )
@@ -72,6 +71,7 @@ import qualified Text.Megaparsec               as Parsec
                                                 ( parse
                                                 , eof
                                                 , takeWhile1P
+                                                , takeWhileP
                                                 , ParseErrorBundle(..)
                                                 , ParseError(..)
                                                 , ErrorItem(..)
@@ -83,6 +83,7 @@ import qualified Text.Megaparsec               as Parsec
                                                 , attachSourcePos
                                                 , getSourcePos
                                                 , unPos
+                                                , single
                                                 )
 import qualified Text.Megaparsec.Char.Lexer    as L
                                                 ( lexeme
@@ -97,7 +98,10 @@ import           Language.Egison.Syntax.Pattern.Parser.Token
                                                 ( IsToken )
 import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                as Token
-                                                ( isSpace )
+                                                ( isSpace
+                                                , parenLeft
+                                                , parenRight
+                                                )
 import           Language.Egison.Syntax.Pattern.Parser.Location
                                                 ( Position(..)
                                                 , Locate(..)
@@ -114,21 +118,21 @@ type Token s = Parsec.Token s
 type Tokens s = Parsec.Tokens s
 
 -- | @'ExtParser' s a' is a type for externally provided parser of @a@
-type ExtParser s a = s -> Either String a
+type ExtParser s a = Tokens s -> Either String a
 
 -- | Fixity of infix operators.
 data Fixity n s =
   Fixity { associativity :: Associativity
          , precedence :: Precedence
-         , parser :: Parsec Void s n
+         , parser :: ExtParser s n
          }
 
 -- | Parser configuration.
 data ParseMode n e s
   = ParseMode { filename        :: FilePath
               , fixities        :: [Fixity n s]
-              , nameParser      :: Parsec Void s n
-              , valueExprParser :: Parsec Void s e
+              , nameParser      :: ExtParser s n
+              , valueExprParser :: ExtParser s e
               }
 
 -- | A parser monad.
@@ -140,10 +144,6 @@ newtype Parse n e s a = Parse { unParse :: ReaderT (ParseMode n e s) (Parsec Voi
 instance Parsec.Stream s => Locate (Parse n e s) where
   getPosition = makePosition <$> Parsec.getSourcePos
 
-
--- | Lift 'Parsec' monad to 'Parse'.
-liftP :: Source s => Parsec Void s a -> Parse n e s a
-liftP p = Parse $ lift p
 
 -- | Run 'Parse' monad and produce a parse result.
 runParse
@@ -163,6 +163,25 @@ space :: Source s => Parse n e s ()
 space = L.space space1 empty empty
   where space1 = void $ Parsec.takeWhile1P (Just "whitespace") Token.isSpace
 
+-- | Parse a lexical chunk.
+takeChunk :: Source s => Parse n e s (Tokens s)
+takeChunk = withParens <|> withoutParens
+ where
+  withParens = do
+    void $ Parsec.single Token.parenLeft
+    Parsec.takeWhileP (Just "lexical chunk (in parens)") endOfChunkInParens
+  withoutParens = Parsec.takeWhileP (Just "lexical chunk") endOfChunk
+  endOfChunkInParens x = x /= Token.parenRight
+  endOfChunk x = not (Token.isSpace x) && x /= Token.parenRight
+
+-- | Apply an external parser.
+extParser :: Source s => ExtParser s a -> Parse n e s a
+extParser p = try $ do
+  lchunk <- takeChunk
+  case p lchunk of
+    Left  err -> fail err
+    Right x   -> pure x
+
 -- | Make a lexical token.
 -- @lexeme p@ first applies parser @p@ then 'space' parser.
 lexeme :: Source s => Parse n e s a -> Parse n e s a
@@ -172,13 +191,13 @@ lexeme = L.lexeme space
 name :: Source s => Parse n e s n
 name = do
   ParseMode { nameParser } <- ask
-  liftP nameParser
+  extParser nameParser
 
 -- | Parser for @e@ in @Parse n e s@ monad.
 valueExpr :: Source s => Parse n e s e
 valueExpr = do
   ParseMode { valueExprParser } <- ask
-  liftP valueExprParser
+  extParser valueExprParser
 
 
 -- | A type synonym for an error list.
