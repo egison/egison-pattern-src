@@ -34,4 +34,8 @@ data Error tokens
                     , expected :: [ErrorItem tokens]
                     , found    :: Maybe (ErrorItem tokens)
                     }
+  | ExternalError { position :: Position
+                  , input :: tokens
+                  , message :: String
+                  }
   deriving (Show, Eq, Generic, Data, Typeable)

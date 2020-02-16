@@ -49,7 +49,7 @@ newtype ValueExpr = ValueExprInt Int
 
 unParsec :: Parsec Void String a -> (String -> Either String a)
 unParsec p input = case Parsec.parse p "test" input of
-  Left  _ -> Left "error!"
+  Left  e -> Left (show e)
   Right x -> Right x
 
 testFixities :: [Fixity Name String]

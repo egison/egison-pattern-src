@@ -81,6 +81,7 @@ library
     DeriveGeneric
     DeriveTraversable
     DerivingStrategies
+    DuplicateRecordFields
     ExistentialQuantification
     FlexibleContexts
     FlexibleInstances
@@ -90,6 +91,7 @@ library
     OverloadedStrings
     RankNTypes
     ScopedTypeVariables
+    StandaloneDeriving
     TypeApplications
     TypeFamilies
 
