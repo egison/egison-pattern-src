@@ -123,7 +123,10 @@ test-suite test
     , tasty
     , tasty-hunit
 
-  default-extensions: FlexibleContexts
+  default-extensions:
+    DerivingStrategies
+    FlexibleContexts
+    GeneralizedNewtypeDeriving
 
   -- cabal-fmt: expand test
   other-modules:

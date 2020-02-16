@@ -79,6 +79,8 @@ import qualified Text.Megaparsec               as Parsec
                                                 , takeWhileP
                                                 , manyTill
                                                 , chunk
+                                                , chunkToTokens
+                                                , tokensToChunk
                                                 , ParseErrorBundle(..)
                                                 , ParseError(..)
                                                 , ErrorFancy(..)
@@ -204,12 +206,17 @@ space = do
   emptyOr = maybe empty
 
 -- | Parse a lexical chunk.
-takeChunk :: Source s => Parse n e s (Tokens s)
+takeChunk :: forall n e s . Source s => Parse n e s (Tokens s)
 takeChunk = withParens <|> withoutParens
  where
   withParens = do
-    void $ Parsec.single Token.parenLeft
-    Parsec.takeWhileP (Just "lexical chunk (in parens)") endOfChunkInParens
+    left <- Parsec.single Token.parenLeft
+    ck   <- Parsec.takeWhileP (Just "lexical chunk (in parens)")
+                              endOfChunkInParens
+    right <- Parsec.single Token.parenRight
+    -- TODO: better solution?
+    let tk = left : Parsec.chunkToTokens (Proxy @s) ck ++ [right]
+    pure $ Parsec.tokensToChunk (Proxy @s) tk
   withoutParens = Parsec.takeWhileP (Just "lexical chunk") endOfChunk
   endOfChunkInParens x = x /= Token.parenRight
   endOfChunk x = not (Token.isSpace x) && x /= Token.parenRight

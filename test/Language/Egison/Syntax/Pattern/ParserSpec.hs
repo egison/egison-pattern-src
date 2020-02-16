@@ -22,11 +22,15 @@ test_atom_patterns =
   [ testCase "wildcard pattern" $ assertParseExpr "_" Wildcard
   , testCase "variable pattern" $ assertParseExpr "$x" (Variable $ Name "x")
   , testCase "value pattern" $ assertParseExpr "#10" (Value $ ValueExprInt 10)
+  , testCase "value pattern between parentheses"
+    $ assertParseExpr "#(-10)" (Value . ValueExprInt $ -10)
   , testCase "predicate pattern"
     $ assertParseExpr "?10" (Predicate $ ValueExprInt 10)
   , testCase "constructor pattern" $ assertParseExpr
     "(ctor _ _ _)"
     (Pattern (Name "ctor") [Wildcard, Wildcard, Wildcard])
+  , testCase "constructor pattern that the name is between parentheses"
+    $ assertParseExpr "((++) _ _)" (Pattern (Name "++") [Wildcard, Wildcard])
   , testCase "constructor pattern without arguments"
     $ assertParseExpr "nil" (Pattern (Name "nil") [])
   , testCase "constructor pattern between parentheses"
