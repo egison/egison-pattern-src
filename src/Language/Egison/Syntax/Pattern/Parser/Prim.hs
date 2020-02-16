@@ -66,12 +66,16 @@ import           Control.Monad                  ( MonadPlus
 import           Control.Applicative            ( Alternative((<|>))
                                                 , empty
                                                 )
+import           Control.Applicative.Combinators
+                                                ( between )
 import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( parse
                                                 , eof
                                                 , takeWhile1P
                                                 , takeWhileP
+                                                , manyTill
+                                                , chunk
                                                 , ParseErrorBundle(..)
                                                 , ParseError(..)
                                                 , ErrorItem(..)
@@ -84,6 +88,7 @@ import qualified Text.Megaparsec               as Parsec
                                                 , getSourcePos
                                                 , unPos
                                                 , single
+                                                , anySingle
                                                 )
 import qualified Text.Megaparsec.Char.Lexer    as L
                                                 ( lexeme
@@ -101,6 +106,7 @@ import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                 ( isSpace
                                                 , parenLeft
                                                 , parenRight
+                                                , newline
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Location
                                                 ( Position(..)
@@ -131,6 +137,8 @@ data Fixity n s =
 data ParseMode n e s
   = ParseMode { filename        :: FilePath
               , fixities        :: [Fixity n s]
+              , blockComment    :: Maybe (Tokens s, Tokens s)
+              , lineComment     :: Maybe (Tokens s)
               , nameParser      :: ExtParser s n
               , valueExprParser :: ExtParser s e
               }
@@ -153,15 +161,34 @@ runParse
   -> s
   -> m a
 runParse parse mode@ParseMode { filename } content =
-  case Parsec.parse parser filename content of
+  case Parsec.parse parsec filename content of
     Left  bundle -> throwError $ makeErrors bundle
     Right e      -> pure e
-  where parser = runReaderT (unParse parse) mode <* Parsec.eof
+  where parsec = runReaderT (unParse $ file parse) mode
+
+file :: Source s => Parse n e s a -> Parse n e s a
+file = between space Parsec.eof
+
+skipBlockComment :: Source s => Tokens s -> Tokens s -> Parse n e s ()
+skipBlockComment start end = cs *> void (Parsec.manyTill Parsec.anySingle ce)
+ where
+  cs = Parsec.chunk start
+  ce = Parsec.chunk end
+
+skipLineComment :: Source s => Tokens s -> Parse n e s ()
+skipLineComment prefix = Parsec.chunk prefix
+  *> void (Parsec.takeWhileP (Just "chars") (/= Token.newline))
 
 -- | Skip one or more spaces.
 space :: Source s => Parse n e s ()
-space = L.space space1 empty empty
-  where space1 = void $ Parsec.takeWhile1P (Just "whitespace") Token.isSpace
+space = do
+  ParseMode { blockComment, lineComment } <- ask
+  let block = emptyOr (uncurry skipBlockComment) blockComment
+      line  = emptyOr skipLineComment lineComment
+  L.space space1 line block
+ where
+  space1  = void $ Parsec.takeWhile1P (Just "whitespace") Token.isSpace
+  emptyOr = maybe empty
 
 -- | Parse a lexical chunk.
 takeChunk :: Source s => Parse n e s (Tokens s)

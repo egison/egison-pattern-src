@@ -17,6 +17,7 @@ import qualified Data.Char                     as Char
 
 class IsToken c where
   isSpace :: c -> Bool
+  newline :: c
   parenLeft :: c
   parenRight :: c
   underscore :: c
@@ -29,6 +30,7 @@ class IsToken c where
 
 instance IsToken Char where
   isSpace     = Char.isSpace
+  newline     = '\n'
   parenLeft   = '('
   parenRight  = ')'
   underscore  = '_'

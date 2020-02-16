@@ -2,6 +2,7 @@ module Language.Egison.Syntax.Pattern.ParserSpec
   ( test_atom_patterns
   , test_primitive_pattern_operators
   , test_user_defined_pattern_operators
+  , test_user_defined_comments
   )
 where
 
@@ -92,4 +93,19 @@ test_user_defined_pattern_operators =
   , testCase "associativity" $ assertParseExpr
     "_ |> _ |> _"
     (Infix (Name "|>") (Infix (Name "|>") Wildcard Wildcard) Wildcard)
+  ]
+
+test_user_defined_comments :: [TestTree]
+test_user_defined_comments =
+  [ testCase "ignore a block comment"
+    $ assertParseExpr "_ {- comment -} & _" (And Wildcard Wildcard)
+  , testCase "ignore block comments" $ assertParseExpr
+    "_ {- comment1 -}{- comment2 -} & (_ &{- comment3 -}_)"
+    (And Wildcard (And Wildcard Wildcard))
+  , testCase "ignore a block comment at beginning of line"
+    $ assertParseExpr "{- comment -}_" Wildcard
+  , testCase "ignore a line comment"
+    $ assertParseExpr "_-- comment -- yeah" Wildcard
+  , testCase "ignore a line comment at beginning of line"
+    $ assertParseExpr "-- comment -- yeah \n_-- comment" Wildcard
   ]

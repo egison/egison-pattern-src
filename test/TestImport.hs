@@ -74,6 +74,8 @@ testParseValueExpr = ValueExprInt <$> Parsec.decimal
 testMode :: ParseMode Name ValueExpr String
 testMode = ParseMode { filename        = "test"
                      , fixities        = testFixities
+                     , blockComment    = Just ("{-", "-}")
+                     , lineComment     = Just "--"
                      , nameParser      = unParsec testParseName
                      , valueExprParser = unParsec testParseValueExpr
                      }
