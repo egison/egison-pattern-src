@@ -13,8 +13,8 @@ import           Language.Egison.Syntax.Pattern.Expr
 
 -- main
 import           Data.Void                      ( Void )
-import           Control.Applicative            ( some
-                                                , empty
+import           Control.Applicative            ( (<|>)
+                                                , some
                                                 )
 import           Control.Monad.Except           ( MonadError )
 
@@ -22,15 +22,12 @@ import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( chunk
                                                 , single
+                                                , parse
                                                 )
 import qualified Text.Megaparsec.Char          as Parsec
-                                                ( letterChar
-                                                , space1
-                                                )
+                                                ( letterChar )
 import qualified Text.Megaparsec.Char.Lexer    as Parsec
-                                                ( decimal
-                                                , space
-                                                )
+                                                ( decimal )
 
 import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr(..) )
@@ -50,36 +47,51 @@ newtype Name = Name String
   deriving (Show, Eq)
 
 newtype ValueExpr = ValueExprInt Int
-  deriving (Show, Eq)
+  deriving newtype Num
+  deriving stock (Show, Eq)
+
+unParsec :: Parsec Void String a -> (String -> Either String a)
+unParsec p input = case Parsec.parse p "test" input of
+  Left  e -> Left (show e)
+  Right x -> Right x
 
 testFixities :: [Fixity Name String]
 testFixities =
-  [ Fixity Assoc.Right (Precedence 5) (Name "++" <$ pp)
-  , Fixity Assoc.Right (Precedence 5) (Name ":" <$ col)
-  , Fixity Assoc.Left  (Precedence 4) (Name "|>" <$ rear)
-  , Fixity Assoc.Right (Precedence 4) (Name "<|" <$ front)
+  [ Fixity Assoc.Right (Precedence 5) (unParsec pp)
+  , Fixity Assoc.Right (Precedence 5) (unParsec col)
+  , Fixity Assoc.Left  (Precedence 4) (unParsec rear)
+  , Fixity Assoc.Right (Precedence 4) (unParsec front)
   ]
  where
-  pp    = Parsec.chunk "++"
-  col   = Parsec.single ':'
-  rear  = Parsec.chunk "|>"
-  front = Parsec.chunk "<|"
-
-testParseSpace :: Parsec Void String ()
-testParseSpace = Parsec.space Parsec.space1 empty empty
+  pp    = Name <$> Parsec.chunk "++"
+  col   = Name <$> Parsec.chunk ":"
+  rear  = Name <$> Parsec.chunk "|>"
+  front = Name <$> Parsec.chunk "<|"
 
 testParseName :: Parsec Void String Name
-testParseName = Name <$> some Parsec.letterChar
+testParseName = withParens <|> name
+ where
+  name       = Name <$> some Parsec.letterChar
+  ops        = Parsec.chunk "++"
+  withParens = do
+    op <- Parsec.single '(' *> ops <* Parsec.single ')'
+    pure $ Name op
 
 testParseValueExpr :: Parsec Void String ValueExpr
-testParseValueExpr = ValueExprInt <$> Parsec.decimal
+testParseValueExpr = withParens <|> dec
+ where
+  dec        = ValueExprInt <$> Parsec.decimal
+  withParens = do
+    d <- Parsec.chunk "(-" *> dec <* Parsec.single ')'
+    pure $ negate d
 
 testMode :: ParseMode Name ValueExpr String
 testMode = ParseMode { filename        = "test"
                      , fixities        = testFixities
-                     , spaceParser     = testParseSpace
-                     , nameParser      = testParseName
-                     , valueExprParser = testParseValueExpr
+                     , blockComment    = Just ("{-", "-}")
+                     , lineComment     = Just "--"
+                     , nameParser      = unParsec testParseName
+                     , valueExprParser = unParsec testParseValueExpr
                      }
 
 testParseExpr

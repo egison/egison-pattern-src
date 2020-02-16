@@ -2,6 +2,7 @@ module Language.Egison.Syntax.Pattern.ParserSpec
   ( test_atom_patterns
   , test_primitive_pattern_operators
   , test_user_defined_pattern_operators
+  , test_user_defined_comments
   )
 where
 
@@ -21,11 +22,15 @@ test_atom_patterns =
   [ testCase "wildcard pattern" $ assertParseExpr "_" Wildcard
   , testCase "variable pattern" $ assertParseExpr "$x" (Variable $ Name "x")
   , testCase "value pattern" $ assertParseExpr "#10" (Value $ ValueExprInt 10)
+  , testCase "value pattern between parentheses"
+    $ assertParseExpr "#(-10)" (Value . ValueExprInt $ -10)
   , testCase "predicate pattern"
     $ assertParseExpr "?10" (Predicate $ ValueExprInt 10)
   , testCase "constructor pattern" $ assertParseExpr
     "(ctor _ _ _)"
     (Pattern (Name "ctor") [Wildcard, Wildcard, Wildcard])
+  , testCase "constructor pattern that the name is between parentheses"
+    $ assertParseExpr "((++) _ _)" (Pattern (Name "++") [Wildcard, Wildcard])
   , testCase "constructor pattern without arguments"
     $ assertParseExpr "nil" (Pattern (Name "nil") [])
   , testCase "constructor pattern between parentheses"
@@ -92,4 +97,19 @@ test_user_defined_pattern_operators =
   , testCase "associativity" $ assertParseExpr
     "_ |> _ |> _"
     (Infix (Name "|>") (Infix (Name "|>") Wildcard Wildcard) Wildcard)
+  ]
+
+test_user_defined_comments :: [TestTree]
+test_user_defined_comments =
+  [ testCase "ignore a block comment"
+    $ assertParseExpr "_ {- comment -} & _" (And Wildcard Wildcard)
+  , testCase "ignore block comments" $ assertParseExpr
+    "_ {- comment1 -}{- comment2 -} & (_ &{- comment3 -}_)"
+    (And Wildcard (And Wildcard Wildcard))
+  , testCase "ignore a block comment at beginning of line"
+    $ assertParseExpr "{- comment -}_" Wildcard
+  , testCase "ignore a line comment"
+    $ assertParseExpr "_-- comment -- yeah" Wildcard
+  , testCase "ignore a line comment at beginning of line"
+    $ assertParseExpr "-- comment -- yeah \n_-- comment" Wildcard
   ]
