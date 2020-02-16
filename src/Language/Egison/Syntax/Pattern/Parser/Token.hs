@@ -11,8 +11,12 @@ module Language.Egison.Syntax.Pattern.Parser.Token
   )
 where
 
+import qualified Data.Char                     as Char
+                                                ( isSpace )
+
 
 class IsToken c where
+  isSpace :: c -> Bool
   parenLeft :: c
   parenRight :: c
   underscore :: c
@@ -24,6 +28,7 @@ class IsToken c where
   dollar :: c
 
 instance IsToken Char where
+  isSpace     = Char.isSpace
   parenLeft   = '('
   parenRight  = ')'
   underscore  = '_'

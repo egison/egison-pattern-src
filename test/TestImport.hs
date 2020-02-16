@@ -13,9 +13,7 @@ import           Language.Egison.Syntax.Pattern.Expr
 
 -- main
 import           Data.Void                      ( Void )
-import           Control.Applicative            ( some
-                                                , empty
-                                                )
+import           Control.Applicative            ( some )
 import           Control.Monad.Except           ( MonadError )
 
 import           Text.Megaparsec                ( Parsec )
@@ -24,13 +22,9 @@ import qualified Text.Megaparsec               as Parsec
                                                 , single
                                                 )
 import qualified Text.Megaparsec.Char          as Parsec
-                                                ( letterChar
-                                                , space1
-                                                )
+                                                ( letterChar )
 import qualified Text.Megaparsec.Char.Lexer    as Parsec
-                                                ( decimal
-                                                , space
-                                                )
+                                                ( decimal )
 
 import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr(..) )
@@ -65,9 +59,6 @@ testFixities =
   rear  = Parsec.chunk "|>"
   front = Parsec.chunk "<|"
 
-testParseSpace :: Parsec Void String ()
-testParseSpace = Parsec.space Parsec.space1 empty empty
-
 testParseName :: Parsec Void String Name
 testParseName = Name <$> some Parsec.letterChar
 
@@ -77,7 +68,6 @@ testParseValueExpr = ValueExprInt <$> Parsec.decimal
 testMode :: ParseMode Name ValueExpr String
 testMode = ParseMode { filename        = "test"
                      , fixities        = testFixities
-                     , spaceParser     = testParseSpace
                      , nameParser      = testParseName
                      , valueExprParser = testParseValueExpr
                      }

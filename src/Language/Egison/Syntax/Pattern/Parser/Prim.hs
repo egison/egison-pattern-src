@@ -61,12 +61,17 @@ import           Control.Monad.Reader           ( ReaderT
                                                 )
 import           Control.Monad.Trans.Class      ( lift )
 import           Control.Monad.Fail             ( MonadFail )
-import           Control.Monad                  ( MonadPlus )
-import           Control.Applicative            ( Alternative )
+import           Control.Monad                  ( MonadPlus
+                                                , void
+                                                )
+import           Control.Applicative            ( Alternative
+                                                , empty
+                                                )
 import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
                                                 ( parse
                                                 , eof
+                                                , takeWhile1P
                                                 , ParseErrorBundle(..)
                                                 , ParseError(..)
                                                 , ErrorItem(..)
@@ -80,7 +85,9 @@ import qualified Text.Megaparsec               as Parsec
                                                 , unPos
                                                 )
 import qualified Text.Megaparsec.Char.Lexer    as L
-                                                ( lexeme )
+                                                ( lexeme
+                                                , space
+                                                )
 
 import           Language.Egison.Syntax.Pattern.Parser.Associativity
                                                 ( Associativity )
@@ -88,6 +95,9 @@ import           Language.Egison.Syntax.Pattern.Parser.Precedence
                                                 ( Precedence )
 import           Language.Egison.Syntax.Pattern.Parser.Token
                                                 ( IsToken )
+import qualified Language.Egison.Syntax.Pattern.Parser.Token
+                                               as Token
+                                                ( isSpace )
 import           Language.Egison.Syntax.Pattern.Parser.Location
                                                 ( Position(..)
                                                 , Locate(..)
@@ -117,7 +127,6 @@ data Fixity n s =
 data ParseMode n e s
   = ParseMode { filename        :: FilePath
               , fixities        :: [Fixity n s]
-              , spaceParser     :: Parsec Void s ()
               , nameParser      :: Parsec Void s n
               , valueExprParser :: Parsec Void s e
               }
@@ -151,9 +160,8 @@ runParse parse mode@ParseMode { filename } content =
 
 -- | Skip one or more spaces.
 space :: Source s => Parse n e s ()
-space = do
-  ParseMode { spaceParser } <- ask
-  liftP spaceParser
+space = L.space space1 empty empty
+  where space1 = void $ Parsec.takeWhile1P (Just "whitespace") Token.isSpace
 
 -- | Make a lexical token.
 -- @lexeme p@ first applies parser @p@ then 'space' parser.
