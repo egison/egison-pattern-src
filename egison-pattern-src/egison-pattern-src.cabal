@@ -15,7 +15,6 @@ author:             coord_e
 maintainer:         coord_e <me@coord-e.com>, Satoshi Egi <egi@egison.org>
 copyright:          Copyright 2020 coord_e
 category:           Language
-extra-source-files: CHANGELOG.md
 build-type:         Custom
 
 -- see .github/workflows/latest.yml
