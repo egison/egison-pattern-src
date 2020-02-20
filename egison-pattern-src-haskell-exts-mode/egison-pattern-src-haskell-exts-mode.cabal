@@ -77,10 +77,18 @@ test-suite test
   default-language:   Haskell2010
   build-depends:
       base
+    , egison-pattern-src
     , egison-pattern-src-haskell-exts-mode
+    , haskell-src-exts
+    , mtl
     , tasty
     , tasty-hunit
 
+  default-extensions: FlexibleContexts
+
   -- cabal-fmt: expand test
   other-modules:
+    Language.Egison.Syntax.Pattern.Parser.HaskellSpec
+    TestImport
+
   build-tool-depends: tasty-discover:tasty-discover -any
