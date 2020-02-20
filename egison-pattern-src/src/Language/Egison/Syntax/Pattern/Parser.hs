@@ -7,7 +7,7 @@
 -- A parser for Egison patterns.
 
 module Language.Egison.Syntax.Pattern.Parser
-  ( parseExprWithLocation
+  ( parseExprL
   , parseExpr
   -- * Re-exports
   , module X
@@ -140,14 +140,19 @@ expr :: Source s => Parse n e s (ExprL n e)
 expr = exprParser primInfixes atom
 
 -- | A parser for 'Expr' with locations annotated.
-parseExprWithLocation
+parseExprL
   :: (Source s, MonadError (Errors s) m)
   => ParseMode n e s
+  -> FilePath
   -> s
   -> m (ExprL n e)
-parseExprWithLocation = runParse expr
+parseExprL = runParse expr
 
 -- | A parser for 'Expr'.
 parseExpr
-  :: (Source s, MonadError (Errors s) m) => ParseMode n e s -> s -> m (Expr n e)
-parseExpr m = fmap unAnnotate . runParse expr m
+  :: (Source s, MonadError (Errors s) m)
+  => ParseMode n e s
+  -> FilePath
+  -> s
+  -> m (Expr n e)
+parseExpr mode path = fmap unAnnotate . parseExprL mode path

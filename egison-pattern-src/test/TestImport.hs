@@ -86,8 +86,7 @@ testParseValueExpr = withParens <|> dec
     pure $ negate d
 
 testMode :: ParseMode Name ValueExpr String
-testMode = ParseMode { filename        = "test"
-                     , fixities        = testFixities
+testMode = ParseMode { fixities        = testFixities
                      , blockComment    = Just ("{-", "-}")
                      , lineComment     = Just "--"
                      , nameParser      = unParsec testParseName
@@ -96,4 +95,4 @@ testMode = ParseMode { filename        = "test"
 
 testParseExpr
   :: MonadError (Errors String) m => String -> m (Expr Name ValueExpr)
-testParseExpr = parseExpr testMode
+testParseExpr = parseExpr testMode "test"

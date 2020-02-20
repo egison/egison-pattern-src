@@ -142,8 +142,7 @@ data Fixity n s =
 
 -- | Parser configuration.
 data ParseMode n e s
-  = ParseMode { filename        :: FilePath
-              , fixities        :: [Fixity n s]
+  = ParseMode { fixities        :: [Fixity n s]
               , blockComment    :: Maybe (Tokens s, Tokens s)
               , lineComment     :: Maybe (Tokens s)
               , nameParser      :: ExtParser s n
@@ -173,9 +172,10 @@ runParse
   :: (Source s, MonadError (Errors s) m)
   => Parse n e s a
   -> ParseMode n e s
+  -> FilePath
   -> s
   -> m a
-runParse parse mode@ParseMode { filename } content =
+runParse parse mode filename content =
   case Parsec.parse parsec filename content of
     Left  bundle -> throwError $ makeErrors bundle
     Right e      -> pure e
