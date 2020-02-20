@@ -43,8 +43,10 @@ import qualified Language.Haskell.Exts.Parser  as Haskell
 
 import qualified Language.Egison.Syntax.Pattern
                                                as Egison
-                                                ( Expr
-                                                , ParseMode(..)
+                                                ( Expr )
+import qualified Language.Egison.Syntax.Pattern.Parser
+                                               as Egison
+                                                ( ParseMode(..)
                                                 , Fixity(..)
                                                 , Associativity(..)
                                                 , parseExpr

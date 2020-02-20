@@ -20,3 +20,6 @@ import           Language.Egison.Syntax.Pattern.Combinator
 
 import           Language.Egison.Syntax.Pattern.Parser
                                                as X
+                                                ( parseExpr
+                                                , parseExprL
+                                                )
