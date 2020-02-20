@@ -58,10 +58,10 @@ import           Language.Egison.Syntax.Pattern.Parser
 
 
 -- | A type synonym of 'Egison.Expr' to be parsed in Haskell's source code.
-type Expr = Egison.Expr (QName ()) (Exp SrcSpanInfo)
+type Expr = Egison.Expr (QName ()) (Name ()) (Exp SrcSpanInfo)
 
 -- | A type synonym of 'Egison.ParseMode' to parse 'Expr'.
-type ParseMode = Egison.ParseMode (QName ()) (Exp SrcSpanInfo) String
+type ParseMode = Egison.ParseMode (QName ()) (Name ()) (Exp SrcSpanInfo) String
 
 -- | A type synonym of 'Egison.Fixity' to parse 'Expr'.
 type Fixity = Egison.Fixity (QName ()) String
@@ -70,11 +70,19 @@ resultToEither :: Haskell.ParseResult a -> Either String a
 resultToEither (Haskell.ParseOk a      ) = Right a
 resultToEither (Haskell.ParseFailed _ e) = Left e
 
-parseQNameWithMode :: Haskell.ParseMode -> String -> Either String (QName ())
-parseQNameWithMode mode content =
+parseVarNameWithMode :: Haskell.ParseMode -> String -> Either String (Name ())
+parseVarNameWithMode mode content =
+  case resultToEither $ Haskell.parseExpWithMode mode content of
+    Right (Var _ (UnQual _ name)) -> Right $ fmap (const ()) name
+    Right e                       -> Left (show e ++ " is not a variable")
+    Left  err                     -> Left err
+
+parseNameWithMode :: Haskell.ParseMode -> String -> Either String (QName ())
+parseNameWithMode mode content =
   case resultToEither $ Haskell.parseExpWithMode mode content of
     Right (Var _ name) -> Right $ fmap (const ()) name
-    Right e            -> Left (show e ++ " is not a variable")
+    Right (Con _ name) -> Right $ fmap (const ()) name
+    Right e            -> Left (show e ++ " is not a name")
     Left  err          -> Left err
 
 -- | Build 'Fixity' using 'Haskell.Fixity' from @haskell-src-exts@.
@@ -114,7 +122,8 @@ makeHaskellMode mode@Haskell.ParseMode { Haskell.fixities } = Egison.ParseMode
   { Egison.fixities        = maybe [] makeFixities fixities
   , Egison.blockComment    = Just ("{-", "-}")
   , Egison.lineComment     = Just "--"
-  , Egison.nameParser      = parseQNameWithMode mode
+  , Egison.varNameParser   = parseVarNameWithMode mode
+  , Egison.nameParser      = parseNameWithMode mode
   , Egison.valueExprParser = resultToEither . Haskell.parseExpWithMode mode
   }
 

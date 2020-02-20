@@ -22,19 +22,19 @@ import           Language.Haskell.Exts.Build    ( name
 
 
 makeAssertion
-  :: (String -> Either (Errors String) (Expr (QName ()) (Exp ())))
+  :: (String -> Either (Errors String) (Expr (QName ()) (Name ()) (Exp ())))
   -> String
-  -> Expr (QName ()) (Exp ())
+  -> Expr (QName ()) (Name ()) (Exp ())
   -> Assertion
 makeAssertion parser content expected = case parser content of
   Left  err -> fail $ show err
   Right got -> assertEqual ("while parsing \"" ++ content ++ "\"") expected got
 
-assertParseExpr :: String -> Expr (QName ()) (Exp ()) -> Assertion
+assertParseExpr :: String -> Expr (QName ()) (Name ()) (Exp ()) -> Assertion
 assertParseExpr = makeAssertion $ fmap (mapValueExpr void) . testParseExpr
 
 assertParseExprSpecialFixities
-  :: String -> Expr (QName ()) (Exp ()) -> Assertion
+  :: String -> Expr (QName ()) (Name ()) (Exp ()) -> Assertion
 assertParseExprSpecialFixities =
   makeAssertion $ fmap (mapValueExpr void) . testParseExprSpecialFixities
 
@@ -54,9 +54,9 @@ qsym modName = Qual () (ModuleName () modName) . sym
 test_atom_patterns :: [TestTree]
 test_atom_patterns =
   [ testCase "wildcard pattern" $ assertParseExpr "_" Wildcard
-  , testCase "variable pattern" $ assertParseExpr "$x" (Variable $ uqname "x")
+  , testCase "variable pattern" $ assertParseExpr "$x" (Variable $ name "x")
   , testCase "variable pattern of symbols"
-    $ assertParseExpr "$(%)" (Variable $ uqsym "%")
+    $ assertParseExpr "$(%)" (Variable $ sym "%")
   , testCase "value pattern" $ assertParseExpr "#10" (Value $ intE 10)
   , testCase "value pattern between parentheses" $ assertParseExpr
     "#(1 + 2)"
@@ -65,6 +65,9 @@ test_atom_patterns =
   , testCase "constructor pattern" $ assertParseExpr
     "(ctor _ _ _)"
     (Pattern (uqname "ctor") [Wildcard, Wildcard, Wildcard])
+  , testCase "constructor pattern with data constructor" $ assertParseExpr
+    "(Ctor _ _ _)"
+    (Pattern (uqname "Ctor") [Wildcard, Wildcard, Wildcard])
   , testCase "constructor pattern with qualified name" $ assertParseExpr
     "(Mod.ctor _ _ _)"
     (Pattern (qname "Mod" "ctor") [Wildcard, Wildcard, Wildcard])
