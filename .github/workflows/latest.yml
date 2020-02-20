@@ -26,17 +26,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: docker run -v $(pwd):/work coorde/hlint:2.2.11 hlint src test
+      - run: docker run -v $(pwd):/work coorde/hlint:2.2.11 hlint --git
   hs-fmt:
     name: check .hs style
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: find src test -name '*.hs' | xargs docker run -v $(pwd):/work herpinc/brittany:0.12.1.1 brittany --check-mode
+      - run: find . -name '*.hs' -exec docker run -v $(pwd):/work herpinc/brittany:0.12.1.1 brittany --check-mode {} +
   cabal-fmt:
     name: check .cabal style
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: docker run -v $(pwd):/work coorde/cabal-fmt:0.1.2 cabal-fmt -i egison-pattern-src.cabal
+      - run: find . -name '*.cabal' -exec docker run -v $(pwd):/work coorde/cabal-fmt:0.1.2 cabal-fmt -i {} +
       - run: git diff --exit-code
