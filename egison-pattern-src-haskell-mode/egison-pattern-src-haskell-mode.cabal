@@ -1,11 +1,11 @@
 cabal-version: >=1.10
-name:          egison-pattern-src-haskell-exts-mode
+name:          egison-pattern-src-haskell-mode
 version:       0.1.0.0
 synopsis:
   Parser for Egison pattern expressions in Haskell source code
 
 description:
-  @egison-pattern-src-haskell-exts-mode@ provides a parser for Egison pattern expressions in Haskell source code.
+  @egison-pattern-src-haskell-mode@ provides a parser for Egison pattern expressions in Haskell source code.
 
 bug-reports:   https://github.com/egison/egison-pattern-src/issues
 homepage:      https://github.com/egison/egison-pattern-src#readme
@@ -65,7 +65,7 @@ test-suite doctest
   build-depends:
       base
     , doctest
-    , egison-pattern-src-haskell-exts-mode
+    , egison-pattern-src-haskell-mode
     , QuickCheck
     , template-haskell
 
@@ -78,7 +78,7 @@ test-suite test
   build-depends:
       base
     , egison-pattern-src
-    , egison-pattern-src-haskell-exts-mode
+    , egison-pattern-src-haskell-mode
     , haskell-src-exts
     , mtl
     , tasty

@@ -34,7 +34,7 @@ library
   build-depends:
       base                                  >=4.5 && <5
     , egison-pattern-src
-    , egison-pattern-src-haskell-exts-mode
+    , egison-pattern-src-haskell-mode
     , haskell-src-exts
     , haskell-src-meta
     , mtl
