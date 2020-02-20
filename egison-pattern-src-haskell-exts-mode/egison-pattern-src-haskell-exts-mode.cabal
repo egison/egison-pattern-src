@@ -1,0 +1,86 @@
+cabal-version: >=1.10
+name:          egison-pattern-src-haskell-exts-mode
+version:       0.1.0.0
+synopsis:
+  Parser for Egison pattern expressions in Haskell source code
+
+description:
+  @egison-pattern-src-haskell-exts-mode@ provides a parser for Egison pattern expressions in Haskell source code.
+
+bug-reports:   https://github.com/egison/egison-pattern-src/issues
+homepage:      https://github.com/egison/egison-pattern-src#readme
+license:       BSD3
+license-file:  LICENSE
+author:        coord_e
+maintainer:    coord_e <me@coord-e.com>, Satoshi Egi <egi@egison.org>
+copyright:     Copyright 2020 coord_e
+category:      Language
+build-type:    Custom
+
+-- see .github/workflows/latest.yml
+tested-with:   GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.1
+
+source-repository head
+  type:     git
+  location: https://github.com/egison/egison-pattern-src
+
+custom-setup
+  setup-depends:
+      base           >=4.5 && <5
+    , Cabal
+    , cabal-doctest  >=1   && <1.1
+
+library
+  build-depends:
+      base                >=4.5 && <5
+    , egison-pattern-src
+    , haskell-src-exts
+    , mtl
+
+  hs-source-dirs:     src
+  exposed-modules:    Language.Egison.Syntax.Pattern.Parser.Haskell
+
+  if impl(ghc >=7.8)
+    ghc-options: -j4
+
+  if impl(ghc >=8)
+    ghc-options: -Wredundant-constraints
+
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -O2
+
+  default-language:   Haskell2010
+  default-extensions:
+    FlexibleContexts
+    NamedFieldPuns
+
+test-suite doctest
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    test
+  main-is:           doctest.hs
+  ghc-options:       -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language:  Haskell2010
+  x-doctest-options: --fast
+  build-depends:
+      base
+    , doctest
+    , egison-pattern-src-haskell-exts-mode
+    , QuickCheck
+    , template-haskell
+
+test-suite test
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     test
+  main-is:            test.hs
+  ghc-options:        -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language:   Haskell2010
+  build-depends:
+      base
+    , egison-pattern-src-haskell-exts-mode
+    , tasty
+    , tasty-hunit
+
+  -- cabal-fmt: expand test
+  other-modules:
+  build-tool-depends: tasty-discover:tasty-discover -any
