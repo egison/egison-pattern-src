@@ -1,4 +1,4 @@
-PACKAGE_NAME := egison-pattern-src
+PACKAGE_NAME ?= $(notdir $(CURDIR))
 
 CABAL ?= cabal
 CABAL_FMT ?= cabal-fmt
