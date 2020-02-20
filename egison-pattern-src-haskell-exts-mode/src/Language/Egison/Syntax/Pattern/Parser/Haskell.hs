@@ -21,6 +21,7 @@ module Language.Egison.Syntax.Pattern.Parser.Haskell
   )
 where
 
+import           Data.Functor                   ( void )
 import           Data.Maybe                     ( mapMaybe )
 import           Control.Monad.Except           ( MonadError )
 
@@ -73,15 +74,15 @@ resultToEither (Haskell.ParseFailed _ e) = Left e
 parseVarNameWithMode :: Haskell.ParseMode -> String -> Either String (Name ())
 parseVarNameWithMode mode content =
   case resultToEither $ Haskell.parseExpWithMode mode content of
-    Right (Var _ (UnQual _ name)) -> Right $ fmap (const ()) name
+    Right (Var _ (UnQual _ name)) -> Right $ void name
     Right e                       -> Left (show e ++ " is not a variable")
     Left  err                     -> Left err
 
 parseNameWithMode :: Haskell.ParseMode -> String -> Either String (QName ())
 parseNameWithMode mode content =
   case resultToEither $ Haskell.parseExpWithMode mode content of
-    Right (Var _ name) -> Right $ fmap (const ()) name
-    Right (Con _ name) -> Right $ fmap (const ()) name
+    Right (Var _ name) -> Right $ void name
+    Right (Con _ name) -> Right $ void name
     Right e            -> Left (show e ++ " is not a name")
     Left  err          -> Left err
 
@@ -142,5 +143,5 @@ parseExprWithFixities
   -> String
   -> m Expr
 parseExprWithFixities mode@Haskell.ParseMode { Haskell.parseFilename } fixities
-  = Egison.parseExpr (makeHaskellMode mode) { Egison.fixities = fixities }
-                     parseFilename
+  = Egison.parseExpr mode' parseFilename
+  where mode' = (makeHaskellMode mode) { Egison.fixities = fixities }
