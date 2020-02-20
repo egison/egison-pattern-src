@@ -21,7 +21,7 @@ conf_errorHandling:
   econf_omit_output_valid_check: false
   econf_produceOutputOnErrors: false
 conf_preprocessor:
-  ppconf_CPPMode: CPPModeAbort
+  ppconf_CPPMode: CPPModeWarn
   ppconf_hackAroundIncludes: false
 conf_obfuscate: false
 conf_roundtrip_exactprint_only: false
