@@ -10,6 +10,7 @@ module Language.Egison.Syntax.Pattern.Combinator
   ( unAnnotate
   , foldExpr
   , mapName
+  , mapVarName
   , mapValueExpr
   , variables
   )
@@ -55,6 +56,21 @@ mapName f = cata go
   go (AndF p1 p2  )  = And p1 p2
   go (OrF  p1 p2  )  = Or p1 p2
   go (NotF p1     )  = Not p1
+
+-- | Map over @v@ in @Expr n v e@.
+mapVarName :: (v -> v') -> Expr n v e -> Expr n v' e
+mapVarName f = cata go
+ where
+  go (VariableF v)   = Variable (f v)
+  -- TODO: omit these verbose matches
+  go WildcardF       = Wildcard
+  go (ValueF     e ) = Value e
+  go (PredicateF e ) = Predicate e
+  go (AndF p1 p2   ) = And p1 p2
+  go (OrF  p1 p2   ) = Or p1 p2
+  go (NotF p1      ) = Not p1
+  go (InfixF n a b ) = Infix n a b
+  go (PatternF n ps) = Pattern n ps
 
 -- | Map over @e@ in @Expr n v e@.
 mapValueExpr :: (e -> e') -> Expr n v e -> Expr n v e'
