@@ -15,10 +15,6 @@ build: cabal-fmt
 cabal-fmt: $(PACKAGE_NAME).cabal
 	$(CABAL_FMT) -i $<
 
-.PHONY: fmt
-fmt:
-	find src test -name '*.hs' -exec $(BRITTANY) --write-mode=inplace {} +
-
 .PHONY: watch
 watch:
 	while true; do \

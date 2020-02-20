@@ -15,10 +15,6 @@ build: cabal-fmt
 cabal-fmt: $(foreach pkg,$(PACKAGES),$(pkg)/$(pkg).cabal)
 	$(CABAL_FMT) -i $^
 
-.PHONY: fmt
-fmt:
-	find . -name '*.hs' -exec $(BRITTANY) --write-mode=inplace {} +
-
 .PHONY: clean
 clean:
 	$(CABAL) new-clean
