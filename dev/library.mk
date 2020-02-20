@@ -1,9 +1,6 @@
-PACKAGE_NAME ?= $(notdir $(CURDIR))
+include ../dev/tools.mk
 
-CABAL ?= cabal
-CABAL_FMT ?= cabal-fmt
-BRITTANY ?= brittany
-FSWATCH ?= fswatch
+PACKAGE_NAME ?= $(notdir $(CURDIR))
 
 
 .PHONY: test
