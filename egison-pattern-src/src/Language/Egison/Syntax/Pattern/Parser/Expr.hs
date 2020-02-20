@@ -145,11 +145,11 @@ addPrecLevel atom table = do
     let location = Location { begin, end }
     pure (location :< x)
 
--- | 'Expr' with locations annotated.
+-- | 'Language.Egison.Syntax.Pattern.Expr.Expr' with locations annotated.
 type ExprL n e = Cofree (ExprF n e) Location
 
 -- | Build an operator table from primitive operator table and 'ParseMode' context.
--- Note that the behavior is undefined when the supplied 'ParseMode' contains some fixities that conflict with 'primInfixes'
+-- Note that the behavior is undefined when the supplied 'ParseMode' contains some fixities that conflict with ones provided via the parameter.
 buildOperatorTable
   :: (MonadReader (ParseMode n e s) m, Source s)
   => [(Precedence, Table (Parse n e s) (ExprF n e) (ExprL n e))]

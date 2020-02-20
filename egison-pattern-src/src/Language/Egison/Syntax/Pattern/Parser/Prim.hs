@@ -125,9 +125,11 @@ import           Language.Egison.Syntax.Pattern.Parser.Error
                                                 )
 
 
--- | Constraint for parser stream.
+-- | Constraint for the source of parser.
 type Source s = (Parsec.Stream s, IsToken (Parsec.Token s))
+-- | Type of token in the source.
 type Token s = Parsec.Token s
+-- | Type of tokens in the source.
 type Tokens s = Parsec.Tokens s
 
 -- | @'ExtParser' s a' is a type for externally provided parser of @a@

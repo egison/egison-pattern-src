@@ -15,6 +15,7 @@ import qualified Data.Char                     as Char
                                                 ( isSpace )
 
 
+-- | Provide a set of tokens needed to parse pattern expressions.
 class IsToken c where
   isSpace :: c -> Bool
   newline :: c

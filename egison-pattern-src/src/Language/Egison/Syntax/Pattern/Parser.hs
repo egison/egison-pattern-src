@@ -18,6 +18,9 @@ where
 import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                as X
                                                 ( Source
+                                                , Token
+                                                , Tokens
+                                                , ExtParser
                                                 , ParseMode(..)
                                                 , Fixity(..)
                                                 , Errors
