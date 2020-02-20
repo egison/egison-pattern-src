@@ -50,9 +50,6 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 , lexeme
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Associativity
-                                                ( Associativity )
-import qualified Language.Egison.Syntax.Pattern.Parser.Associativity
-                                               as Assoc
                                                 ( Associativity(..) )
 import           Language.Egison.Syntax.Pattern.Parser.Precedence
                                                 ( Precedence(..) )
@@ -79,11 +76,11 @@ initTable = Table [] [] [] []
 
 -- | Add an infix operator to 'Table'.
 addInfix :: Associativity -> m (a -> a -> f a) -> Table m f a -> Table m f a
-addInfix Assoc.Right op table@Table { infixRight } =
+addInfix AssocRight op table@Table { infixRight } =
   table { infixRight = op : infixRight }
-addInfix Assoc.Left op table@Table { infixLeft } =
+addInfix AssocLeft op table@Table { infixLeft } =
   table { infixLeft = op : infixLeft }
-addInfix Assoc.None op table@Table { infixNone } =
+addInfix AssocNone op table@Table { infixNone } =
   table { infixNone = op : infixNone }
 
 -- | Add a prefix operator to 'Table'.

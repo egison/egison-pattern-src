@@ -68,9 +68,6 @@ import           Language.Egison.Syntax.Pattern.Parser.Expr
                                                 , addInfix
                                                 , addPrefix
                                                 )
-import qualified Language.Egison.Syntax.Pattern.Parser.Associativity
-                                               as Assoc
-                                                ( Associativity(..) )
 import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                as Token
                                                 ( underscore
@@ -93,8 +90,8 @@ primInfixes
   :: Source s => [(Precedence, Table (Parse n e s) (ExprF n e) (ExprL n e))]
 primInfixes =
   [ (Precedence 5, addPrefix (NotF <$ token Token.exclamation) initTable)
-  , (Precedence 3, addInfix Assoc.Right (AndF <$ token Token.and) initTable)
-  , (Precedence 2, addInfix Assoc.Right (OrF <$ token Token.vertical) initTable)
+  , (Precedence 3, addInfix AssocRight (AndF <$ token Token.and) initTable)
+  , (Precedence 2, addInfix AssocRight (OrF <$ token Token.vertical) initTable)
   ]
 
 wildcard :: Source s => Parse n e s (ExprF n e a)

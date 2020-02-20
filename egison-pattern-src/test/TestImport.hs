@@ -35,12 +35,10 @@ import           Language.Egison.Syntax.Pattern.Parser
                                                 ( ParseMode(..)
                                                 , Fixity(..)
                                                 , Precedence(..)
+                                                , Associativity(..)
                                                 , Errors
                                                 , parseExpr
                                                 )
-import qualified Language.Egison.Syntax.Pattern.Parser
-                                               as Assoc
-                                                ( Associativity(..) )
 
 
 newtype Name = Name String
@@ -57,10 +55,10 @@ unParsec p input = case Parsec.parse p "test" input of
 
 testFixities :: [Fixity Name String]
 testFixities =
-  [ Fixity Assoc.Right (Precedence 5) (unParsec pp)
-  , Fixity Assoc.Right (Precedence 5) (unParsec col)
-  , Fixity Assoc.Left  (Precedence 4) (unParsec rear)
-  , Fixity Assoc.Right (Precedence 4) (unParsec front)
+  [ Fixity AssocRight (Precedence 5) (unParsec pp)
+  , Fixity AssocRight (Precedence 5) (unParsec col)
+  , Fixity AssocLeft  (Precedence 4) (unParsec rear)
+  , Fixity AssocRight (Precedence 4) (unParsec front)
   ]
  where
   pp    = Name <$> Parsec.chunk "++"

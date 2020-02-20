@@ -81,9 +81,9 @@ makeFixity :: Haskell.Fixity -> Maybe Fixity
 makeFixity (Haskell.Fixity assoc prec name) =
   Egison.Fixity (makeAssoc assoc) (Precedence prec) <$> makeNameParser name
  where
-  makeAssoc (Haskell.AssocRight ()) = Egison.Right
-  makeAssoc (Haskell.AssocLeft  ()) = Egison.Left
-  makeAssoc (Haskell.AssocNone  ()) = Egison.None
+  makeAssoc (Haskell.AssocRight ()) = Egison.AssocRight
+  makeAssoc (Haskell.AssocLeft  ()) = Egison.AssocLeft
+  makeAssoc (Haskell.AssocNone  ()) = Egison.AssocNone
   makeNameParser (UnQual () (Ident () n)) = Just $ makeIdentOpParser Nothing n
   makeNameParser (UnQual () (Symbol () n)) =
     Just $ makeSymbolOpParser Nothing n
