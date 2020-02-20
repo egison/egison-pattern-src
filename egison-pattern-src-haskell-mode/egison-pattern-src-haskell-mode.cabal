@@ -15,7 +15,7 @@ author:        coord_e
 maintainer:    coord_e <me@coord-e.com>, Satoshi Egi <egi@egison.org>
 copyright:     Copyright 2020 coord_e
 category:      Language
-build-type:    Custom
+build-type:    Simple
 
 -- see .github/workflows/latest.yml
 tested-with:   GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.1
@@ -23,12 +23,6 @@ tested-with:   GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.1
 source-repository head
   type:     git
   location: https://github.com/egison/egison-pattern-src
-
-custom-setup
-  setup-depends:
-      base           >=4.5 && <5
-    , Cabal
-    , cabal-doctest  >=1   && <1.1
 
 library
   build-depends:
@@ -54,20 +48,6 @@ library
   default-extensions:
     FlexibleContexts
     NamedFieldPuns
-
-test-suite doctest
-  type:              exitcode-stdio-1.0
-  hs-source-dirs:    test
-  main-is:           doctest.hs
-  ghc-options:       -Wall -threaded -rtsopts -with-rtsopts=-N
-  default-language:  Haskell2010
-  x-doctest-options: --fast
-  build-depends:
-      base
-    , doctest
-    , egison-pattern-src-haskell-mode
-    , QuickCheck
-    , template-haskell
 
 test-suite test
   type:               exitcode-stdio-1.0
