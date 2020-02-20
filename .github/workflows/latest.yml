@@ -13,12 +13,18 @@ jobs:
           - '8.4.4'
           - '8.6.5'
           - '8.8.1'
+        cabal:
+          - '2.4'
+          - '3.0'
+        exclude:
+          - ghc: '8.8.1'
+            cabal: '2.4'
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-haskell@v1
         with:
           ghc-version: ${{ matrix.ghc }}
-          cabal-version: '3.0'
+          cabal-version: ${{ matrix.cabal }}
       - run: cabal new-update
       - run: cabal new-test all
   hlint:
