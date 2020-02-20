@@ -18,25 +18,26 @@ import           Data.Data                      ( Data
 
 
 -- | Egison pattern expressions.
--- @n@ is a type for names in patterns, such as them in pattern variables.
+-- @n@ is a type for name references in patterns, such as them in pattern constructors.
+-- @v@ is a type for name bindings in patterns, such as them in pattern variables.
 -- @e@ is a type for expressions in patterns, such as them in value patterns.
-data Expr n e
+data Expr n v e
   -- | Wildcard pattern. Match with everything.
   = Wildcard
   -- | Pattern variable. The matched term is bound to the name.
-  | Variable n
+  | Variable v
   -- | Value pattern. Match with equal terms.
   | Value e
   -- | Predicate pattern. Match with terms that satisfy the given predicate.
   | Predicate e
   -- | And pattern. Match when both patterns matches.
-  | And (Expr n e) (Expr n e)
+  | And (Expr n v e) (Expr n v e)
   -- | Or pattern. Match when one of given patterns matches.
-  | Or (Expr n e) (Expr n e)
+  | Or (Expr n v e) (Expr n v e)
   -- | Not pattern. Match when the given pattern does not match.
-  | Not (Expr n e)
+  | Not (Expr n v e)
   -- | User-defined infix pattern.
-  | Infix n (Expr n e) (Expr n e)
+  | Infix n (Expr n v e) (Expr n v e)
   -- | User-defined normal pattern.
-  | Pattern n [Expr n e]
+  | Pattern n [Expr n v e]
   deriving (Eq, Ord, Show, Typeable, Data, Generic)

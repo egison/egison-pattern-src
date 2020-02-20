@@ -83,14 +83,15 @@ testParseValueExpr = withParens <|> dec
     d <- Parsec.chunk "(-" *> dec <* Parsec.single ')'
     pure $ negate d
 
-testMode :: ParseMode Name ValueExpr String
+testMode :: ParseMode Name Name ValueExpr String
 testMode = ParseMode { fixities        = testFixities
                      , blockComment    = Just ("{-", "-}")
                      , lineComment     = Just "--"
+                     , varNameParser   = unParsec testParseName
                      , nameParser      = unParsec testParseName
                      , valueExprParser = unParsec testParseValueExpr
                      }
 
 testParseExpr
-  :: MonadError (Errors String) m => String -> m (Expr Name ValueExpr)
+  :: MonadError (Errors String) m => String -> m (Expr Name Name ValueExpr)
 testParseExpr = parseExpr testMode "test"

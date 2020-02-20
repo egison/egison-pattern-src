@@ -143,14 +143,14 @@ addPrecLevel atom table = do
     pure (location :< x)
 
 -- | 'Language.Egison.Syntax.Pattern.Expr.Expr' with locations annotated.
-type ExprL n e = Cofree (ExprF n e) Location
+type ExprL n v e = Cofree (ExprF n v e) Location
 
 -- | Build an operator table from primitive operator table and 'ParseMode' context.
 -- Note that the behavior is undefined when the supplied 'ParseMode' contains some fixities that conflict with ones provided via the parameter.
 buildOperatorTable
-  :: (MonadReader (ParseMode n e s) m, Source s)
-  => [(Precedence, Table (Parse n e s) (ExprF n e) (ExprL n e))]
-  -> m [Table (Parse n e s) (ExprF n e) (ExprL n e)]
+  :: (MonadReader (ParseMode n v e s) m, Source s)
+  => [(Precedence, Table (Parse n v e s) (ExprF n v e) (ExprL n v e))]
+  -> m [Table (Parse n v e s) (ExprF n v e) (ExprL n v e)]
 buildOperatorTable primInfixes = do
   ParseMode { fixities } <- ask
   pure . map snd . IntMap.toDescList $ foldr go prim fixities
@@ -162,12 +162,12 @@ buildOperatorTable primInfixes = do
   addPrecToTable prec f = adjustWithDefault f (f initTable) $ Prec.toInt prec
   adjustWithDefault f def = IntMap.alter (Just . maybe def f)
 
--- | Build an expression parser with location information, from an atom parser.
+-- | Build an v expression parser with location information, from an atom parser.
 exprParser
   :: Source s
-  => [(Precedence, Table (Parse n e s) (ExprF n e) (ExprL n e))]
-  -> Parse n e s (ExprF n e (ExprL n e))
-  -> Parse n e s (ExprL n e)
+  => [(Precedence, Table (Parse n v e s) (ExprF n v e) (ExprL n v e))]
+  -> Parse n v e s (ExprF n v e (ExprL n v e))
+  -> Parse n v e s (ExprL n v e)
 exprParser primInfixes atom = do
   ops <- buildOperatorTable primInfixes
   makeExprParser atom ops

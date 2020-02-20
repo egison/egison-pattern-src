@@ -16,8 +16,7 @@ module Language.Egison.Syntax.Pattern.Combinator
 where
 
 import           Control.Applicative            ( Alternative(..) )
-import           Control.Applicative.Combinators
-                                                ( choice )
+import           Data.Foldable                  ( asum )
 import           Data.Functor.Foldable          ( cata
                                                 , embed
                                                 )
@@ -31,34 +30,34 @@ import           Language.Egison.Syntax.Pattern.Base
 
 
 -- | Unwrap annotations from AST.
-unAnnotate :: Cofree (ExprF n e) a -> Expr n e
+unAnnotate :: Cofree (ExprF n v e) a -> Expr n v e
 unAnnotate = cata go where go (_ :< x) = embed x
 
--- | fold an expr.
+-- | fold an v expr.
 --
 -- Note that this is just a type specialization of 'cata'.
-foldExpr :: (ExprF n e a -> a) -> Expr n e -> a
+foldExpr :: (ExprF n v e a -> a) -> Expr n v e -> a
 foldExpr = cata
 
 -- TODO: Implement 'mapName' and 'mapValueExpr' by adding newtype wrapper for them and making them instances of 'MonoFunctor'
 
--- | Map over @n@ in @Expr n e@.
-mapName :: (n -> n') -> Expr n e -> Expr n' e
+-- | Map over @n@ in @Expr n v e@.
+mapName :: (n -> n') -> Expr n v e -> Expr n' v e
 mapName f = cata go
  where
-  go (VariableF n  ) = Variable (f n)
   go (InfixF n a b ) = Infix (f n) a b
   go (PatternF n ps) = Pattern (f n) ps
   -- TODO: omit these verbose matches
   go WildcardF       = Wildcard
+  go (VariableF  n)  = Variable n
   go (ValueF     e)  = Value e
   go (PredicateF e)  = Predicate e
   go (AndF p1 p2  )  = And p1 p2
   go (OrF  p1 p2  )  = Or p1 p2
   go (NotF p1     )  = Not p1
 
--- | Map over @e@ in @Expr n e@.
-mapValueExpr :: (e -> e') -> Expr n e -> Expr n e'
+-- | Map over @e@ in @Expr n v e@.
+mapValueExpr :: (e -> e') -> Expr n v e -> Expr n v e'
 mapValueExpr f = cata go
  where
   go (ValueF     e)   = Value (f e)
@@ -72,11 +71,17 @@ mapValueExpr f = cata go
   go (OrF      p1 p2) = Or p1 p2
   go (NotF p1       ) = Not p1
 
--- | List pattern variables in a pattern.
-variables :: Alternative f => Expr n e -> f n
+-- | List bound pattern variables in a pattern.
+variables :: Alternative f => Expr n v e -> f v
 variables = cata go
  where
-  go (VariableF n  ) = pure n
-  go (InfixF n a b ) = pure n <|> a <|> b
-  go (PatternF n ps) = pure n <|> choice ps
-  go _               = empty
+  go (VariableF n)   = pure n
+  -- TODO: omit these verbose matches
+  go WildcardF       = empty
+  go (ValueF     _ ) = empty
+  go (PredicateF _ ) = empty
+  go (AndF p1 p2   ) = p1 <|> p2
+  go (OrF  p1 p2   ) = p1 <|> p2
+  go (NotF p1      ) = p1
+  go (InfixF _ a b ) = a <|> b
+  go (PatternF _ ps) = asum ps

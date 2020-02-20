@@ -53,6 +53,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 , runParse
                                                 , lexeme
                                                 , name
+                                                , varName
                                                 , valueExpr
                                                 , try
                                                 , (<?>)
@@ -87,35 +88,36 @@ import           Language.Egison.Syntax.Pattern.Combinator
 
 
 primInfixes
-  :: Source s => [(Precedence, Table (Parse n e s) (ExprF n e) (ExprL n e))]
+  :: Source s
+  => [(Precedence, Table (Parse n v e s) (ExprF n v e) (ExprL n v e))]
 primInfixes =
   [ (Precedence 5, addPrefix (NotF <$ token Token.exclamation) initTable)
   , (Precedence 3, addInfix AssocRight (AndF <$ token Token.and) initTable)
   , (Precedence 2, addInfix AssocRight (OrF <$ token Token.vertical) initTable)
   ]
 
-wildcard :: Source s => Parse n e s (ExprF n e a)
+wildcard :: Source s => Parse n v e s (ExprF n v e a)
 wildcard = WildcardF <$ token Token.underscore
 
-variable :: Source s => Parse n e s (ExprF n e a)
+variable :: Source s => Parse n v e s (ExprF n v e a)
 variable = do
   token Token.dollar
-  n <- lexeme name
-  pure $ VariableF n
+  v <- lexeme varName
+  pure $ VariableF v
 
-value :: Source s => Parse n e s (ExprF n e a)
+value :: Source s => Parse n v e s (ExprF n v e a)
 value = do
   token Token.hash
   e <- lexeme valueExpr
   pure $ ValueF e
 
-predicate :: Source s => Parse n e s (ExprF n e a)
+predicate :: Source s => Parse n v e s (ExprF n v e a)
 predicate = do
   token Token.question
   e <- lexeme valueExpr
   pure $ PredicateF e
 
-constr :: Source s => Parse n e s (ExprF n e (ExprL n e))
+constr :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
 constr = withArgs <|> withoutArgs
  where
   withArgs = parens $ do
@@ -126,7 +128,7 @@ constr = withArgs <|> withoutArgs
     n <- lexeme name
     pure $ PatternF n []
 
-atom :: Source s => Parse n e s (ExprF n e (ExprL n e))
+atom :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
 atom =
   try (unwrap <$> parens expr) -- discarding location once
     <|> wildcard
@@ -136,23 +138,23 @@ atom =
     <|> predicate
     <?> "atomic pattern"
 
-expr :: Source s => Parse n e s (ExprL n e)
+expr :: Source s => Parse n v e s (ExprL n v e)
 expr = exprParser primInfixes atom
 
 -- | A parser for 'Expr' with locations annotated.
 parseExprL
   :: (Source s, MonadError (Errors s) m)
-  => ParseMode n e s
+  => ParseMode n v e s
   -> FilePath
   -> s
-  -> m (ExprL n e)
+  -> m (ExprL n v e)
 parseExprL = runParse expr
 
 -- | A parser for 'Expr'.
 parseExpr
   :: (Source s, MonadError (Errors s) m)
-  => ParseMode n e s
+  => ParseMode n v e s
   -> FilePath
   -> s
-  -> m (Expr n e)
+  -> m (Expr n v e)
 parseExpr mode path = fmap unAnnotate . parseExprL mode path

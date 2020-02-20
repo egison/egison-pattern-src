@@ -25,6 +25,7 @@ module Language.Egison.Syntax.Pattern.Parser.Prim
   , space
   , lexeme
   , name
+  , varName
   , valueExpr
   -- * Error Type
   , Errors
@@ -143,10 +144,11 @@ data Fixity n s =
          }
 
 -- | Parser configuration.
-data ParseMode n e s
+data ParseMode n v e s
   = ParseMode { fixities        :: [Fixity n s]
               , blockComment    :: Maybe (Tokens s, Tokens s)
               , lineComment     :: Maybe (Tokens s)
+              , varNameParser   :: ExtParser s v
               , nameParser      :: ExtParser s n
               , valueExprParser :: ExtParser s e
               }
@@ -160,20 +162,20 @@ deriving instance Eq (Tokens s) => Eq (CustomError s)
 deriving instance Ord (Tokens s) => Ord (CustomError s)
 
 -- | A parser monad.
-newtype Parse n e s a = Parse { unParse :: ReaderT (ParseMode n e s) (Parsec (CustomError s) s) a }
+newtype Parse n v e s a = Parse { unParse :: ReaderT (ParseMode n v e s) (Parsec (CustomError s) s) a }
   deriving newtype (Functor, Applicative, Alternative, Monad, MonadFail, MonadPlus)
-  deriving newtype (MonadReader (ParseMode n e s))
+  deriving newtype (MonadReader (ParseMode n v e s))
   deriving newtype (MonadParsec (CustomError s) s)
 
-instance Parsec.Stream s => Locate (Parse n e s) where
+instance Parsec.Stream s => Locate (Parse n v e s) where
   getPosition = makePosition <$> Parsec.getSourcePos
 
 
 -- | Run 'Parse' monad and produce a parse result.
 runParse
   :: (Source s, MonadError (Errors s) m)
-  => Parse n e s a
-  -> ParseMode n e s
+  => Parse n v e s a
+  -> ParseMode n v e s
   -> FilePath
   -> s
   -> m a
@@ -183,21 +185,21 @@ runParse parse mode filename content =
     Right e      -> pure e
   where parsec = runReaderT (unParse $ file parse) mode
 
-file :: Source s => Parse n e s a -> Parse n e s a
+file :: Source s => Parse n v e s a -> Parse n v e s a
 file = between space Parsec.eof
 
-skipBlockComment :: Source s => Tokens s -> Tokens s -> Parse n e s ()
+skipBlockComment :: Source s => Tokens s -> Tokens s -> Parse n v e s ()
 skipBlockComment start end = cs *> void (Parsec.manyTill Parsec.anySingle ce)
  where
   cs = Parsec.chunk start
   ce = Parsec.chunk end
 
-skipLineComment :: Source s => Tokens s -> Parse n e s ()
+skipLineComment :: Source s => Tokens s -> Parse n v e s ()
 skipLineComment prefix = Parsec.chunk prefix
   *> void (Parsec.takeWhileP (Just "chars") (/= Token.newline))
 
 -- | Skip one or more spaces.
-space :: Source s => Parse n e s ()
+space :: Source s => Parse n v e s ()
 space = do
   ParseMode { blockComment, lineComment } <- ask
   let block = emptyOr (uncurry skipBlockComment) blockComment
@@ -208,7 +210,7 @@ space = do
   emptyOr = maybe empty
 
 -- | Parse a lexical chunk.
-takeChunk :: forall n e s . Source s => Parse n e s (Tokens s)
+takeChunk :: forall n v e s . Source s => Parse n v e s (Tokens s)
 takeChunk = withParens <|> withoutParens
  where
   withParens = do
@@ -224,7 +226,7 @@ takeChunk = withParens <|> withoutParens
   endOfChunk x = not (Token.isSpace x) && x /= Token.parenRight
 
 -- | Apply an external parser.
-extParser :: Source s => ExtParser s a -> Parse n e s a
+extParser :: Source s => ExtParser s a -> Parse n v e s a
 extParser p = try $ do
   lchunk <- takeChunk
   case p lchunk of
@@ -233,17 +235,23 @@ extParser p = try $ do
 
 -- | Make a lexical token.
 -- @lexeme p@ first applies parser @p@ then 'space' parser.
-lexeme :: Source s => Parse n e s a -> Parse n e s a
+lexeme :: Source s => Parse n v e s a -> Parse n v e s a
 lexeme = L.lexeme space
 
--- | Parser for @n@ in @Parse n e s@ monad.
-name :: Source s => Parse n e s n
+-- | Parser for @n@ in @Parse n v e s@ monad.
+name :: Source s => Parse n v e s n
 name = do
   ParseMode { nameParser } <- ask
   extParser nameParser
 
--- | Parser for @e@ in @Parse n e s@ monad.
-valueExpr :: Source s => Parse n e s e
+-- | Parser for @v@ in @Parse n v e s@ monad.
+varName :: Source s => Parse n v e s v
+varName = do
+  ParseMode { varNameParser } <- ask
+  extParser varNameParser
+
+-- | Parser for @e@ in @Parse n v e s@ monad.
+valueExpr :: Source s => Parse n v e s e
 valueExpr = do
   ParseMode { valueExprParser } <- ask
   extParser valueExprParser

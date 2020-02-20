@@ -36,13 +36,13 @@ import qualified Language.Egison.Syntax.Pattern.Parser.Token
 
 
 -- | Parser for a single token.
-token :: Source s => Token s -> Parse n e s ()
+token :: Source s => Token s -> Parse n v e s ()
 token = void . lexeme . single
 
 -- | Parser for a chunk of tokens.
-symbol :: Source s => Tokens s -> Parse n e s ()
+symbol :: Source s => Tokens s -> Parse n v e s ()
 symbol = void . lexeme . chunk
 
 -- | Wrap a parser with parentheses.
-parens :: Source s => Parse n e s a -> Parse n e s a
+parens :: Source s => Parse n v e s a -> Parse n v e s a
 parens = between (token Token.parenLeft) (token Token.parenRight)
