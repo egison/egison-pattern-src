@@ -25,6 +25,7 @@ sym = mkName
 intE :: Integer -> Exp
 intE = LitE . IntegerL
 
+{-# ANN infixApp "HLint: ignore Eta reduce" #-}
 infixApp :: Exp -> Name -> Exp -> Exp
 infixApp l op r = UInfixE l (VarE op) r
 
