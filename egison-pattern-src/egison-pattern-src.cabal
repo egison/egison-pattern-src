@@ -112,15 +112,20 @@ test-suite test
     , mtl
     , tasty
     , tasty-hunit
+    , text
 
   default-extensions:
     DerivingStrategies
+    DuplicateRecordFields
     FlexibleContexts
     GeneralizedNewtypeDeriving
+    NamedFieldPuns
+    OverloadedStrings
 
   -- cabal-fmt: expand test
   other-modules:
     Language.Egison.Parser.PatternSpec
+    Language.Egison.Pretty.PatternSpec
     TestImport
 
   build-tool-depends: tasty-discover:tasty-discover -any

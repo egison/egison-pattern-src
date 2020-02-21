@@ -14,3 +14,4 @@ where
 
 -- | A pretty printer error.
 newtype Error n = UnknownInfixOperator n
+  deriving (Show, Eq)
