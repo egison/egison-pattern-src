@@ -1,5 +1,6 @@
 module TestImport
   ( testParseExpr
+  , testPrintExpr
   , Name(..)
   , ValueExpr(..)
   -- * Re-exports
@@ -12,6 +13,9 @@ import           Language.Egison.Syntax.Pattern.Expr
                                                as X
 
 -- main
+import           Data.Text                      ( Text
+                                                , pack
+                                                )
 import           Data.Functor                   ( void )
 import           Data.Void                      ( Void )
 import           Control.Applicative            ( (<|>)
@@ -40,10 +44,15 @@ import           Language.Egison.Parser.Pattern ( ParseMode(..)
                                                 , Errors
                                                 , parseExpr
                                                 )
+import           Language.Egison.Pretty.Pattern ( PrintMode(..)
+                                                , PrintFixity(..)
+                                                , Error
+                                                , prettyExpr
+                                                )
 
 
 newtype Name = Name String
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)
 
 newtype ValueExpr = ValueExprInt Int
   deriving newtype Num
@@ -54,18 +63,21 @@ unParsec p input = case Parsec.parse p "test" input of
   Left  e -> Left (show e)
   Right x -> Right x
 
-testFixities :: [ParseFixity Name String]
+testFixities :: [Fixity Name]
 testFixities =
-  [ ParseFixity (Fixity AssocRight (Precedence 5) (Name "++")) (unParsec pp)
-  , ParseFixity (Fixity AssocRight (Precedence 5) (Name ":"))  (unParsec col)
-  , ParseFixity (Fixity AssocLeft (Precedence 4) (Name "|>"))  (unParsec rear)
-  , ParseFixity (Fixity AssocRight (Precedence 4) (Name "<|")) (unParsec front)
+  [ Fixity AssocRight (Precedence 5) (Name "++")
+  , Fixity AssocRight (Precedence 5) (Name ":")
+  , Fixity AssocLeft  (Precedence 4) (Name "|>")
+  , Fixity AssocRight (Precedence 4) (Name "<|")
   ]
- where
-  pp    = void $ Parsec.chunk "++"
-  col   = void $ Parsec.chunk ":"
-  rear  = void $ Parsec.chunk "|>"
-  front = void $ Parsec.chunk "<|"
+
+toParseFixity :: Fixity Name -> ParseFixity Name String
+toParseFixity fixity@(Fixity _ _ (Name name)) = ParseFixity fixity
+  $ unParsec parser
+  where parser = void $ Parsec.chunk name
+
+toPrintFixity :: Fixity Name -> PrintFixity Name
+toPrintFixity fixity@(Fixity _ _ (Name name)) = PrintFixity fixity $ pack name
 
 testParseName :: Parsec Void String Name
 testParseName = withParens <|> name
@@ -84,15 +96,29 @@ testParseValueExpr = withParens <|> dec
     d <- Parsec.chunk "(-" *> dec <* Parsec.single ')'
     pure $ negate d
 
-testMode :: ParseMode Name Name ValueExpr String
-testMode = ParseMode { fixities        = testFixities
-                     , blockComment    = Just ("{-", "-}")
-                     , lineComment     = Just "--"
-                     , varNameParser   = unParsec testParseName
-                     , nameParser      = unParsec testParseName
-                     , valueExprParser = unParsec testParseValueExpr
-                     }
+testParseMode :: ParseMode Name Name ValueExpr String
+testParseMode = ParseMode { fixities        = map toParseFixity testFixities
+                          , blockComment    = Just ("{-", "-}")
+                          , lineComment     = Just "--"
+                          , varNameParser   = unParsec testParseName
+                          , nameParser      = unParsec testParseName
+                          , valueExprParser = unParsec testParseValueExpr
+                          }
+
+testPrintMode :: PrintMode Name Name ValueExpr
+testPrintMode = PrintMode { fixities         = map toPrintFixity testFixities
+                          , varNamePrinter   = namePrinter
+                          , namePrinter
+                          , valueExprPrinter = valueExprPrinter
+                          , pageMode         = Nothing
+                          }
+ where
+  namePrinter (Name name) = pack name
+  valueExprPrinter (ValueExprInt i) = pack $ show i
 
 testParseExpr
   :: MonadError (Errors String) m => String -> m (Expr Name Name ValueExpr)
-testParseExpr = parseExpr testMode "test"
+testParseExpr = parseExpr testParseMode "test"
+
+testPrintExpr :: MonadError (Error Name) m => Expr Name Name ValueExpr -> m Text
+testPrintExpr = prettyExpr testPrintMode

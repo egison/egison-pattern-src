@@ -1,6 +1,7 @@
 module TestImport
   ( testParseExpr
   , testParseExprSpecialFixities
+  , testPrintExpr
   -- * Re-exports
   , module X
   )
@@ -21,35 +22,59 @@ import           Language.Egison.Syntax.Pattern
                                                as X
 
 -- main
+import           Data.Text                      ( Text )
 import           Control.Monad.Except           ( MonadError )
 
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
+import qualified Language.Haskell.Exts.Pretty  as Haskell
+                                                ( style
+                                                , defaultMode
+                                                )
 
-import           Language.Egison.Parser.Pattern ( Fixity(..)
+import           Language.Egison.Syntax.Pattern.Fixity
+                                                ( Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)
                                                 )
-
 import qualified Language.Egison.Parser.Pattern.Mode.Haskell
-                                               as HaskellMode
+                                               as HaskellParseMode
                                                 ( Expr
                                                 , parseExpr
                                                 , parseExprWithFixities
                                                 )
+import           Language.Egison.Pretty.Pattern ( Error )
+import qualified Language.Egison.Pretty.Pattern.Mode.Haskell
+                                               as HaskellPrettyMode
+                                                ( Expr
+                                                , prettyExprWithFixities
+                                                )
 
 
-testParseExpr :: MonadError (Errors String) m => String -> m HaskellMode.Expr
-testParseExpr = HaskellMode.parseExpr Haskell.defaultParseMode
+testParseExpr
+  :: MonadError (Errors String) m => String -> m HaskellParseMode.Expr
+testParseExpr = HaskellParseMode.parseExpr Haskell.defaultParseMode
 
 specialFixities :: [Fixity (QName ())]
 specialFixities =
   [ Fixity AssocRight (Precedence 5) (sym "++")
   , Fixity AssocRight (Precedence 5) (sym ":")
+  , Fixity AssocRight (Precedence 5) (qsym ":")
+  , Fixity AssocLeft  (Precedence 7) (qname "mod")
   ]
-  where sym = UnQual () . Symbol ()
+ where
+  sym   = UnQual () . Symbol ()
+  qsym  = Qual () (ModuleName () "Special") . Symbol ()
+  qname = Qual () (ModuleName () "Special") . Ident ()
 
 testParseExprSpecialFixities
-  :: MonadError (Errors String) m => String -> m HaskellMode.Expr
-testParseExprSpecialFixities =
-  HaskellMode.parseExprWithFixities Haskell.defaultParseMode specialFixities
+  :: MonadError (Errors String) m => String -> m HaskellParseMode.Expr
+testParseExprSpecialFixities = HaskellParseMode.parseExprWithFixities
+  Haskell.defaultParseMode
+  specialFixities
+
+testPrintExpr
+  :: MonadError (Error (QName ())) m => HaskellPrettyMode.Expr -> m Text
+testPrintExpr = HaskellPrettyMode.prettyExprWithFixities Haskell.style
+                                                         Haskell.defaultMode
+                                                         specialFixities
