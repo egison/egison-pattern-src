@@ -33,15 +33,15 @@ import           Language.Egison.Parser.Pattern ( ParseFixity(..)
                                                 )
 
 import qualified Language.Egison.Parser.Pattern.Haskell
-                                               as HaskellParser
+                                               as HaskellMode
                                                 ( Expr
                                                 , parseExpr
                                                 , parseExprWithFixities
                                                 )
 
 
-testParseExpr :: MonadError (Errors String) m => String -> m HaskellParser.Expr
-testParseExpr = HaskellParser.parseExpr Haskell.defaultParseMode
+testParseExpr :: MonadError (Errors String) m => String -> m HaskellMode.Expr
+testParseExpr = HaskellMode.parseExpr Haskell.defaultParseMode
 
 specialFixities :: [ParseFixity (QName ()) String]
 specialFixities =
@@ -55,6 +55,6 @@ specialFixities =
     | otherwise = Left $ "expected " ++ show chunk ++ ", found " ++ show content
 
 testParseExprSpecialFixities
-  :: MonadError (Errors String) m => String -> m HaskellParser.Expr
+  :: MonadError (Errors String) m => String -> m HaskellMode.Expr
 testParseExprSpecialFixities =
-  HaskellParser.parseExprWithFixities Haskell.defaultParseMode specialFixities
+  HaskellMode.parseExprWithFixities Haskell.defaultParseMode specialFixities

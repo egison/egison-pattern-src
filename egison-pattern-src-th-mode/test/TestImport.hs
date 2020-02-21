@@ -26,11 +26,11 @@ import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
 
 import qualified Language.Egison.Parser.Pattern.Haskell.TH
-                                               as THParser
+                                               as THMode
                                                 ( Expr
                                                 , parseExpr
                                                 )
 
 
-testParseExpr :: MonadError (Errors String) m => String -> m THParser.Expr
-testParseExpr = THParser.parseExpr Haskell.defaultParseMode
+testParseExpr :: MonadError (Errors String) m => String -> m THMode.Expr
+testParseExpr = THMode.parseExpr Haskell.defaultParseMode
