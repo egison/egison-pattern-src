@@ -50,6 +50,7 @@ library
     Language.Egison.Syntax.Pattern.Parser.Location
     Language.Egison.Syntax.Pattern.Parser.Precedence
     Language.Egison.Syntax.Pattern.Parser.Prim
+    Language.Egison.Syntax.Pattern.Parser.Prim.Source
     Language.Egison.Syntax.Pattern.Parser.Token
 
   if impl(ghc >=7.8)

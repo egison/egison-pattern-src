@@ -87,8 +87,6 @@ import qualified Text.Megaparsec               as Parsec
                                                 , ErrorFancy(..)
                                                 , ErrorItem(..)
                                                 , Stream(..)
-                                                , Token
-                                                , Tokens
                                                 , SourcePos(..)
                                                 , customFailure
                                                 , errorOffset
@@ -107,8 +105,6 @@ import           Language.Egison.Syntax.Pattern.Parser.Associativity
                                                 ( Associativity )
 import           Language.Egison.Syntax.Pattern.Parser.Precedence
                                                 ( Precedence )
-import           Language.Egison.Syntax.Pattern.Parser.Token
-                                                ( IsToken )
 import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                as Token
                                                 ( isSpace
@@ -125,13 +121,12 @@ import           Language.Egison.Syntax.Pattern.Parser.Error
                                                 , ErrorItem(..)
                                                 )
 
+import           Language.Egison.Syntax.Pattern.Parser.Prim.Source
+                                                ( Source
+                                                , Token
+                                                , Tokens
+                                                )
 
--- | Constraint for the source of parser.
-type Source s = (Parsec.Stream s, IsToken (Parsec.Token s))
--- | Type of token in the source.
-type Token s = Parsec.Token s
--- | Type of tokens in the source.
-type Tokens s = Parsec.Tokens s
 
 -- | @'ExtParser' s a' is a type for externally provided parser of @a@
 type ExtParser s a = Tokens s -> Either String a
