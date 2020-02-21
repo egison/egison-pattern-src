@@ -26,8 +26,7 @@ import           Control.Monad.Except           ( MonadError )
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
 
-import           Language.Egison.Parser.Pattern ( ParseFixity(..)
-                                                , Fixity(..)
+import           Language.Egison.Parser.Pattern ( Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)
                                                 )
@@ -43,16 +42,12 @@ import qualified Language.Egison.Parser.Pattern.Mode.Haskell
 testParseExpr :: MonadError (Errors String) m => String -> m HaskellMode.Expr
 testParseExpr = HaskellMode.parseExpr Haskell.defaultParseMode
 
-specialFixities :: [ParseFixity (QName ()) String]
+specialFixities :: [Fixity (QName ())]
 specialFixities =
-  [ ParseFixity (Fixity AssocRight (Precedence 5) (sym "++")) (chunkParser "++")
-  , ParseFixity (Fixity AssocRight (Precedence 5) (sym ":"))  (chunkParser ":")
+  [ Fixity AssocRight (Precedence 5) (sym "++")
+  , Fixity AssocRight (Precedence 5) (sym ":")
   ]
- where
-  sym = UnQual () . Symbol ()
-  chunkParser chunk content
-    | chunk == content = Right ()
-    | otherwise = Left $ "expected " ++ show chunk ++ ", found " ++ show content
+  where sym = UnQual () . Symbol ()
 
 testParseExprSpecialFixities
   :: MonadError (Errors String) m => String -> m HaskellMode.Expr

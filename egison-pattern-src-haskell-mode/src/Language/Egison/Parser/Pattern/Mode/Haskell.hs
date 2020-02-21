@@ -15,9 +15,11 @@ module Language.Egison.Parser.Pattern.Mode.Haskell
   -- * Converting @haskell-src-exts@'s entities
   , ParseMode
   , ParseFixity
+  , Fixity
   , makeHaskellMode
   , makeFixity
-  , makeFixities
+  , makeParseFixity
+  , makeParseFixities
   )
 where
 
@@ -64,6 +66,9 @@ type Expr = Egison.Expr (QName ()) (Name ()) (Exp SrcSpanInfo)
 -- | A type synonym of 'Egison.ParseMode' to parse 'Expr'.
 type ParseMode = Egison.ParseMode (QName ()) (Name ()) (Exp SrcSpanInfo) String
 
+-- | A type synonym of 'Egison.Fixity' to parse 'Expr'.
+type Fixity = Egison.Fixity (QName ())
+
 -- | A type synonym of 'Egison.ParseFixity' to parse 'Expr'.
 type ParseFixity = Egison.ParseFixity (QName ()) String
 
@@ -86,16 +91,22 @@ parseNameWithMode mode content =
     Right e            -> Left (show e ++ " is not a name")
     Left  err          -> Left err
 
--- | Build 'ParseFixity' using 'Haskell.Fixity' from @haskell-src-exts@.
+-- | Build 'Egison.Fixity' using 'Haskell.Fixity' from @haskell-src-exts@.
 -- Note that a built-in constructor with special syntax, that is represented as 'Special' in 'QName', is just ignored here.
-makeFixity :: Haskell.Fixity -> Maybe ParseFixity
-makeFixity (Haskell.Fixity assoc prec name) =
-  Egison.ParseFixity (Egison.Fixity (makeAssoc assoc) (Precedence prec) name)
-    <$> makeNameParser name
+makeFixity :: Haskell.Fixity -> Fixity
+makeFixity (Haskell.Fixity assoc prec name) = fixity
  where
+  fixity = Egison.Fixity (makeAssoc assoc) (Precedence prec) name
   makeAssoc (Haskell.AssocRight ()) = Egison.AssocRight
   makeAssoc (Haskell.AssocLeft  ()) = Egison.AssocLeft
   makeAssoc (Haskell.AssocNone  ()) = Egison.AssocNone
+
+-- | Build 'Egison.ParseFixity' using 'Egison.Fixity' to parse Haskell-style operators
+-- Note that a built-in constructor with special syntax, that is represented as 'Special' in 'QName', is just ignored here.
+makeParseFixity :: Fixity -> Maybe ParseFixity
+makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
+ where
+  Egison.Fixity { Egison.symbol } = fixity
   makeNameParser (UnQual () (Ident () n)) = Just $ makeIdentOpParser Nothing n
   makeNameParser (UnQual () (Symbol () n)) =
     Just $ makeSymbolOpParser Nothing n
@@ -109,19 +120,19 @@ makeFixity (Haskell.Fixity assoc prec name) =
     | content == printed = Right ()
     | otherwise          = Left "not an operator name"
     where printed = '`' : maybe ident (++ '.' : ident) mModName ++ "`"
-  makeSymbolOpParser mModName symbol content
+  makeSymbolOpParser mModName sym content
     | content == printed = Right ()
     | otherwise          = Left "not an operator name"
-    where printed = maybe symbol (++ '.' : symbol) mModName
+    where printed = maybe sym (++ '.' : sym) mModName
 
--- | > makeFixities = mapMaybe makeFixity
-makeFixities :: [Haskell.Fixity] -> [ParseFixity]
-makeFixities = mapMaybe makeFixity
+-- | > makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
+makeParseFixities :: [Haskell.Fixity] -> [ParseFixity]
+makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
 
 -- | Build 'ParseMode' using 'Haskell.ParseMode' from @haskell-src-exts@.
 makeHaskellMode :: Haskell.ParseMode -> ParseMode
 makeHaskellMode mode@Haskell.ParseMode { Haskell.fixities } = Egison.ParseMode
-  { Egison.fixities        = maybe [] makeFixities fixities
+  { Egison.fixities        = maybe [] makeParseFixities fixities
   , Egison.blockComment    = Just ("{-", "-}")
   , Egison.lineComment     = Just "--"
   , Egison.varNameParser   = parseVarNameWithMode mode
@@ -140,9 +151,12 @@ parseExpr mode@Haskell.ParseMode { Haskell.parseFilename } =
 parseExprWithFixities
   :: MonadError (Errors String) m
   => Haskell.ParseMode
-  -> [ParseFixity]
+  -> [Fixity]
   -> String
   -> m Expr
 parseExprWithFixities mode@Haskell.ParseMode { Haskell.parseFilename } fixities
-  = Egison.parseExpr mode' parseFilename
-  where mode' = (makeHaskellMode mode) { Egison.fixities = fixities }
+  = Egison.parseExpr hsModeWithFixities parseFilename
+ where
+  hsMode = makeHaskellMode mode
+  hsModeWithFixities =
+    hsMode { Egison.fixities = mapMaybe makeParseFixity fixities }

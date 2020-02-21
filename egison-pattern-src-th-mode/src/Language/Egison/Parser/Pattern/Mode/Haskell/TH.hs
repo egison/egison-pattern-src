@@ -46,7 +46,7 @@ import           Language.Egison.Syntax.Pattern ( mapValueExpr
 import           Language.Egison.Parser.Pattern ( Errors )
 import qualified Language.Egison.Parser.Pattern.Mode.Haskell
                                                as HaskellMode
-                                                ( ParseFixity
+                                                ( Fixity
                                                 , parseExpr
                                                 , parseExprWithFixities
                                                 )
@@ -70,7 +70,7 @@ parseExpr mode = fmap toTH . HaskellMode.parseExpr mode
 parseExprWithFixities
   :: MonadError (Errors String) m
   => Haskell.ParseMode
-  -> [HaskellMode.ParseFixity]
+  -> [HaskellMode.Fixity]
   -> String
   -> m Expr
 parseExprWithFixities mode fixities =
