@@ -1,3 +1,13 @@
+-- |
+--
+-- Module:      Language.Egison.Pretty.Pattern.Prim
+-- Description: Primitive printers
+-- Stability:   experimental
+--
+-- Primitive printers.
+--
+-- Note that all dependencies on printer library are in this module.
+
 module Language.Egison.Pretty.Pattern.Prim
   ( Doc
   , renderDoc

@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Pretty.Pattern.Operator
+-- Description: Infix operator datatypes
+-- Stability:   experimental
+--
+-- A datatypes for infix operators.
+
 module Language.Egison.Pretty.Pattern.Operator
   ( Operator(..)
   , OperatorAssoc(..)

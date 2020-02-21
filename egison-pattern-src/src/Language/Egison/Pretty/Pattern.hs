@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Pretty.Pattern
+-- Description: Pretty printer for Egison patterns
+-- Stability:   experimental
+--
+-- A pretty printer for Egison patterns.
+
 module Language.Egison.Pretty.Pattern
   ( prettyExpr
   -- * Re-exports
@@ -6,10 +14,14 @@ module Language.Egison.Pretty.Pattern
 where
 
 -- re-exports
+import           Language.Egison.Pretty.Pattern.Error
+                                               as X
+                                                ( Error(..) )
 import           Language.Egison.Pretty.Pattern.PrintMode
                                                as X
                                                 ( ExtPrinter
                                                 , PrintMode(..)
+                                                , PageMode(..)
                                                 , PrintFixity(..)
                                                 )
 import           Language.Egison.Syntax.Pattern.Fixity
@@ -30,8 +42,6 @@ import           Language.Egison.Pretty.Pattern.Prim
                                                 , (<+>)
                                                 , renderDoc
                                                 )
-import           Language.Egison.Pretty.Pattern.Error
-                                                ( Error )
 import           Language.Egison.Pretty.Pattern.External
                                                 ( name
                                                 , varName
@@ -117,6 +127,7 @@ expr (Pattern n es) = do
   ds <- withContext ConstructorArgument $ traverse expr es
   pure . parens $ dn <+> hsep ds
 
+-- | Pretty print 'Expr'.
 prettyExpr
   :: (MonadError (Error n) m, Ord n) => PrintMode n v e -> Expr n v e -> m Text
 prettyExpr mode e = do

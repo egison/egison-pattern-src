@@ -1,5 +1,13 @@
 {-# LANGUAGE ViewPatterns #-}
 
+-- |
+--
+-- Module:      Language.Egison.Pretty.Pattern.External
+-- Description: Externally privided printers
+-- Stability:   experimental
+--
+-- This module defines a set of combinators that access to externally provided printers
+
 module Language.Egison.Pretty.Pattern.External
   ( name
   , varName

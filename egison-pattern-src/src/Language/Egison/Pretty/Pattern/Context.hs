@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Pretty.Pattern.Context
+-- Description: Pretty-printing context
+-- Stability:   experimental
+--
+-- A pretty-printing context, utilized to control parentheses in infix expressions
+
 module Language.Egison.Pretty.Pattern.Context
   ( Context(..)
   , Side(..)

@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Pretty.Pattern.Print
+-- Description: Printer monad
+-- Stability:   experimental
+--
+-- This module defines a pretty printing monad 'Print'.
+
 module Language.Egison.Pretty.Pattern.Print
   ( Print
   , askMode
