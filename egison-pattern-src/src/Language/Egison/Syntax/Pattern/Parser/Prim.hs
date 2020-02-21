@@ -253,7 +253,7 @@ valueExpr = do
 
 
 -- | A type synonym for an error list.
-type Errors s = NonEmpty (Error (Tokens s))
+type Errors s = NonEmpty (Error s)
 
 makePosition :: Parsec.SourcePos -> Position
 makePosition Parsec.SourcePos { Parsec.sourceLine, Parsec.sourceColumn } =
@@ -263,17 +263,14 @@ makePosition Parsec.SourcePos { Parsec.sourceLine, Parsec.sourceColumn } =
   column = Parsec.unPos sourceColumn
 
 makeErrorItem
-  :: forall s
-   . Parsec.Stream s
-  => Parsec.ErrorItem (Token s)
-  -> ErrorItem (Tokens s)
+  :: forall s . Parsec.Stream s => Parsec.ErrorItem (Token s) -> ErrorItem s
 makeErrorItem (Parsec.Tokens ts) =
   Tokens . Parsec.tokensToChunk (Proxy @s) $ NonEmpty.toList ts
 makeErrorItem (Parsec.Label cs) = Label $ NonEmpty.toList cs
 makeErrorItem Parsec.EndOfInput = EndOfInput
 
 makeFancyError
-  :: Parsec.SourcePos -> Parsec.ErrorFancy (CustomError s) -> Error (Tokens s)
+  :: Parsec.SourcePos -> Parsec.ErrorFancy (CustomError s) -> Error s
 makeFancyError pos (Parsec.ErrorCustom err) = extError
  where
   position                          = makePosition pos
@@ -285,7 +282,7 @@ makeError
   :: forall s
    . Parsec.Stream s
   => (Parsec.ParseError s (CustomError s), Parsec.SourcePos)
-  -> Error (Tokens s)
+  -> Error s
 makeError (Parsec.FancyError _ es, pos) | Set.size es == 1 =
   makeFancyError pos $ Set.elemAt 0 es
 makeError (Parsec.TrivialError _ mfound expectedSet, pos) = UnexpectedToken
