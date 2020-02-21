@@ -14,7 +14,7 @@ import           Language.Haskell.Exts.Syntax  as X
                                                 , Exp(..)
                                                 )
 
-import           Language.Egison.Syntax.Pattern.Parser
+import           Language.Egison.Parser.Pattern
                                                as X
                                                 ( Errors )
 import           Language.Egison.Syntax.Pattern
@@ -26,34 +26,30 @@ import           Control.Monad.Except           ( MonadError )
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
 
-import           Language.Egison.Syntax.Pattern.Parser
-                                                ( Fixity(..)
+import           Language.Egison.Parser.Pattern ( Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)
                                                 )
 
-import qualified Language.Egison.Syntax.Pattern.Parser.Haskell
-                                               as HaskellParser
+import qualified Language.Egison.Parser.Pattern.Mode.Haskell
+                                               as HaskellMode
                                                 ( Expr
                                                 , parseExpr
                                                 , parseExprWithFixities
                                                 )
 
 
-testParseExpr :: MonadError (Errors String) m => String -> m HaskellParser.Expr
-testParseExpr = HaskellParser.parseExpr Haskell.defaultParseMode
+testParseExpr :: MonadError (Errors String) m => String -> m HaskellMode.Expr
+testParseExpr = HaskellMode.parseExpr Haskell.defaultParseMode
 
-specialFixities :: [Fixity (QName ()) String]
+specialFixities :: [Fixity (QName ())]
 specialFixities =
-  [ Fixity AssocRight (Precedence 5) (chunkParser "++")
-  , Fixity AssocRight (Precedence 5) (chunkParser ":")
+  [ Fixity AssocRight (Precedence 5) (sym "++")
+  , Fixity AssocRight (Precedence 5) (sym ":")
   ]
- where
-  chunkParser chunk content
-    | chunk == content = Right (UnQual () (Symbol () chunk))
-    | otherwise = Left $ "expected " ++ show chunk ++ ", found " ++ show content
+  where sym = UnQual () . Symbol ()
 
 testParseExprSpecialFixities
-  :: MonadError (Errors String) m => String -> m HaskellParser.Expr
+  :: MonadError (Errors String) m => String -> m HaskellMode.Expr
 testParseExprSpecialFixities =
-  HaskellParser.parseExprWithFixities Haskell.defaultParseMode specialFixities
+  HaskellMode.parseExprWithFixities Haskell.defaultParseMode specialFixities

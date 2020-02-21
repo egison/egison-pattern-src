@@ -35,7 +35,7 @@ library
     , template-haskell
 
   hs-source-dirs:     src
-  exposed-modules:    Language.Egison.Syntax.Pattern.Parser.Haskell.TH
+  exposed-modules:    Language.Egison.Parser.Pattern.Mode.Haskell.TH
 
   if impl(ghc >=7.8)
     ghc-options: -j4
@@ -72,7 +72,7 @@ test-suite test
 
   -- cabal-fmt: expand test
   other-modules:
-    Language.Egison.Syntax.Pattern.Parser.Haskell.THSpec
+    Language.Egison.Parser.Pattern.Mode.Haskell.THSpec
     TestImport
 
   build-tool-depends: tasty-discover:tasty-discover -any

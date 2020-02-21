@@ -1,6 +1,6 @@
 module TestImport
   ( testParseExpr
-                  -- * Re-exports
+  -- * Re-exports
   , module X
   )
 where
@@ -13,7 +13,7 @@ import           Language.Haskell.TH.Syntax    as X
                                                 , mkName
                                                 )
 
-import           Language.Egison.Syntax.Pattern.Parser
+import           Language.Egison.Parser.Pattern
                                                as X
                                                 ( Errors )
 import           Language.Egison.Syntax.Pattern
@@ -25,12 +25,12 @@ import           Control.Monad.Except           ( MonadError )
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
 
-import qualified Language.Egison.Syntax.Pattern.Parser.Haskell.TH
-                                               as THParser
+import qualified Language.Egison.Parser.Pattern.Mode.Haskell.TH
+                                               as THMode
                                                 ( Expr
                                                 , parseExpr
                                                 )
 
 
-testParseExpr :: MonadError (Errors String) m => String -> m THParser.Expr
-testParseExpr = THParser.parseExpr Haskell.defaultParseMode
+testParseExpr :: MonadError (Errors String) m => String -> m THMode.Expr
+testParseExpr = THMode.parseExpr Haskell.defaultParseMode
