@@ -27,10 +27,14 @@ module Language.Egison.Syntax.Pattern.Parser.Prim
   , name
   , varName
   , valueExpr
-  -- * Error Type
+  -- * Errors
   , Errors
   , Error(..)
   , ErrorItem(..)
+  -- * Locations
+  , Position(..)
+  , Location(..)
+  , Locate(..)
   -- * Source Stream Class
   , Source
   , Token
@@ -49,14 +53,6 @@ import           Text.Megaparsec               as X
                                                 )
 
 -- main
-import           Data.List.NonEmpty             ( NonEmpty )
-import qualified Data.List.NonEmpty            as NonEmpty
-                                                ( toList )
-import qualified Data.Set                      as Set
-                                                ( toList
-                                                , size
-                                                , elemAt
-                                                )
 import           Data.Proxy                     ( Proxy(..) )
 import           Control.Monad.Except           ( MonadError(..) )
 import           Control.Monad.Reader           ( ReaderT
@@ -82,17 +78,9 @@ import qualified Text.Megaparsec               as Parsec
                                                 , chunk
                                                 , chunkToTokens
                                                 , tokensToChunk
-                                                , ParseErrorBundle(..)
-                                                , ParseError(..)
-                                                , ErrorFancy(..)
-                                                , ErrorItem(..)
                                                 , Stream(..)
-                                                , SourcePos(..)
                                                 , customFailure
-                                                , errorOffset
-                                                , attachSourcePos
                                                 , getSourcePos
-                                                , unPos
                                                 , single
                                                 , anySingle
                                                 )
@@ -112,13 +100,17 @@ import qualified Language.Egison.Syntax.Pattern.Parser.Token
                                                 , parenRight
                                                 , newline
                                                 )
-import           Language.Egison.Syntax.Pattern.Parser.Location
+import           Language.Egison.Syntax.Pattern.Parser.Prim.Location
                                                 ( Position(..)
+                                                , Location(..)
                                                 , Locate(..)
                                                 )
-import           Language.Egison.Syntax.Pattern.Parser.Error
+import           Language.Egison.Syntax.Pattern.Parser.Prim.Error
                                                 ( Error(..)
                                                 , ErrorItem(..)
+                                                , Errors
+                                                , CustomError(..)
+                                                , fromParseErrorBundle
                                                 )
 
 import           Language.Egison.Syntax.Pattern.Parser.Prim.Source
@@ -126,6 +118,8 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim.Source
                                                 , Token
                                                 , Tokens
                                                 )
+import           Language.Egison.Syntax.Pattern.Parser.Prim.Location
+                                                ( fromSourcePos )
 
 
 -- | @'ExtParser' s a' is a type for externally provided parser of @a@
@@ -148,13 +142,6 @@ data ParseMode n v e s
               , valueExprParser :: ExtParser s e
               }
 
--- | An internal error type to use as a custom error in 'Parsec'
-data CustomError s = ExtParserError { input :: Tokens s
-                                    , message :: String
-                                    }
-
-deriving instance Eq (Tokens s) => Eq (CustomError s)
-deriving instance Ord (Tokens s) => Ord (CustomError s)
 
 -- | A parser monad.
 newtype Parse n v e s a = Parse { unParse :: ReaderT (ParseMode n v e s) (Parsec (CustomError s) s) a }
@@ -163,7 +150,7 @@ newtype Parse n v e s a = Parse { unParse :: ReaderT (ParseMode n v e s) (Parsec
   deriving newtype (MonadParsec (CustomError s) s)
 
 instance Parsec.Stream s => Locate (Parse n v e s) where
-  getPosition = makePosition <$> Parsec.getSourcePos
+  getPosition = fromSourcePos <$> Parsec.getSourcePos
 
 
 -- | Run 'Parse' monad and produce a parse result.
@@ -176,7 +163,7 @@ runParse
   -> m a
 runParse parse mode filename content =
   case Parsec.parse parsec filename content of
-    Left  bundle -> throwError $ makeErrors bundle
+    Left  bundle -> throwError $ fromParseErrorBundle bundle
     Right e      -> pure e
   where parsec = runReaderT (unParse $ file parse) mode
 
@@ -250,56 +237,3 @@ valueExpr :: Source s => Parse n v e s e
 valueExpr = do
   ParseMode { valueExprParser } <- ask
   extParser valueExprParser
-
-
--- | A type synonym for an error list.
-type Errors s = NonEmpty (Error s)
-
-makePosition :: Parsec.SourcePos -> Position
-makePosition Parsec.SourcePos { Parsec.sourceLine, Parsec.sourceColumn } =
-  Position { line, column }
- where
-  line   = Parsec.unPos sourceLine
-  column = Parsec.unPos sourceColumn
-
-makeErrorItem
-  :: forall s . Parsec.Stream s => Parsec.ErrorItem (Token s) -> ErrorItem s
-makeErrorItem (Parsec.Tokens ts) =
-  Tokens . Parsec.tokensToChunk (Proxy @s) $ NonEmpty.toList ts
-makeErrorItem (Parsec.Label cs) = Label $ NonEmpty.toList cs
-makeErrorItem Parsec.EndOfInput = EndOfInput
-
-makeFancyError
-  :: Parsec.SourcePos -> Parsec.ErrorFancy (CustomError s) -> Error s
-makeFancyError pos (Parsec.ErrorCustom err) = extError
- where
-  position                          = makePosition pos
-  ExtParserError { input, message } = err
-  extError                          = ExternalError { position, input, message }
-makeFancyError _ _ = error "unreachable: unused fancy error"
-
-makeError
-  :: forall s
-   . Parsec.Stream s
-  => (Parsec.ParseError s (CustomError s), Parsec.SourcePos)
-  -> Error s
-makeError (Parsec.FancyError _ es, pos) | Set.size es == 1 =
-  makeFancyError pos $ Set.elemAt 0 es
-makeError (Parsec.TrivialError _ mfound expectedSet, pos) = UnexpectedToken
-  { position
-  , expected
-  , found
-  }
- where
-  found    = fmap (makeErrorItem @s) mfound
-  expected = map (makeErrorItem @s) $ Set.toList expectedSet
-  position = makePosition pos
-makeError _ = error "unreachable: unused error"
-
-makeErrors
-  :: Parsec.Stream s => Parsec.ParseErrorBundle s (CustomError s) -> Errors s
-makeErrors Parsec.ParseErrorBundle { Parsec.bundleErrors = errors, Parsec.bundlePosState = posState }
-  = fmap makeError errorsWithPos
- where
-  (errorsWithPos, _) =
-    Parsec.attachSourcePos Parsec.errorOffset errors posState

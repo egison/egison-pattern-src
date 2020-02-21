@@ -45,11 +45,11 @@ library
   other-modules:
     Language.Egison.Syntax.Pattern.Parser.Associativity
     Language.Egison.Syntax.Pattern.Parser.Combinator
-    Language.Egison.Syntax.Pattern.Parser.Error
     Language.Egison.Syntax.Pattern.Parser.Expr
-    Language.Egison.Syntax.Pattern.Parser.Location
     Language.Egison.Syntax.Pattern.Parser.Precedence
     Language.Egison.Syntax.Pattern.Parser.Prim
+    Language.Egison.Syntax.Pattern.Parser.Prim.Error
+    Language.Egison.Syntax.Pattern.Parser.Prim.Location
     Language.Egison.Syntax.Pattern.Parser.Prim.Source
     Language.Egison.Syntax.Pattern.Parser.Token
 

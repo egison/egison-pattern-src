@@ -26,17 +26,14 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 , Errors
                                                 , Error(..)
                                                 , ErrorItem(..)
+                                                , Location(..)
+                                                , Position(..)
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Expr
                                                as X
                                                 ( Precedence(..)
                                                 , Associativity(..)
                                                 , ExprL
-                                                )
-import           Language.Egison.Syntax.Pattern.Parser.Location
-                                               as X
-                                                ( Location(..)
-                                                , Position(..)
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Token
                                                as X
