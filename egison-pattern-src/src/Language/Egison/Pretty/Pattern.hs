@@ -32,6 +32,7 @@ import           Language.Egison.Syntax.Pattern.Fixity
                                                 )
 
 -- main
+import           Data.Semigroup                 ( (<>) )
 import           Data.Text                      ( Text )
 import           Control.Monad.Except           ( MonadError )
 import           Language.Egison.Pretty.Pattern.Prim
