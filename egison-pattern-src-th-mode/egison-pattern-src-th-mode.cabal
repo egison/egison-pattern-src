@@ -2,10 +2,10 @@ cabal-version: >=1.10
 name:          egison-pattern-src-th-mode
 version:       0.1.0.0
 synopsis:
-  Parser for Egison pattern expressions to use with Template Haskell
+  Parser and pretty printer for Egison pattern expressions to use with Template Haskell
 
 description:
-  @egison-pattern-src-th-mode@ provides a parser for Egison pattern expressions to use with Template Haskell.
+  @egison-pattern-src-th-mode@ provides a parser and pretty priner for Egison pattern expressions to use with Template Haskell.
 
 bug-reports:   https://github.com/egison/egison-pattern-src/issues
 homepage:      https://github.com/egison/egison-pattern-src#readme
