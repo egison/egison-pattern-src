@@ -32,7 +32,7 @@ import           Language.Egison.Parser.Pattern ( ParseFixity(..)
                                                 , Associativity(..)
                                                 )
 
-import qualified Language.Egison.Parser.Pattern.Haskell
+import qualified Language.Egison.Parser.Pattern.Mode.Haskell
                                                as HaskellMode
                                                 ( Expr
                                                 , parseExpr

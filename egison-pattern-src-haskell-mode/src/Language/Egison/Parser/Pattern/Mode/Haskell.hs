@@ -1,12 +1,12 @@
 -- |
 --
--- Module:      Language.Egison.Parser.Pattern.Haskell
+-- Module:      Language.Egison.Parser.Pattern.Mode.Haskell
 -- Description: A parser for Egison pattern expressions in Haskell source code
 -- Stability:   experimental
 --
 -- A parser for Egison pattern expressions in Haskell source code.
 
-module Language.Egison.Parser.Pattern.Haskell
+module Language.Egison.Parser.Pattern.Mode.Haskell
   (
   -- * Parsers
     Expr

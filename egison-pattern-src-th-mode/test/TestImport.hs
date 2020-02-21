@@ -25,7 +25,7 @@ import           Control.Monad.Except           ( MonadError )
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
 
-import qualified Language.Egison.Parser.Pattern.Haskell.TH
+import qualified Language.Egison.Parser.Pattern.Mode.Haskell.TH
                                                as THMode
                                                 ( Expr
                                                 , parseExpr

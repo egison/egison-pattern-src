@@ -1,4 +1,4 @@
-module Language.Egison.Parser.Pattern.Haskell.THSpec
+module Language.Egison.Parser.Pattern.Mode.Haskell.THSpec
   ( test_atom_patterns
   , test_pattern_operators
   , test_comments

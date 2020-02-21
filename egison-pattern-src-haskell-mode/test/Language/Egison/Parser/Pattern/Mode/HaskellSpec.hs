@@ -1,4 +1,4 @@
-module Language.Egison.Parser.Pattern.HaskellSpec
+module Language.Egison.Parser.Pattern.Mode.HaskellSpec
   ( test_atom_patterns
   , test_pattern_operators
   , test_special_pattern_operators

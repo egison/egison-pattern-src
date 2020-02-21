@@ -1,12 +1,12 @@
 -- |
 --
--- Module:      Language.Egison.Parser.Pattern.Haskell
+-- Module:      Language.Egison.Parser.Pattern.Mode.Haskell
 -- Description: A parser for Egison pattern expressions to use with Template Haskell
 -- Stability:   experimental
 --
 -- A parser for Egison pattern expressions to use with Template Haskell.
 
-module Language.Egison.Parser.Pattern.Haskell.TH
+module Language.Egison.Parser.Pattern.Mode.Haskell.TH
   (
   -- * Parsers
     Expr
@@ -44,7 +44,7 @@ import           Language.Egison.Syntax.Pattern ( mapValueExpr
                                                 , mapName
                                                 )
 import           Language.Egison.Parser.Pattern ( Errors )
-import qualified Language.Egison.Parser.Pattern.Haskell
+import qualified Language.Egison.Parser.Pattern.Mode.Haskell
                                                as HaskellMode
                                                 ( ParseFixity
                                                 , parseExpr
