@@ -122,6 +122,7 @@ expr (Not e    ) = do
 expr (Infix n e1 e2) = do
   fixity <- operatorOf n
   infix_ fixity e1 e2
+expr (Pattern n []) = name n
 expr (Pattern n es) = do
   dn <- name n
   ds <- withContext ConstructorArgument $ traverse expr es
