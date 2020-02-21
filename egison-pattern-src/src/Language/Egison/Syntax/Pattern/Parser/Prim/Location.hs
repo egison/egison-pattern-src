@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Syntax.Pattern.Parser.Prim.Location
--- Description: A helper module to handle source code locations
+-- Description: Helpers to handle source code locations
 -- Stability:   experimental
 --
 -- A helper module to handle source code locations during parsing.

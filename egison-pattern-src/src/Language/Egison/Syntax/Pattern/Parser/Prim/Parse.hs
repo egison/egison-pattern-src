@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Syntax.Pattern.Parser.Prim.Parse
+-- Description: Parser monad
+-- Stability:   experimental
+--
+-- This module defines a parser monad 'Parse'.
+
 module Language.Egison.Syntax.Pattern.Parser.Prim.Parse
   ( Parse
   , runParse

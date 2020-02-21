@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Syntax.Pattern.Parser.Prim.Source
+-- Description: Constraint for the source of parser
+-- Stability:   experimental
+--
+-- A constraint and property of the source of parser
+
 module Language.Egison.Syntax.Pattern.Parser.Prim.Source
   ( Source
   , Token

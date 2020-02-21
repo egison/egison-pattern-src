@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Syntax.Pattern.Parser.Prim.ParseMode
+-- Description: Parser configuration
+-- Stability:   experimental
+--
+-- A parser configuration type, that contains a set of external parsers
+
 module Language.Egison.Syntax.Pattern.Parser.Prim.ParseMode
   ( ParseMode(..)
   , Fixity(..)
@@ -14,7 +22,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim.Source
                                                 ( Tokens )
 
 
--- | @'ExtParser' s a' is a type for externally provided parser of @a@
+-- | @'ExtParser' s a@ is a type for externally provided parser of @a@.
 type ExtParser s a = Tokens s -> Either String a
 
 -- | Fixity of infix operators.

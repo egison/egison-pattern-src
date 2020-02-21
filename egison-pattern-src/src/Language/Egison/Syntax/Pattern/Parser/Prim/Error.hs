@@ -79,7 +79,7 @@ deriving instance Eq (Tokens s) => Eq (Error s)
 type Errors s = NonEmpty (Error s)
 
 
--- | An internal error type to use as a custom error in 'Parsec'
+-- | An internal error type to use as a custom error in 'Text.Megaparsec.Parsec' monad
 data CustomError s = ExtParserError { input :: Tokens s
                                     , message :: String
                                     }
