@@ -30,9 +30,12 @@ library
     , egison-pattern-src
     , haskell-src-exts
     , mtl
+    , text
 
   hs-source-dirs:     src
-  exposed-modules:    Language.Egison.Parser.Pattern.Mode.Haskell
+  exposed-modules:
+    Language.Egison.Parser.Pattern.Mode.Haskell
+    Language.Egison.Pretty.Pattern.Mode.Haskell
 
   if impl(ghc >=7.8)
     ghc-options: -j4
@@ -63,12 +66,14 @@ test-suite test
     , mtl
     , tasty
     , tasty-hunit
+    , text
 
   default-extensions: FlexibleContexts
 
   -- cabal-fmt: expand test
   other-modules:
     Language.Egison.Parser.Pattern.Mode.HaskellSpec
+    Language.Egison.Pretty.Pattern.Mode.HaskellSpec
     TestImport
 
   build-tool-depends: tasty-discover:tasty-discover -any
