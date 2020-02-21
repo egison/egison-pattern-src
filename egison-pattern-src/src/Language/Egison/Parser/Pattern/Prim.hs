@@ -11,7 +11,7 @@
 module Language.Egison.Parser.Pattern.Prim
   (
   -- * Parser Configuration
-    Fixity(..)
+    ParseFixity(..)
   , ParseMode(..)
   , ExtParser
   -- * Parser Monad
@@ -99,7 +99,7 @@ import           Language.Egison.Parser.Pattern.Prim.Source
                                                 )
 import           Language.Egison.Parser.Pattern.Prim.ParseMode
                                                 ( ParseMode(..)
-                                                , Fixity(..)
+                                                , ParseFixity(..)
                                                 , ExtParser
                                                 )
 import           Language.Egison.Parser.Pattern.Prim.Parse

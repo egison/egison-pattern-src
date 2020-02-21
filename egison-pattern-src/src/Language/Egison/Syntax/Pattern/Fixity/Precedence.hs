@@ -1,12 +1,12 @@
 -- |
 --
--- Module:      Language.Egison.Parser.Pattern.Precedence
+-- Module:      Language.Egison.Syntax.Pattern.Fixity.Precedence
 -- Description: A precedence of infix operators
 -- Stability:   experimental
 --
 -- A precedence of infix operators.
 
-module Language.Egison.Parser.Pattern.Precedence
+module Language.Egison.Syntax.Pattern.Fixity.Precedence
   ( Precedence(..)
   , toInt
   )

@@ -12,6 +12,7 @@ import           Language.Egison.Syntax.Pattern.Expr
                                                as X
 
 -- main
+import           Data.Functor                   ( void )
 import           Data.Void                      ( Void )
 import           Control.Applicative            ( (<|>)
                                                 , some
@@ -32,6 +33,7 @@ import qualified Text.Megaparsec.Char.Lexer    as Parsec
 import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr(..) )
 import           Language.Egison.Parser.Pattern ( ParseMode(..)
+                                                , ParseFixity(..)
                                                 , Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)
@@ -52,18 +54,18 @@ unParsec p input = case Parsec.parse p "test" input of
   Left  e -> Left (show e)
   Right x -> Right x
 
-testFixities :: [Fixity Name String]
+testFixities :: [ParseFixity Name String]
 testFixities =
-  [ Fixity AssocRight (Precedence 5) (unParsec pp)
-  , Fixity AssocRight (Precedence 5) (unParsec col)
-  , Fixity AssocLeft  (Precedence 4) (unParsec rear)
-  , Fixity AssocRight (Precedence 4) (unParsec front)
+  [ ParseFixity (Fixity AssocRight (Precedence 5) (Name "++")) (unParsec pp)
+  , ParseFixity (Fixity AssocRight (Precedence 5) (Name ":"))  (unParsec col)
+  , ParseFixity (Fixity AssocLeft (Precedence 4) (Name "|>"))  (unParsec rear)
+  , ParseFixity (Fixity AssocRight (Precedence 4) (Name "<|")) (unParsec front)
   ]
  where
-  pp    = Name <$> Parsec.chunk "++"
-  col   = Name <$> Parsec.chunk ":"
-  rear  = Name <$> Parsec.chunk "|>"
-  front = Name <$> Parsec.chunk "<|"
+  pp    = void $ Parsec.chunk "++"
+  col   = void $ Parsec.chunk ":"
+  rear  = void $ Parsec.chunk "|>"
+  front = void $ Parsec.chunk "<|"
 
 testParseName :: Parsec Void String Name
 testParseName = withParens <|> name

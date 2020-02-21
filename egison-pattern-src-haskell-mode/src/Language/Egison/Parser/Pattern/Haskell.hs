@@ -14,7 +14,7 @@ module Language.Egison.Parser.Pattern.Haskell
   , parseExprWithFixities
   -- * Converting @haskell-src-exts@'s entities
   , ParseMode
-  , Fixity
+  , ParseFixity
   , makeHaskellMode
   , makeFixity
   , makeFixities
@@ -48,6 +48,7 @@ import qualified Language.Egison.Syntax.Pattern
 import qualified Language.Egison.Parser.Pattern
                                                as Egison
                                                 ( ParseMode(..)
+                                                , ParseFixity(..)
                                                 , Fixity(..)
                                                 , Associativity(..)
                                                 , parseExpr
@@ -63,8 +64,8 @@ type Expr = Egison.Expr (QName ()) (Name ()) (Exp SrcSpanInfo)
 -- | A type synonym of 'Egison.ParseMode' to parse 'Expr'.
 type ParseMode = Egison.ParseMode (QName ()) (Name ()) (Exp SrcSpanInfo) String
 
--- | A type synonym of 'Egison.Fixity' to parse 'Expr'.
-type Fixity = Egison.Fixity (QName ()) String
+-- | A type synonym of 'Egison.ParseFixity' to parse 'Expr'.
+type ParseFixity = Egison.ParseFixity (QName ()) String
 
 resultToEither :: Haskell.ParseResult a -> Either String a
 resultToEither (Haskell.ParseOk a      ) = Right a
@@ -85,11 +86,12 @@ parseNameWithMode mode content =
     Right e            -> Left (show e ++ " is not a name")
     Left  err          -> Left err
 
--- | Build 'Fixity' using 'Haskell.Fixity' from @haskell-src-exts@.
+-- | Build 'ParseFixity' using 'Haskell.Fixity' from @haskell-src-exts@.
 -- Note that a built-in constructor with special syntax, that is represented as 'Special' in 'QName', is just ignored here.
-makeFixity :: Haskell.Fixity -> Maybe Fixity
+makeFixity :: Haskell.Fixity -> Maybe ParseFixity
 makeFixity (Haskell.Fixity assoc prec name) =
-  Egison.Fixity (makeAssoc assoc) (Precedence prec) <$> makeNameParser name
+  Egison.ParseFixity (Egison.Fixity (makeAssoc assoc) (Precedence prec) name)
+    <$> makeNameParser name
  where
   makeAssoc (Haskell.AssocRight ()) = Egison.AssocRight
   makeAssoc (Haskell.AssocLeft  ()) = Egison.AssocLeft
@@ -104,16 +106,16 @@ makeFixity (Haskell.Fixity assoc prec name) =
   makeNameParser (Special () _) = Nothing  -- Skipping special built-in constructors
   -- TODO: Maybe we could do better here
   makeIdentOpParser mModName ident content
-    | content == printed = Right name
+    | content == printed = Right ()
     | otherwise          = Left "not an operator name"
     where printed = '`' : maybe ident (++ '.' : ident) mModName ++ "`"
   makeSymbolOpParser mModName symbol content
-    | content == printed = Right name
+    | content == printed = Right ()
     | otherwise          = Left "not an operator name"
     where printed = maybe symbol (++ '.' : symbol) mModName
 
 -- | > makeFixities = mapMaybe makeFixity
-makeFixities :: [Haskell.Fixity] -> [Fixity]
+makeFixities :: [Haskell.Fixity] -> [ParseFixity]
 makeFixities = mapMaybe makeFixity
 
 -- | Build 'ParseMode' using 'Haskell.ParseMode' from @haskell-src-exts@.
@@ -133,12 +135,12 @@ parseExpr
 parseExpr mode@Haskell.ParseMode { Haskell.parseFilename } =
   Egison.parseExpr (makeHaskellMode mode) parseFilename
 
--- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'Fixity'.
+-- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'ParseFixity'.
 -- Note that fixities obtained from 'Haskell.ParseMode' is ignored here.
 parseExprWithFixities
   :: MonadError (Errors String) m
   => Haskell.ParseMode
-  -> [Fixity]
+  -> [ParseFixity]
   -> String
   -> m Expr
 parseExprWithFixities mode@Haskell.ParseMode { Haskell.parseFilename } fixities

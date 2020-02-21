@@ -8,16 +8,13 @@
 
 module Language.Egison.Parser.Pattern.Prim.ParseMode
   ( ParseMode(..)
-  , Fixity(..)
+  , ParseFixity(..)
   , ExtParser
   )
 where
 
-import           Language.Egison.Parser.Pattern.Associativity
-                                                ( Associativity )
-import           Language.Egison.Parser.Pattern.Precedence
-                                                ( Precedence )
-
+import           Language.Egison.Syntax.Pattern.Fixity
+                                                ( Fixity )
 import           Language.Egison.Parser.Pattern.Prim.Source
                                                 ( Tokens )
 
@@ -26,15 +23,14 @@ import           Language.Egison.Parser.Pattern.Prim.Source
 type ExtParser s a = Tokens s -> Either String a
 
 -- | Fixity of infix operators.
-data Fixity n s =
-  Fixity { associativity :: Associativity
-         , precedence :: Precedence
-         , parser :: ExtParser s n
-         }
+data ParseFixity n s =
+  ParseFixity { fixity :: Fixity n
+              , parser :: ExtParser s ()
+              }
 
 -- | Parser configuration.
 data ParseMode n v e s
-  = ParseMode { fixities        :: [Fixity n s]
+  = ParseMode { fixities        :: [ParseFixity n s]
               , blockComment    :: Maybe (Tokens s, Tokens s)
               , lineComment     :: Maybe (Tokens s)
               , varNameParser   :: ExtParser s v

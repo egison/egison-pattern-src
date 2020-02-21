@@ -41,12 +41,11 @@ library
     Language.Egison.Syntax.Pattern.Base
     Language.Egison.Syntax.Pattern.Combinator
     Language.Egison.Syntax.Pattern.Expr
+    Language.Egison.Syntax.Pattern.Fixity
 
   other-modules:
-    Language.Egison.Parser.Pattern.Associativity
     Language.Egison.Parser.Pattern.Combinator
     Language.Egison.Parser.Pattern.Expr
-    Language.Egison.Parser.Pattern.Precedence
     Language.Egison.Parser.Pattern.Prim
     Language.Egison.Parser.Pattern.Prim.Error
     Language.Egison.Parser.Pattern.Prim.Location
@@ -54,6 +53,8 @@ library
     Language.Egison.Parser.Pattern.Prim.ParseMode
     Language.Egison.Parser.Pattern.Prim.Source
     Language.Egison.Parser.Pattern.Token
+    Language.Egison.Syntax.Pattern.Fixity.Associativity
+    Language.Egison.Syntax.Pattern.Fixity.Precedence
 
   if impl(ghc >=7.8)
     ghc-options: -j4

@@ -19,9 +19,7 @@ module Language.Egison.Parser.Pattern.Expr
 where
 
 -- re-exports
-import           Language.Egison.Parser.Pattern.Precedence
-                                               as X
-import           Language.Egison.Parser.Pattern.Associativity
+import           Language.Egison.Syntax.Pattern.Fixity
                                                as X
 
 -- main
@@ -41,23 +39,22 @@ import           Control.Applicative.Combinators
 
 import           Language.Egison.Syntax.Pattern.Base
                                                 ( ExprF(..) )
-import           Language.Egison.Parser.Pattern.Prim
+import           Language.Egison.Syntax.Pattern.Fixity
                                                 ( Fixity(..)
+                                                , Precedence(..)
+                                                , Associativity(..)
+                                                )
+import qualified Language.Egison.Syntax.Pattern.Fixity.Precedence
+                                               as Prec
+                                                ( toInt )
+import           Language.Egison.Parser.Pattern.Prim
+                                                ( ParseFixity(..)
                                                 , ParseMode(..)
                                                 , Source
                                                 , Parse
                                                 , extParser
                                                 , lexeme
-                                                )
-import           Language.Egison.Parser.Pattern.Associativity
-                                                ( Associativity(..) )
-import           Language.Egison.Parser.Pattern.Precedence
-                                                ( Precedence(..) )
-import qualified Language.Egison.Parser.Pattern.Precedence
-                                               as Prec
-                                                ( toInt )
-import           Language.Egison.Parser.Pattern.Prim
-                                                ( Locate(..)
+                                                , Locate(..)
                                                 , Location(..)
                                                 )
 
@@ -155,9 +152,9 @@ buildOperatorTable primInfixes = do
   ParseMode { fixities } <- ask
   pure . map snd . IntMap.toDescList $ foldr go prim fixities
  where
-  go (Fixity assoc prec p) =
-    addPrecToTable prec . addInfix assoc $ makeOperator p
-  makeOperator p = InfixF <$> lexeme (extParser p)
+  go (ParseFixity (Fixity assoc prec n) p) =
+    addPrecToTable prec . addInfix assoc $ makeOperator n p
+  makeOperator n p = InfixF n <$ lexeme (extParser p)
   prim = IntMap.fromList $ map (first Prec.toInt) primInfixes
   addPrecToTable prec f = adjustWithDefault f (f initTable) $ Prec.toInt prec
   adjustWithDefault f def = IntMap.alter (Just . maybe def f)

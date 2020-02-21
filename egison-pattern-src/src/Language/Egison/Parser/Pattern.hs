@@ -22,7 +22,7 @@ import           Language.Egison.Parser.Pattern.Prim
                                                 , Tokens
                                                 , ExtParser
                                                 , ParseMode(..)
-                                                , Fixity(..)
+                                                , ParseFixity(..)
                                                 , Errors
                                                 , Error(..)
                                                 , ErrorItem(..)
@@ -33,6 +33,7 @@ import           Language.Egison.Parser.Pattern.Expr
                                                as X
                                                 ( Precedence(..)
                                                 , Associativity(..)
+                                                , Fixity(..)
                                                 , ExprL
                                                 )
 import           Language.Egison.Parser.Pattern.Token

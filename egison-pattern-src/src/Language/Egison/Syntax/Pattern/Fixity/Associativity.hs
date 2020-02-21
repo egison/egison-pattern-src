@@ -1,12 +1,12 @@
 -- |
 --
--- Module:      Language.Egison.Parser.Pattern.Associativity
+-- Module:      Language.Egison.Syntax.Pattern.Fixity.Associativity
 -- Description: An associativity of infix operators
 -- Stability:   experimental
 --
 -- An associativity of infix operators.
 
-module Language.Egison.Parser.Pattern.Associativity
+module Language.Egison.Syntax.Pattern.Fixity.Associativity
   ( Associativity(..)
   )
 where
