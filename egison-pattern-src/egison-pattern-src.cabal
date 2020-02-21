@@ -32,11 +32,14 @@ library
     , megaparsec
     , mtl
     , parser-combinators
+    , prettyprinter
     , recursion-schemes
+    , text
 
   hs-source-dirs:     src
   exposed-modules:
     Language.Egison.Parser.Pattern
+    Language.Egison.Pretty.Pattern
     Language.Egison.Syntax.Pattern
     Language.Egison.Syntax.Pattern.Base
     Language.Egison.Syntax.Pattern.Combinator
@@ -53,6 +56,13 @@ library
     Language.Egison.Parser.Pattern.Prim.ParseMode
     Language.Egison.Parser.Pattern.Prim.Source
     Language.Egison.Parser.Pattern.Token
+    Language.Egison.Pretty.Pattern.Context
+    Language.Egison.Pretty.Pattern.Error
+    Language.Egison.Pretty.Pattern.External
+    Language.Egison.Pretty.Pattern.Operator
+    Language.Egison.Pretty.Pattern.Prim
+    Language.Egison.Pretty.Pattern.Print
+    Language.Egison.Pretty.Pattern.PrintMode
     Language.Egison.Syntax.Pattern.Fixity.Associativity
     Language.Egison.Syntax.Pattern.Fixity.Precedence
 
