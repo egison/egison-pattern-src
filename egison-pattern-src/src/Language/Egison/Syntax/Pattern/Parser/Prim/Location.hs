@@ -1,21 +1,28 @@
 -- |
 --
--- Module:      Language.Egison.Syntax.Pattern.Location
--- Description: A helper module to handle source code locations
+-- Module:      Language.Egison.Syntax.Pattern.Parser.Prim.Location
+-- Description: Helpers to handle source code locations
 -- Stability:   experimental
 --
 -- A helper module to handle source code locations during parsing.
 
-module Language.Egison.Syntax.Pattern.Parser.Location
+module Language.Egison.Syntax.Pattern.Parser.Prim.Location
   ( Location(..)
   , Position(..)
   , Locate(..)
+  -- * Conversion
+  , fromSourcePos
   )
 where
 
 import           GHC.Generics                   ( Generic )
 import           Data.Data                      ( Data
                                                 , Typeable
+                                                )
+
+import qualified Text.Megaparsec               as Parsec
+                                                ( SourcePos(..)
+                                                , unPos
                                                 )
 
 
@@ -44,3 +51,12 @@ class Monad m => Locate m where
     end <- getPosition
     let location = Location { begin, end }
     pure (x, location)
+
+
+-- | Make 'Position' from 'Parsec.SourcePos'
+fromSourcePos :: Parsec.SourcePos -> Position
+fromSourcePos Parsec.SourcePos { Parsec.sourceLine, Parsec.sourceColumn } =
+  Position { line, column }
+ where
+  line   = Parsec.unPos sourceLine
+  column = Parsec.unPos sourceColumn

@@ -26,17 +26,14 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 , Errors
                                                 , Error(..)
                                                 , ErrorItem(..)
+                                                , Location(..)
+                                                , Position(..)
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Expr
                                                as X
                                                 ( Precedence(..)
                                                 , Associativity(..)
                                                 , ExprL
-                                                )
-import           Language.Egison.Syntax.Pattern.Parser.Location
-                                               as X
-                                                ( Location(..)
-                                                , Position(..)
                                                 )
 import           Language.Egison.Syntax.Pattern.Parser.Token
                                                as X
@@ -52,6 +49,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 ( Parse
                                                 , runParse
                                                 , lexeme
+                                                , space
                                                 , name
                                                 , varName
                                                 , valueExpr
@@ -148,7 +146,7 @@ parseExprL
   -> FilePath
   -> s
   -> m (ExprL n v e)
-parseExprL = runParse expr
+parseExprL = runParse (space *> expr)
 
 -- | A parser for 'Expr'.
 parseExpr

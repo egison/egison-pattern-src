@@ -56,7 +56,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Precedence
 import qualified Language.Egison.Syntax.Pattern.Parser.Precedence
                                                as Prec
                                                 ( toInt )
-import           Language.Egison.Syntax.Pattern.Parser.Location
+import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 ( Locate(..)
                                                 , Location(..)
                                                 )
