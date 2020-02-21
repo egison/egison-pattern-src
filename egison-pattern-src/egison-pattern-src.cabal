@@ -50,6 +50,7 @@ library
     Language.Egison.Syntax.Pattern.Parser.Prim
     Language.Egison.Syntax.Pattern.Parser.Prim.Error
     Language.Egison.Syntax.Pattern.Parser.Prim.Location
+    Language.Egison.Syntax.Pattern.Parser.Prim.Parse
     Language.Egison.Syntax.Pattern.Parser.Prim.ParseMode
     Language.Egison.Syntax.Pattern.Parser.Prim.Source
     Language.Egison.Syntax.Pattern.Parser.Token

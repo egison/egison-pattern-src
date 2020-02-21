@@ -49,6 +49,7 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim
                                                 ( Parse
                                                 , runParse
                                                 , lexeme
+                                                , space
                                                 , name
                                                 , varName
                                                 , valueExpr
@@ -145,7 +146,7 @@ parseExprL
   -> FilePath
   -> s
   -> m (ExprL n v e)
-parseExprL = runParse expr
+parseExprL = runParse (space *> expr)
 
 -- | A parser for 'Expr'.
 parseExpr

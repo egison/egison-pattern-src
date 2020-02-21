@@ -1,6 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 -- |
 --
 -- Module:      Language.Egison.Syntax.Pattern.Precedence
@@ -54,25 +51,13 @@ import           Text.Megaparsec               as X
 
 -- main
 import           Data.Proxy                     ( Proxy(..) )
-import           Control.Monad.Except           ( MonadError(..) )
-import           Control.Monad.Reader           ( ReaderT
-                                                , MonadReader(..)
-                                                , runReaderT
-                                                )
-import           Control.Monad.Fail             ( MonadFail )
-import           Control.Monad                  ( MonadPlus
-                                                , void
-                                                )
+import           Control.Monad                  ( void )
+import           Control.Monad.Reader           ( ask )
 import           Control.Applicative            ( Alternative((<|>))
                                                 , empty
                                                 )
-import           Control.Applicative.Combinators
-                                                ( between )
-import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
-                                                ( parse
-                                                , eof
-                                                , takeWhile1P
+                                                ( takeWhile1P
                                                 , takeWhileP
                                                 , manyTill
                                                 , chunk
@@ -80,7 +65,6 @@ import qualified Text.Megaparsec               as Parsec
                                                 , tokensToChunk
                                                 , Stream(..)
                                                 , customFailure
-                                                , getSourcePos
                                                 , single
                                                 , anySingle
                                                 )
@@ -106,7 +90,6 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim.Error
                                                 , ErrorItem(..)
                                                 , Errors
                                                 , CustomError(..)
-                                                , fromParseErrorBundle
                                                 )
 
 import           Language.Egison.Syntax.Pattern.Parser.Prim.Source
@@ -114,41 +97,16 @@ import           Language.Egison.Syntax.Pattern.Parser.Prim.Source
                                                 , Token
                                                 , Tokens
                                                 )
-import           Language.Egison.Syntax.Pattern.Parser.Prim.Location
-                                                ( fromSourcePos )
 import           Language.Egison.Syntax.Pattern.Parser.Prim.ParseMode
                                                 ( ParseMode(..)
                                                 , Fixity(..)
                                                 , ExtParser
                                                 )
+import           Language.Egison.Syntax.Pattern.Parser.Prim.Parse
+                                                ( Parse
+                                                , runParse
+                                                )
 
-
--- | A parser monad.
-newtype Parse n v e s a = Parse { unParse :: ReaderT (ParseMode n v e s) (Parsec (CustomError s) s) a }
-  deriving newtype (Functor, Applicative, Alternative, Monad, MonadFail, MonadPlus)
-  deriving newtype (MonadReader (ParseMode n v e s))
-  deriving newtype (MonadParsec (CustomError s) s)
-
-instance Parsec.Stream s => Locate (Parse n v e s) where
-  getPosition = fromSourcePos <$> Parsec.getSourcePos
-
-
--- | Run 'Parse' monad and produce a parse result.
-runParse
-  :: (Source s, MonadError (Errors s) m)
-  => Parse n v e s a
-  -> ParseMode n v e s
-  -> FilePath
-  -> s
-  -> m a
-runParse parse mode filename content =
-  case Parsec.parse parsec filename content of
-    Left  bundle -> throwError $ fromParseErrorBundle bundle
-    Right e      -> pure e
-  where parsec = runReaderT (unParse $ file parse) mode
-
-file :: Source s => Parse n v e s a -> Parse n v e s a
-file = between space Parsec.eof
 
 skipBlockComment :: Source s => Tokens s -> Tokens s -> Parse n v e s ()
 skipBlockComment start end = cs *> void (Parsec.manyTill Parsec.anySingle ce)
