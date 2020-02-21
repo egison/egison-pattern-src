@@ -118,7 +118,7 @@ expr (Or  e1 e2) = infix_ orOperator e1 e2
 expr (Not e    ) = do
   let Operator { precedence } = notOperator
   d <- withContext (Under precedence RightSide) $ expr e
-  smartParens notOperator $ "!" <+> d
+  smartParens notOperator $ "!" <> d
 expr (Infix n e1 e2) = do
   fixity <- operatorOf n
   infix_ fixity e1 e2
