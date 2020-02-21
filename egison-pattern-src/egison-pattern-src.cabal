@@ -36,24 +36,24 @@ library
 
   hs-source-dirs:     src
   exposed-modules:
+    Language.Egison.Parser.Pattern
     Language.Egison.Syntax.Pattern
     Language.Egison.Syntax.Pattern.Base
     Language.Egison.Syntax.Pattern.Combinator
     Language.Egison.Syntax.Pattern.Expr
-    Language.Egison.Syntax.Pattern.Parser
 
   other-modules:
-    Language.Egison.Syntax.Pattern.Parser.Associativity
-    Language.Egison.Syntax.Pattern.Parser.Combinator
-    Language.Egison.Syntax.Pattern.Parser.Expr
-    Language.Egison.Syntax.Pattern.Parser.Precedence
-    Language.Egison.Syntax.Pattern.Parser.Prim
-    Language.Egison.Syntax.Pattern.Parser.Prim.Error
-    Language.Egison.Syntax.Pattern.Parser.Prim.Location
-    Language.Egison.Syntax.Pattern.Parser.Prim.Parse
-    Language.Egison.Syntax.Pattern.Parser.Prim.ParseMode
-    Language.Egison.Syntax.Pattern.Parser.Prim.Source
-    Language.Egison.Syntax.Pattern.Parser.Token
+    Language.Egison.Parser.Pattern.Associativity
+    Language.Egison.Parser.Pattern.Combinator
+    Language.Egison.Parser.Pattern.Expr
+    Language.Egison.Parser.Pattern.Precedence
+    Language.Egison.Parser.Pattern.Prim
+    Language.Egison.Parser.Pattern.Prim.Error
+    Language.Egison.Parser.Pattern.Prim.Location
+    Language.Egison.Parser.Pattern.Prim.Parse
+    Language.Egison.Parser.Pattern.Prim.ParseMode
+    Language.Egison.Parser.Pattern.Prim.Source
+    Language.Egison.Parser.Pattern.Token
 
   if impl(ghc >=7.8)
     ghc-options: -j4
@@ -109,7 +109,7 @@ test-suite test
 
   -- cabal-fmt: expand test
   other-modules:
-    Language.Egison.Syntax.Pattern.ParserSpec
+    Language.Egison.Parser.PatternSpec
     TestImport
 
   build-tool-depends: tasty-discover:tasty-discover -any

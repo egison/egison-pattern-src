@@ -31,8 +31,7 @@ import qualified Text.Megaparsec.Char.Lexer    as Parsec
 
 import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr(..) )
-import           Language.Egison.Syntax.Pattern.Parser
-                                                ( ParseMode(..)
+import           Language.Egison.Parser.Pattern ( ParseMode(..)
                                                 , Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)

@@ -14,7 +14,7 @@ import           Language.Haskell.Exts.Syntax  as X
                                                 , Exp(..)
                                                 )
 
-import           Language.Egison.Syntax.Pattern.Parser
+import           Language.Egison.Parser.Pattern
                                                as X
                                                 ( Errors )
 import           Language.Egison.Syntax.Pattern
@@ -26,13 +26,12 @@ import           Control.Monad.Except           ( MonadError )
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( defaultParseMode )
 
-import           Language.Egison.Syntax.Pattern.Parser
-                                                ( Fixity(..)
+import           Language.Egison.Parser.Pattern ( Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)
                                                 )
 
-import qualified Language.Egison.Syntax.Pattern.Parser.Haskell
+import qualified Language.Egison.Parser.Pattern.Haskell
                                                as HaskellParser
                                                 ( Expr
                                                 , parseExpr
