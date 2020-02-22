@@ -8,24 +8,22 @@
 
 module Language.Egison.Pretty.Pattern.Operator
   ( Operator(..)
-  , OperatorAssoc(..)
   )
 where
 
 import           Data.Text                      ( Text )
 
 import           Language.Egison.Syntax.Pattern.Fixity
-                                                ( Precedence )
+                                                ( Precedence
+                                                , Associativity
+                                                )
 
 
-data OperatorAssoc
-  = InfixRight
-  | InfixLeft
-  | InfixNone
-  | Prefix
-
-data Operator =
-  Operator { associativity :: OperatorAssoc
-           , precedence :: Precedence
-           , symbol :: Text
-           }
+data Operator
+  = InfixOp  { associativity :: Associativity
+             , precedence :: Precedence
+             , symbol :: Text
+             }
+  | PrefixOp { precedence :: Precedence
+             , symbol :: Text
+             }

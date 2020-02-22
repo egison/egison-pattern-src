@@ -28,8 +28,6 @@ import           Control.Monad.Reader           ( ReaderT
                                                 , runReaderT
                                                 )
 
-import           Language.Egison.Syntax.Pattern.Fixity
-                                                ( Associativity(..) )
 import           Language.Egison.Pretty.Pattern.Error
                                                 ( Error(UnknownInfixOperator) )
 import           Language.Egison.Pretty.Pattern.Context
@@ -40,9 +38,7 @@ import           Language.Egison.Pretty.Pattern.PrintMode
                                                 , Fixity(..)
                                                 )
 import           Language.Egison.Pretty.Pattern.Operator
-                                                ( Operator(..)
-                                                , OperatorAssoc(..)
-                                                )
+                                                ( Operator(..) )
 
 
 type OperatorTable n = Map.Map n Operator
@@ -59,13 +55,7 @@ buildOperatorTable = foldr go Map.empty
   go fixity@PrintFixity { fixity = Fixity { symbol } } =
     Map.insert symbol (toOperator fixity)
   toOperator PrintFixity { fixity = Fixity { precedence, associativity }, printed }
-    = Operator { precedence
-               , associativity = toOpAssoc associativity
-               , symbol        = printed
-               }
-  toOpAssoc AssocRight = InfixRight
-  toOpAssoc AssocLeft  = InfixLeft
-  toOpAssoc AssocNone  = InfixNone
+    = InfixOp { precedence, associativity, symbol = printed }
 
 initialEnv :: Ord n => PrintMode n v e -> Env n v e
 initialEnv mode@PrintMode { fixities } =

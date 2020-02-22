@@ -78,6 +78,8 @@ import qualified Language.Egison.Parser.Pattern.Token
                                                 , vertical
                                                 , dollar
                                                 )
+import qualified Language.Egison.Syntax.Pattern.Fixity.Primitive
+                                               as PrimOp
 import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr )
 import           Language.Egison.Syntax.Pattern.Base
@@ -90,9 +92,15 @@ primInfixes
   :: Source s
   => [(Precedence, Table (Parse n v e s) (ExprF n v e) (ExprL n v e))]
 primInfixes =
-  [ (Precedence 5, addPrefix (NotF <$ token Token.exclamation) initTable)
-  , (Precedence 3, addInfix AssocRight (AndF <$ token Token.and) initTable)
-  , (Precedence 2, addInfix AssocRight (OrF <$ token Token.vertical) initTable)
+  [ ( PrimOp.notPrecedence
+    , addPrefix (NotF <$ token Token.exclamation) initTable
+    )
+  , ( PrimOp.andPrecedence
+    , addInfix PrimOp.andAssociativity (AndF <$ token Token.and) initTable
+    )
+  , ( PrimOp.orPrecedence
+    , addInfix PrimOp.orAssociativity (OrF <$ token Token.vertical) initTable
+    )
   ]
 
 wildcard :: Source s => Parse n v e s (ExprF n v e a)

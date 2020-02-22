@@ -65,6 +65,7 @@ library
     Language.Egison.Pretty.Pattern.PrintMode
     Language.Egison.Syntax.Pattern.Fixity.Associativity
     Language.Egison.Syntax.Pattern.Fixity.Precedence
+    Language.Egison.Syntax.Pattern.Fixity.Primitive
 
   if impl(ghc >=7.8)
     ghc-options: -j4
