@@ -66,6 +66,11 @@ test_primitive_pattern_operators =
     $ assertPrintExpr (Or (Not Wildcard) Wildcard) "!_ | _"
   , testCase "nested not, and pattern"
     $ assertPrintExpr (Not (And Wildcard Wildcard)) "!(_ & _)"
+  , testCase "nested not patterns"
+    $ assertPrintExpr (Not (Not Wildcard)) "!(!_)"
+  , testCase "not pattern in constructor arguments" $ assertPrintExpr
+    (Pattern (Name "ctor") [Not Wildcard, Not Wildcard])
+    "(ctor !_ !_)"
   ]
 
 test_user_defined_pattern_operators :: [TestTree]

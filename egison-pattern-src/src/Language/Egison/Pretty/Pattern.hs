@@ -72,6 +72,7 @@ smartParens opr doc = do
   if check ctx opr then pure $ parens doc else pure doc
  where
   check World               _ = False
+  check ConstructorArgument Operator { associativity = Prefix } = False
   check ConstructorArgument _ = True
   check (Under uPrec side) Operator { precedence, associativity }
     | uPrec > precedence = True
