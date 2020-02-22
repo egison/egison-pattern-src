@@ -63,6 +63,8 @@ import           Language.Egison.Pretty.Pattern.Context
                                                 )
 import           Language.Egison.Pretty.Pattern.Operator
                                                 ( Operator(..) )
+import qualified Language.Egison.Syntax.Pattern.Fixity.Primitive
+                                               as PrimOp
 import           Language.Egison.Syntax.Pattern ( Expr(..) )
 
 
@@ -96,33 +98,27 @@ expr (Predicate e) = do
   de <- valueExpr e
   pure $ "?" <> de
 expr (And e1 e2) = do
-  d1 <- withContext (Under andPrecedence LeftSide) $ expr e1
-  d2 <- withContext (Under andPrecedence RightSide) $ expr e2
+  d1 <- withContext (Under PrimOp.andPrecedence LeftSide) $ expr e1
+  d2 <- withContext (Under PrimOp.andPrecedence RightSide) $ expr e2
   smartParens opr $ d1 <+> "&" <+> d2
  where
-  opr = InfixOp { precedence    = andPrecedence
-                , associativity = andAssociativity
+  opr = InfixOp { precedence    = PrimOp.andPrecedence
+                , associativity = PrimOp.andAssociativity
                 , symbol        = "&"
                 }
-  andPrecedence    = Precedence 3
-  andAssociativity = AssocRight
 expr (Or e1 e2) = do
-  d1 <- withContext (Under orPrecedence LeftSide) $ expr e1
-  d2 <- withContext (Under orPrecedence RightSide) $ expr e2
+  d1 <- withContext (Under PrimOp.orPrecedence LeftSide) $ expr e1
+  d2 <- withContext (Under PrimOp.orPrecedence RightSide) $ expr e2
   smartParens opr $ d1 <+> "|" <+> d2
  where
-  opr = InfixOp { precedence    = orPrecedence
-                , associativity = orAssociativity
+  opr = InfixOp { precedence    = PrimOp.orPrecedence
+                , associativity = PrimOp.orAssociativity
                 , symbol        = "|"
                 }
-  orPrecedence    = Precedence 2
-  orAssociativity = AssocRight
 expr (Not e) = do
-  d <- withContext (Under notPrecedence RightSide) $ expr e
+  d <- withContext (Under PrimOp.notPrecedence RightSide) $ expr e
   smartParens opr $ "!" <> d
- where
-  opr           = PrefixOp { precedence = notPrecedence, symbol = "!" }
-  notPrecedence = Precedence 5
+  where opr = PrefixOp { precedence = PrimOp.notPrecedence, symbol = "!" }
 expr (Infix n e1 e2) = do
   opr <- operatorOf n
   case opr of
