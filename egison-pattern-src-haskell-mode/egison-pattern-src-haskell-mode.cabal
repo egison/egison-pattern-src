@@ -28,10 +28,10 @@ source-repository head
 
 library
   build-depends:
-      base                >=4.5 && <5
+      base                >=4.7    && <5
     , egison-pattern-src
-    , haskell-src-exts
-    , mtl
+    , haskell-src-exts    >=1.11.1
+    , mtl                 >=2.2.1
     , text
 
   hs-source-dirs:     src
