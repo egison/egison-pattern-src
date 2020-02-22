@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Parser.Pattern.Expr
--- Description: A helper module to build a parser for expressions
+-- Description: Helpers to build a parser for expressions
 -- Stability:   experimental
 --
 -- A helper module to build a parser for expressions.

@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Syntax.Pattern.Fixity.Associativity
--- Description: An associativity of infix operators
+-- Description: Associativity of infix operators
 -- Stability:   experimental
 --
 -- An associativity of infix operators.
@@ -17,6 +17,6 @@ import           Data.Data                      ( Data
                                                 )
 
 
--- | An associativity of infix operators.
+-- | Associativity of infix operators.
 data Associativity = AssocLeft | AssocRight | AssocNone
   deriving (Show, Eq, Generic, Data, Typeable)

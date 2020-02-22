@@ -53,16 +53,16 @@ import qualified Language.Egison.Pretty.Pattern
                                                 )
 
 
--- | A type synonym of 'Egison.Expr' to be printed with Template Haskell.
+-- | Type synonym of 'Egison.Expr' to be printed with Template Haskell.
 type Expr = Egison.Expr TH.Name TH.Name TH.Exp
 
--- | A type synonym of 'Egison.PrintMode' to print 'Expr'.
+-- | Type synonym of 'Egison.PrintMode' to print 'Expr'.
 type PrintMode = Egison.PrintMode TH.Name TH.Name TH.Exp
 
--- | A type synonym of 'Egison.Fixity' to print 'Expr'.
+-- | Type synonym of 'Egison.Fixity' to print 'Expr'.
 type Fixity = Egison.Fixity TH.Name
 
--- | A type synonym of 'Egison.PrintFixity' to print 'Expr'.
+-- | Type synonym of 'Egison.PrintFixity' to print 'Expr'.
 type PrintFixity = Egison.PrintFixity TH.Name
 
 -- | Build 'PrintFixity' using 'Fixity' to print Haskell operators.

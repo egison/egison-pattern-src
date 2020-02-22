@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Parser.Pattern
--- Description: A parser for Egison patterns
+-- Description: Parser for Egison patterns
 -- Stability:   experimental
 --
 -- A parser for Egison patterns.
@@ -148,7 +148,7 @@ atom =
 expr :: Source s => Parse n v e s (ExprL n v e)
 expr = exprParser primInfixes atom
 
--- | A parser for 'Expr' with locations annotated.
+-- | Parse 'Expr' with locations annotated.
 parseExprL
   :: (Source s, MonadError (Errors s) m)
   => ParseMode n v e s
@@ -157,7 +157,7 @@ parseExprL
   -> m (ExprL n v e)
 parseExprL = runParse (space *> expr)
 
--- | A parser for 'Expr'.
+-- | Parse 'Expr'.
 parseExpr
   :: (Source s, MonadError (Errors s) m)
   => ParseMode n v e s

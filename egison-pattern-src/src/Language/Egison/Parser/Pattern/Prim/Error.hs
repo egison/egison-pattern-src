@@ -51,7 +51,7 @@ import qualified Text.Megaparsec               as Parsec
                                                 )
 
 
--- | A token representation in 'Error'.
+-- | Token representation in 'Error'.
 data ErrorItem s
   = Tokens (Tokens s)
   | Label String
@@ -61,7 +61,7 @@ deriving instance Show (Tokens s) => Show (ErrorItem s)
 deriving instance Eq (Tokens s) => Eq (ErrorItem s)
 
 
--- | A parse error.
+-- | Parse error.
 data Error s
   = UnexpectedToken { position :: Position
                     , expected :: [ErrorItem s]
@@ -75,11 +75,11 @@ data Error s
 deriving instance Show (Tokens s) => Show (Error s)
 deriving instance Eq (Tokens s) => Eq (Error s)
 
--- | A type synonym for an error list.
+-- | Type synonym for an error list.
 type Errors s = NonEmpty (Error s)
 
 
--- | An internal error type to use as a custom error in 'Text.Megaparsec.Parsec' monad
+-- | Internal error type to use as a custom error in 'Text.Megaparsec.Parsec' monad.
 data CustomError s = ExtParserError { input :: Tokens s
                                     , message :: String
                                     }

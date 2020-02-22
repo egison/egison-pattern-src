@@ -46,7 +46,7 @@ import           Language.Egison.Parser.Pattern.Prim.Error
                                                 )
 
 
--- | A parser monad.
+-- | Parser monad.
 newtype Parse n v e s a = Parse { unParse :: ReaderT (ParseMode n v e s) (Parsec (CustomError s) s) a }
   deriving newtype (Functor, Applicative, Alternative, Monad, MonadFail, MonadPlus)
   deriving newtype (MonadReader (ParseMode n v e s))

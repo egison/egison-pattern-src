@@ -26,7 +26,7 @@ import qualified Text.Megaparsec               as Parsec
                                                 )
 
 
--- | A position in source code.
+-- | Position in source code.
 data Position
   = Position { line   :: Int
              , column :: Int
@@ -40,7 +40,7 @@ data Location
              }
   deriving (Show, Eq, Generic, Data, Typeable)
 
--- | a 'Monad' that scans over a source code.
+-- | 'Monad' that scans over a source code.
 class Monad m => Locate m where
   getPosition :: m Position
   getLocation :: m a -> m (a, Location)

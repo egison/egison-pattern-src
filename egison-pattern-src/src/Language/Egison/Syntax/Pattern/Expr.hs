@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Syntax.Pattern.Base
--- Description: An abstract syntax tree for Egison pattern expression
+-- Description: Abstract syntax tree for Egison pattern expression
 -- Stability:   experimental
 --
 -- This module defines an AST (Abstract Syntax Tree) for Egison pattern expression.

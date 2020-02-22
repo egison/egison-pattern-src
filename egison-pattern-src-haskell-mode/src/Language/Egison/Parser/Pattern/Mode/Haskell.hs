@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Parser.Pattern.Mode.Haskell
--- Description: A parser for Egison pattern expressions in Haskell source code
+-- Description: Parser for Egison pattern expressions in Haskell source code
 -- Stability:   experimental
 --
 -- A parser for Egison pattern expressions in Haskell source code.
@@ -60,16 +60,16 @@ import           Language.Egison.Parser.Pattern ( Precedence(..)
                                                 )
 
 
--- | A type synonym of 'Egison.Expr' to be parsed in Haskell's source code.
+-- | Type synonym of 'Egison.Expr' to be parsed in Haskell's source code.
 type Expr = Egison.Expr (QName ()) (Name ()) (Exp SrcSpanInfo)
 
--- | A type synonym of 'Egison.ParseMode' to parse 'Expr'.
+-- | Type synonym of 'Egison.ParseMode' to parse 'Expr'.
 type ParseMode = Egison.ParseMode (QName ()) (Name ()) (Exp SrcSpanInfo) String
 
--- | A type synonym of 'Egison.Fixity' to parse 'Expr'.
+-- | Type synonym of 'Egison.Fixity' to parse 'Expr'.
 type Fixity = Egison.Fixity (QName ())
 
--- | A type synonym of 'Egison.ParseFixity' to parse 'Expr'.
+-- | Type synonym of 'Egison.ParseFixity' to parse 'Expr'.
 type ParseFixity = Egison.ParseFixity (QName ()) String
 
 resultToEither :: Haskell.ParseResult a -> Either String a
@@ -125,7 +125,7 @@ makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
     | otherwise          = Left "not an operator name"
     where printed = maybe sym (++ '.' : sym) mModName
 
--- | > makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
+-- | @'makeParseFixities' = 'mapMaybe' $ 'makeParseFixity' . 'makeFixity'@
 makeParseFixities :: [Haskell.Fixity] -> [ParseFixity]
 makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
 

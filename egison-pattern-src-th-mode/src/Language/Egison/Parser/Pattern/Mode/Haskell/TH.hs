@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Parser.Pattern.Mode.Haskell
--- Description: A parser for Egison pattern expressions to use with Template Haskell
+-- Description: Parser for Egison pattern expressions to use with Template Haskell
 -- Stability:   experimental
 --
 -- A parser for Egison pattern expressions to use with Template Haskell.
@@ -52,7 +52,7 @@ import qualified Language.Egison.Parser.Pattern.Mode.Haskell
                                                 )
 
 
--- | A type synonym of 'Egison.Expr' to be used with Template Haskell.
+-- | Type synonym of 'Egison.Expr' to be used with Template Haskell.
 type Expr = Egison.Expr TH.Name TH.Name TH.Exp
 
 -- | Convert 'Egison.Expr' with @haskell-src-exts@ AST into 'Expr' with TemplateHaskell AST

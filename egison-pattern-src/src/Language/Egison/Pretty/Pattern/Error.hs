@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Pretty.Pattern.Error
--- Description: Pretty printing errors
+-- Description: Pretty-printing errors
 -- Stability:   experimental
 --
 -- This module defines datatypes representing pretty-printer errors

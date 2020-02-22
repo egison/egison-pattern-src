@@ -1,7 +1,7 @@
 -- |
 --
 -- Module:      Language.Egison.Parser.Pattern.Prim
--- Description: A parser monad and primitive parsers
+-- Description: Parser monad and primitive parsers
 -- Stability:   experimental
 --
 -- A parser monad and primitive parsers.

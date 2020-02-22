@@ -52,16 +52,16 @@ import qualified Language.Egison.Pretty.Pattern
 import           Language.Egison.Pretty.Pattern ( Error )
 
 
--- | A type synonym of 'Egison.Expr' to be printed with Haskell's source code.
+-- | Type synonym of 'Egison.Expr' to be printed with Haskell's source code.
 type Expr = Egison.Expr (QName ()) (Name ()) (Exp ())
 
--- | A type synonym of 'Egison.PrintMode' to print 'Expr'.
+-- | Type synonym of 'Egison.PrintMode' to print 'Expr'.
 type PrintMode = Egison.PrintMode (QName ()) (Name ()) (Exp ())
 
--- | A type synonym of 'Egison.Fixity' to print 'Expr'.
+-- | Type synonym of 'Egison.Fixity' to print 'Expr'.
 type Fixity = Egison.Fixity (QName ())
 
--- | A type synonym of 'Egison.PrintFixity' to print 'Expr'.
+-- | Type synonym of 'Egison.PrintFixity' to print 'Expr'.
 type PrintFixity = Egison.PrintFixity (QName ())
 
 -- | Build 'Egison.PageMode' using 'Haskell.Style' from @haskell-src-exts@.
