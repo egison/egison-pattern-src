@@ -1,6 +1,6 @@
-cabal-version: >=1.10
-name:          egison-pattern-src
-version:       0.1.0.0
+cabal-version:      >=1.10
+name:               egison-pattern-src
+version:            0.1.0.0
 synopsis:
   Manipulating Egison patterns: abstract syntax, parser, and pretty-printer
 
@@ -8,18 +8,19 @@ description:
   @egison-pattern-src@ provides a standalone syntax definition for patterns in [Egison programming language](https://egison.org/).
   This package enables you to embed Egison's patterns in your parser (pretty-printer) by supplying expression and name parsers (printers) externally.
 
-bug-reports:   https://github.com/egison/egison-pattern-src/issues
-homepage:      https://github.com/egison/egison-pattern-src#readme
-license:       BSD3
-license-file:  LICENSE
-author:        coord_e
-maintainer:    coord_e <me@coord-e.com>, Satoshi Egi <egi@egison.org>
-copyright:     Copyright 2020 coord_e
-category:      Language, Parser, Pretty Printer
-build-type:    Simple
+bug-reports:        https://github.com/egison/egison-pattern-src/issues
+homepage:           https://github.com/egison/egison-pattern-src#readme
+license:            BSD3
+license-file:       LICENSE
+author:             coord_e
+maintainer:         coord_e <me@coord-e.com>, Satoshi Egi <egi@egison.org>
+copyright:          Copyright 2020 coord_e
+category:           Language, Parser, Pretty Printer
+build-type:         Simple
+extra-source-files: README.md
 
 -- see .github/workflows/latest.yml
-tested-with:   GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.1
+tested-with:        GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.1
 
 source-repository head
   type:     git
