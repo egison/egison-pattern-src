@@ -15,6 +15,5 @@ build: cabal-fmt
 cabal-fmt: $(foreach pkg,$(PACKAGES),$(pkg)/$(pkg).cabal)
 	$(CABAL_FMT) -i $^
 
-.PHONY: clean
-clean:
-	$(CABAL) new-clean
+
+include dev/commands.mk
