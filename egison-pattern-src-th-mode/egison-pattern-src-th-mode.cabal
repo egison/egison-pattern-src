@@ -29,14 +29,14 @@ source-repository head
 library
   build-depends:
       base                             >=4.7    && <5
-    , egison-pattern-src
-    , egison-pattern-src-haskell-mode
-    , haskell-src-exts                 >=1.11.1
-    , haskell-src-meta
-    , mtl                              >=2.2.1
-    , pretty
-    , template-haskell
-    , text
+    , egison-pattern-src               >=0.1.0  && <0.2
+    , egison-pattern-src-haskell-mode  >=0.1.0  && <0.2
+    , haskell-src-exts                 >=1.11.1 && <1.24
+    , haskell-src-meta                 >=0.0.0  && <0.9
+    , mtl                              >=2.2.1  && <2.3
+    , pretty                           >=1.0.0  && <1.2
+    , template-haskell                 >=2.2.0  && <2.16
+    , text                             >=0.1.0  && <1.3
 
   hs-source-dirs:     src
   exposed-modules:
@@ -69,7 +69,7 @@ test-suite test
     , mtl
     , tasty
     , tasty-hunit
-    , template-haskell
+    , template-haskell            >=2.6.0 && <2.15
     , text
 
   default-extensions: FlexibleContexts
