@@ -1,4 +1,4 @@
-cabal-version:      >=1.10
+cabal-version:      2.0
 name:               egison-pattern-src-th-mode
 version:            0.1.0.0
 synopsis:
@@ -31,11 +31,11 @@ source-repository head
 library
   build-depends:
       base                             >=4.7    && <5
-    , egison-pattern-src               >=0.1.0  && <0.2
-    , egison-pattern-src-haskell-mode  >=0.1.0  && <0.2
+    , egison-pattern-src               ^>=0.1.0
+    , egison-pattern-src-haskell-mode  ^>=0.1.0
     , haskell-src-exts                 >=1.11.1 && <1.24
     , haskell-src-meta                 >=0.0.0  && <0.9
-    , mtl                              >=2.2.1  && <2.3
+    , mtl                              ^>=2.2.1
     , pretty                           >=1.0.0  && <1.2
     , template-haskell                 >=2.2.0  && <2.16
     , text                             >=0.1.0  && <1.3
