@@ -147,7 +147,7 @@ parseExpr mode@Haskell.ParseMode { Haskell.parseFilename } =
   Egison.parseExpr (makeHaskellMode mode) parseFilename
 
 -- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'ParseFixity'.
--- Note that fixities obtained from 'Haskell.ParseMode' is ignored here.
+-- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
 parseExprWithFixities
   :: MonadError (Errors String) m
   => Haskell.ParseMode

@@ -55,7 +55,7 @@ import qualified Language.Egison.Parser.Pattern.Mode.Haskell
 -- | Type synonym of 'Egison.Expr' to be used with Template Haskell.
 type Expr = Egison.Expr TH.Name TH.Name TH.Exp
 
--- | Convert 'Egison.Expr' with @haskell-src-exts@ AST into 'Expr' with TemplateHaskell AST
+-- | Convert 'Egison.Expr' with @haskell-src-exts@ AST into 'Expr' with Template Haskell AST
 toTH
   :: Egison.Expr (Haskell.QName l1) (Haskell.Name l2) (Haskell.Exp l3) -> Expr
 toTH = mapValueExpr TH.toExp . mapVarName TH.toName . mapName TH.toName
@@ -66,7 +66,7 @@ parseExpr
 parseExpr mode = fmap toTH . HaskellMode.parseExpr mode
 
 -- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'HaskellMode.Fixity'.
--- Note that fixities obtained from 'Haskell.ParseMode' is ignored here.
+-- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
 parseExprWithFixities
   :: MonadError (Errors String) m
   => Haskell.ParseMode
