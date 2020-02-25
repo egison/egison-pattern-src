@@ -5,7 +5,7 @@ synopsis:
   Manipulating Egison patterns: abstract syntax, parser, and pretty-printer
 
 description:
-  @egison-pattern-src@ provides a standalone syntax definition for patterns in [Egison programming language](https://egison.org/).
+  @egison-pattern-src@ provides a standalone syntax definition for patterns in [Egison programming language](https://www.egison.org/).
   This package enables you to embed Egison's patterns in your parser (pretty-printer) by supplying expression and name parsers (printers) externally.
 
 bug-reports:        https://github.com/egison/egison-pattern-src/issues

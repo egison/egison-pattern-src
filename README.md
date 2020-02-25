@@ -5,7 +5,7 @@
 [![Hackage](https://img.shields.io/hackage/v/egison-pattern-src.svg)](https://hackage.haskell.org/package/egison-pattern-src)
 [![Hackage Deps](https://img.shields.io/hackage-deps/v/egison-pattern-src.svg)](http://packdeps.haskellers.com/reverse/egison-pattern-src)
 
-The [egison-pattern-src](https://hackage.haskell.org/package/egison-pattern-src) provides a standalone syntax definition for patterns in [Egison programming language](https://egison.org/).
+The [egison-pattern-src](https://hackage.haskell.org/package/egison-pattern-src) provides a standalone syntax definition for patterns in [Egison programming language](https://www.egison.org/).
 This package enables you to embed Egison's patterns in your parser (pretty-printer) by supplying expression and name parsers (printers) externally.
 For the uses in Haskell source code, such adaptors for [haskell-src-exts](https://hackage.haskell.org/package/haskell-src-exts) and [template-haskell](https://hackage.haskell.org/package/template-haskell) are also available here as [egison-pattern-src-haskell-mode](https://hackage.haskell.org/package/egison-pattern-src-haskell-mode) and [egison-pattern-src-th-mode](https://hackage.haskell.org/package/egison-pattern-src-th-mode) respectively.
 
