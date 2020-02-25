@@ -1,6 +1,7 @@
 # Egison Pattern Source (Haskell Mode)
 
 [![Actions Status](https://github.com/egison/egison-pattern-src/workflows/latest/badge.svg)](https://github.com/egison/egison-pattern-src/actions?workflow=latest)
+[![Actions Status](https://github.com/egison/egison-pattern-src/workflows/release/badge.svg)](https://github.com/egison/egison-pattern-src/actions?workflow=release)
 [![Hackage](https://img.shields.io/hackage/v/egison-pattern-src-haskell-mode.svg)](https://hackage.haskell.org/package/egison-pattern-src-haskell-mode)
 [![Hackage Deps](https://img.shields.io/hackage-deps/v/egison-pattern-src-haskell-mode.svg)](http://packdeps.haskellers.com/reverse/egison-pattern-src-haskell-mode)
 
