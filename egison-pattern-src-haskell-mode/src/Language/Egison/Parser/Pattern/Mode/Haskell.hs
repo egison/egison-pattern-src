@@ -92,7 +92,6 @@ parseNameWithMode mode content =
     Left  err          -> Left err
 
 -- | Build 'Egison.Fixity' using 'Haskell.Fixity' from @haskell-src-exts@.
--- Note that a built-in constructor with special syntax, that is represented as 'Special' in 'QName', is just ignored here.
 makeFixity :: Haskell.Fixity -> Fixity
 makeFixity (Haskell.Fixity assoc prec name) = fixity
  where
