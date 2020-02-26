@@ -12,6 +12,7 @@ module Language.Egison.Parser.Pattern.Mode.Haskell.TH
     Expr
   , parseExpr
   , parseExprWithFixities
+  , parseExprWithParseFixities
   -- * Converting 'Expr'
   , toTH
   )
@@ -47,8 +48,10 @@ import           Language.Egison.Parser.Pattern ( Errors )
 import qualified Language.Egison.Parser.Pattern.Mode.Haskell
                                                as HaskellMode
                                                 ( Fixity
+                                                , ParseFixity
                                                 , parseExpr
                                                 , parseExprWithFixities
+                                                , parseExprWithParseFixities
                                                 )
 
 
@@ -75,3 +78,14 @@ parseExprWithFixities
   -> m Expr
 parseExprWithFixities mode fixities =
   fmap toTH . HaskellMode.parseExprWithFixities mode fixities
+
+-- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'HaskellMode.ParseFixity'.
+-- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
+parseExprWithParseFixities
+  :: MonadError (Errors String) m
+  => Haskell.ParseMode
+  -> [HaskellMode.ParseFixity]
+  -> String
+  -> m Expr
+parseExprWithParseFixities mode fixities =
+  fmap toTH . HaskellMode.parseExprWithParseFixities mode fixities

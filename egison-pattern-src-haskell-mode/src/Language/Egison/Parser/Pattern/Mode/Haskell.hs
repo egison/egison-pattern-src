@@ -12,6 +12,7 @@ module Language.Egison.Parser.Pattern.Mode.Haskell
     Expr
   , parseExpr
   , parseExprWithFixities
+  , parseExprWithParseFixities
   -- * Converting @haskell-src-exts@'s entities
   , ParseMode
   , ParseFixity
@@ -145,7 +146,7 @@ parseExpr
 parseExpr mode@Haskell.ParseMode { Haskell.parseFilename } =
   Egison.parseExpr (makeHaskellMode mode) parseFilename
 
--- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'ParseFixity'.
+-- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'Fixity'.
 -- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
 parseExprWithFixities
   :: MonadError (Errors String) m
@@ -153,9 +154,19 @@ parseExprWithFixities
   -> [Fixity]
   -> String
   -> m Expr
-parseExprWithFixities mode@Haskell.ParseMode { Haskell.parseFilename } fixities
+parseExprWithFixities mode =
+  parseExprWithParseFixities mode . mapMaybe makeParseFixity
+
+-- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'ParseFixity'.
+-- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
+parseExprWithParseFixities
+  :: MonadError (Errors String) m
+  => Haskell.ParseMode
+  -> [ParseFixity]
+  -> String
+  -> m Expr
+parseExprWithParseFixities mode@Haskell.ParseMode { Haskell.parseFilename } fixities
   = Egison.parseExpr hsModeWithFixities parseFilename
  where
-  hsMode = makeHaskellMode mode
-  hsModeWithFixities =
-    hsMode { Egison.fixities = mapMaybe makeParseFixity fixities }
+  hsMode             = makeHaskellMode mode
+  hsModeWithFixities = hsMode { Egison.fixities }
