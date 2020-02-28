@@ -26,7 +26,7 @@ test_atom_patterns =
     $ assertPrintExpr (Predicate $ ValueExprInt 10) "?10"
   , testCase "constructor pattern" $ assertPrintExpr
     (Pattern (Name "ctor") [Wildcard, Wildcard, Wildcard])
-    "(ctor _ _ _)"
+    "ctor _ _ _"
   , testCase "constructor pattern without arguments"
     $ assertPrintExpr (Pattern (Name "nil") []) "nil"
   , testCase "nested constructor pattern" $ assertPrintExpr
@@ -38,7 +38,7 @@ test_atom_patterns =
       , Pattern (Name "ctorE") []
       ]
     )
-    "(ctorA (ctorB _) (ctorC _ (ctorD _)) _ ctorE)"
+    "ctorA (ctorB _) (ctorC _ (ctorD _)) _ ctorE"
   , testCase "collection pattern"
     $ assertPrintExpr (Collection [Wildcard, Wildcard, Wildcard]) "[_, _, _]"
   , testCase "nested collection pattern" $ assertPrintExpr
@@ -76,7 +76,12 @@ test_primitive_pattern_operators =
     $ assertPrintExpr (Not (Not Wildcard)) "!(!_)"
   , testCase "not pattern in constructor arguments" $ assertPrintExpr
     (Pattern (Name "ctor") [Not Wildcard, Not Wildcard])
-    "(ctor !_ !_)"
+    "ctor !_ !_"
+  , testCase "constructor pattern in infix operands" $ assertPrintExpr
+    (Or (And Wildcard (Pattern (Name "ctor") [Wildcard, Wildcard]))
+        (Pattern (Name "ctor") [Wildcard, Wildcard])
+    )
+    "_ & ctor _ _ | ctor _ _"
   ]
 
 test_user_defined_pattern_operators :: [TestTree]

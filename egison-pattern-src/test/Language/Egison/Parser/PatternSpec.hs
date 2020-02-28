@@ -27,9 +27,15 @@ test_atom_patterns =
   , testCase "predicate pattern"
     $ assertParseExpr "?10" (Predicate $ ValueExprInt 10)
   , testCase "constructor pattern" $ assertParseExpr
+    "ctor _ _ _"
+    (Pattern (Name "ctor") [Wildcard, Wildcard, Wildcard])
+  , testCase "constructor pattern between parentheses" $ assertParseExpr
     "(ctor _ _ _)"
     (Pattern (Name "ctor") [Wildcard, Wildcard, Wildcard])
   , testCase "constructor pattern that the name is between parentheses"
+    $ assertParseExpr "(++) _ _" (Pattern (Name "++") [Wildcard, Wildcard])
+  , testCase
+      "constructor pattern that the name and pattern itself is between parentheses"
     $ assertParseExpr "((++) _ _)" (Pattern (Name "++") [Wildcard, Wildcard])
   , testCase "constructor pattern without arguments"
     $ assertParseExpr "nil" (Pattern (Name "nil") [])
@@ -40,7 +46,7 @@ test_atom_patterns =
   , testCase "constructor pattern without arguments between parentheses"
     $ assertParseExpr "((c))" (Pattern (Name "c") [])
   , testCase "nested constructor pattern" $ assertParseExpr
-    "(ctorA (ctorB _) (ctorC _ (ctorD _)) _ ctorE)"
+    "ctorA (ctorB _) (ctorC _ (ctorD _)) _ ctorE"
     (Pattern
       (Name "ctorA")
       [ Pattern (Name "ctorB") [Wildcard]
@@ -76,8 +82,13 @@ test_primitive_pattern_operators =
   , testCase "nested not, and pattern"
     $ assertParseExpr "! _ & _" (And (Not Wildcard) Wildcard)
   , testCase "not pattern in constructor arguments" $ assertParseExpr
-    "(ctor !_ !_)"
+    "ctor !_ !_"
     (Pattern (Name "ctor") [Not Wildcard, Not Wildcard])
+  , testCase "constructor pattern in infix operands" $ assertParseExpr
+    "_ & ctor _ _ | ctor _ _"
+    (Or (And Wildcard (Pattern (Name "ctor") [Wildcard, Wildcard]))
+        (Pattern (Name "ctor") [Wildcard, Wildcard])
+    )
   ]
 
 test_user_defined_pattern_operators :: [TestTree]
