@@ -57,6 +57,7 @@ mapName f = cata go
   go (OrF  p1 p2    ) = Or p1 p2
   go (NotF        p1) = Not p1
   go (CollectionF ps) = Collection ps
+  go (TupleF      ps) = Tuple ps
 
 -- | Map over @v@ in @Expr n v e@.
 mapVarName :: (v -> v') -> Expr n v e -> Expr n v' e
@@ -71,6 +72,7 @@ mapVarName f = cata go
   go (OrF  p1 p2    ) = Or p1 p2
   go (NotF        p1) = Not p1
   go (CollectionF ps) = Collection ps
+  go (TupleF      ps) = Tuple ps
   go (InfixF n a b  ) = Infix n a b
   go (PatternF n ps ) = Pattern n ps
 
@@ -84,6 +86,7 @@ mapValueExpr f = cata go
   go WildcardF        = Wildcard
   go (VariableF   n ) = Variable n
   go (CollectionF ps) = Collection ps
+  go (TupleF      ps) = Tuple ps
   go (InfixF n p1 p2) = Infix n p1 p2
   go (PatternF n  ps) = Pattern n ps
   go (AndF     p1 p2) = And p1 p2
@@ -105,3 +108,4 @@ variables = cata go
   go (InfixF _ a b  ) = a <|> b
   go (PatternF _ ps ) = asum ps
   go (CollectionF ps) = asum ps
+  go (TupleF      ps) = asum ps
