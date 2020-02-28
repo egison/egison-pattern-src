@@ -12,7 +12,7 @@ import           Language.Haskell.Exts.Syntax  as X
                                                 ( QName(..)
                                                 , Name(..)
                                                 , ModuleName(..)
-                                                , Exp(..)
+                                                , Exp
                                                 )
 
 import           Language.Egison.Parser.Pattern

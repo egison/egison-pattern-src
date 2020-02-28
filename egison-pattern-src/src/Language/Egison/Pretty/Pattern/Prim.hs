@@ -22,6 +22,7 @@ import           Data.Text.Prettyprint.Doc     as X
                                                 ( parens
                                                 , hsep
                                                 , list
+                                                , tupled
                                                 , (<+>)
                                                 )
 

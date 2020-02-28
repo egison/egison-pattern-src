@@ -56,7 +56,6 @@ import           Language.Egison.Parser.Pattern.Prim
                                                 , name
                                                 , varName
                                                 , valueExpr
-                                                , try
                                                 , (<?>)
                                                 )
 import           Language.Egison.Parser.Pattern.Combinator
@@ -135,16 +134,23 @@ not_ = do
   e <- atomParser atom
   pure $ NotF e
 
+tupleOrParens :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
+tupleOrParens = parens $ do
+  es <- expr `sepBy` token Token.comma
+  pure $ case es of
+    [x] -> unwrap x  -- parens, discarding location once
+    _   -> TupleF es  -- tuple
+
 atom :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
 atom =
-  try (unwrap <$> parens expr) -- discarding location once
-    <|> wildcard
+  wildcard
     <|> variable
     <|> not_
     <|> value
     <|> collection
     <|> constr
     <|> predicate
+    <|> tupleOrParens
     <?> "atomic pattern"
 
 expr :: Source s => Parse n v e s (ExprL n v e)
