@@ -49,6 +49,12 @@ test_atom_patterns =
       , Pattern (Name "ctorE") []
       ]
     )
+  , testCase "collection pattern"
+    $ assertParseExpr "[_, _, _]" (Collection [Wildcard, Wildcard, Wildcard])
+  , testCase "nested collection pattern" $ assertParseExpr
+    "[_, [_, _], _]"
+    (Collection [Wildcard, Collection [Wildcard, Wildcard], Wildcard])
+  , testCase "nil collection pattern" $ assertParseExpr "[]" (Collection [])
   ]
 
 test_primitive_pattern_operators :: [TestTree]
