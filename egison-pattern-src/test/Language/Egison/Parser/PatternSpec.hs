@@ -61,6 +61,14 @@ test_atom_patterns =
     "[_, [_, _], _]"
     (Collection [Wildcard, Collection [Wildcard, Wildcard], Wildcard])
   , testCase "nil collection pattern" $ assertParseExpr "[]" (Collection [])
+  , testCase "tuple pattern"
+    $ assertParseExpr "(_, _, _)" (Tuple [Wildcard, Wildcard, Wildcard])
+  , testCase "tuple pattern between parentheses"
+    $ assertParseExpr "((_, _, _))" (Tuple [Wildcard, Wildcard, Wildcard])
+  , testCase "nested tuple pattern" $ assertParseExpr
+    "(_, (_, _), _)"
+    (Tuple [Wildcard, Tuple [Wildcard, Wildcard], Wildcard])
+  , testCase "nil tuple pattern" $ assertParseExpr "()" (Tuple [])
   , testCase "not pattern" $ assertParseExpr "!_" (Not Wildcard)
   , testCase "not pattern in constructor arguments" $ assertParseExpr
     "ctor !_ !_"
