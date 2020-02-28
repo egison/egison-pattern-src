@@ -28,16 +28,22 @@ class IsToken c where
   and :: c
   vertical :: c
   dollar :: c
+  bracketLeft :: c
+  bracketRight :: c
+  comma :: c
 
 instance IsToken Char where
-  isSpace     = Char.isSpace
-  newline     = '\n'
-  parenLeft   = '('
-  parenRight  = ')'
-  underscore  = '_'
-  hash        = '#'
-  question    = '?'
-  exclamation = '!'
-  and         = '&'
-  vertical    = '|'
-  dollar      = '$'
+  isSpace      = Char.isSpace
+  newline      = '\n'
+  parenLeft    = '('
+  parenRight   = ')'
+  underscore   = '_'
+  hash         = '#'
+  question     = '?'
+  exclamation  = '!'
+  and          = '&'
+  vertical     = '|'
+  dollar       = '$'
+  bracketLeft  = '['
+  bracketRight = ']'
+  comma        = ','

@@ -43,7 +43,9 @@ import           Language.Egison.Parser.Pattern.Token
 -- main
 import           Control.Monad.Except           ( MonadError )
 import           Control.Applicative            ( (<|>) )
-import           Control.Monad.Combinators      ( many )
+import           Control.Monad.Combinators      ( many
+                                                , sepBy
+                                                )
 import           Control.Comonad.Cofree         ( unwrap )
 
 import           Language.Egison.Parser.Pattern.Prim
@@ -70,14 +72,7 @@ import           Language.Egison.Parser.Pattern.Expr
                                                 )
 import qualified Language.Egison.Parser.Pattern.Token
                                                as Token
-                                                ( underscore
-                                                , hash
-                                                , question
-                                                , exclamation
-                                                , and
-                                                , vertical
-                                                , dollar
-                                                )
+                                                ( IsToken(..) )
 import qualified Language.Egison.Syntax.Pattern.Fixity.Primitive
                                                as PrimOp
 import           Language.Egison.Syntax.Pattern.Expr
@@ -135,12 +130,20 @@ constr = withArgs <|> withoutArgs
     n <- lexeme name
     pure $ PatternF n []
 
+collection :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
+collection = do
+  token Token.bracketLeft
+  es <- expr `sepBy` token Token.comma
+  token Token.bracketRight
+  pure $ CollectionF es
+
 atom :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
 atom =
   try (unwrap <$> parens expr) -- discarding location once
     <|> wildcard
     <|> variable
     <|> value
+    <|> collection
     <|> constr
     <|> predicate
     <?> "atomic pattern"
