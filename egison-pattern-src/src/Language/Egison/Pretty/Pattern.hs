@@ -38,6 +38,7 @@ import           Control.Monad.Except           ( MonadError(..) )
 import           Language.Egison.Pretty.Pattern.Prim
                                                 ( Doc
                                                 , hsep
+                                                , list
                                                 , text
                                                 , parens
                                                 , (<+>)
@@ -119,6 +120,7 @@ expr (Not e) = do
   d <- withContext (Under PrimOp.notPrecedence RightSide) $ expr e
   smartParens opr $ "!" <> d
   where opr = PrefixOp { precedence = PrimOp.notPrecedence, symbol = "!" }
+expr (Collection es) = list <$> traverse expr es
 expr (Infix n e1 e2) = do
   opr <- operatorOf n
   case opr of

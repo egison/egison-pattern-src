@@ -39,6 +39,12 @@ test_atom_patterns =
       ]
     )
     "(ctorA (ctorB _) (ctorC _ (ctorD _)) _ ctorE)"
+  , testCase "collection pattern"
+    $ assertPrintExpr (Collection [Wildcard, Wildcard, Wildcard]) "[_, _, _]"
+  , testCase "nested collection pattern" $ assertPrintExpr
+    (Collection [Wildcard, Collection [Wildcard, Wildcard], Wildcard])
+    "[_, [_, _], _]"
+  , testCase "nil collection pattern" $ assertPrintExpr (Collection []) "[]"
   ]
 
 test_primitive_pattern_operators :: [TestTree]

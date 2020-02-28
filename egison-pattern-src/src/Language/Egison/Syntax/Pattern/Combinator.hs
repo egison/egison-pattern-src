@@ -46,31 +46,33 @@ foldExpr = cata
 mapName :: (n -> n') -> Expr n v e -> Expr n' v e
 mapName f = cata go
  where
-  go (InfixF n a b ) = Infix (f n) a b
-  go (PatternF n ps) = Pattern (f n) ps
+  go (InfixF n a b )  = Infix (f n) a b
+  go (PatternF n ps)  = Pattern (f n) ps
   -- TODO: omit these verbose matches
-  go WildcardF       = Wildcard
-  go (VariableF  n)  = Variable n
-  go (ValueF     e)  = Value e
-  go (PredicateF e)  = Predicate e
-  go (AndF p1 p2  )  = And p1 p2
-  go (OrF  p1 p2  )  = Or p1 p2
-  go (NotF p1     )  = Not p1
+  go WildcardF        = Wildcard
+  go (VariableF  n  ) = Variable n
+  go (ValueF     e  ) = Value e
+  go (PredicateF e  ) = Predicate e
+  go (AndF p1 p2    ) = And p1 p2
+  go (OrF  p1 p2    ) = Or p1 p2
+  go (NotF        p1) = Not p1
+  go (CollectionF ps) = Collection ps
 
 -- | Map over @v@ in @Expr n v e@.
 mapVarName :: (v -> v') -> Expr n v e -> Expr n v' e
 mapVarName f = cata go
  where
-  go (VariableF v)   = Variable (f v)
+  go (VariableF v)    = Variable (f v)
   -- TODO: omit these verbose matches
-  go WildcardF       = Wildcard
-  go (ValueF     e ) = Value e
-  go (PredicateF e ) = Predicate e
-  go (AndF p1 p2   ) = And p1 p2
-  go (OrF  p1 p2   ) = Or p1 p2
-  go (NotF p1      ) = Not p1
-  go (InfixF n a b ) = Infix n a b
-  go (PatternF n ps) = Pattern n ps
+  go WildcardF        = Wildcard
+  go (ValueF     e  ) = Value e
+  go (PredicateF e  ) = Predicate e
+  go (AndF p1 p2    ) = And p1 p2
+  go (OrF  p1 p2    ) = Or p1 p2
+  go (NotF        p1) = Not p1
+  go (CollectionF ps) = Collection ps
+  go (InfixF n a b  ) = Infix n a b
+  go (PatternF n ps ) = Pattern n ps
 
 -- | Map over @e@ in @Expr n v e@.
 mapValueExpr :: (e -> e') -> Expr n v e -> Expr n v e'
@@ -80,7 +82,8 @@ mapValueExpr f = cata go
   go (PredicateF e)   = Predicate (f e)
   -- TODO: omit these verbose matches
   go WildcardF        = Wildcard
-  go (VariableF n   ) = Variable n
+  go (VariableF   n ) = Variable n
+  go (CollectionF ps) = Collection ps
   go (InfixF n p1 p2) = Infix n p1 p2
   go (PatternF n  ps) = Pattern n ps
   go (AndF     p1 p2) = And p1 p2
@@ -91,13 +94,14 @@ mapValueExpr f = cata go
 variables :: Alternative f => Expr n v e -> f v
 variables = cata go
  where
-  go (VariableF n)   = pure n
+  go (VariableF n)    = pure n
   -- TODO: omit these verbose matches
-  go WildcardF       = empty
-  go (ValueF     _ ) = empty
-  go (PredicateF _ ) = empty
-  go (AndF p1 p2   ) = p1 <|> p2
-  go (OrF  p1 p2   ) = p1 <|> p2
-  go (NotF p1      ) = p1
-  go (InfixF _ a b ) = a <|> b
-  go (PatternF _ ps) = asum ps
+  go WildcardF        = empty
+  go (ValueF     _  ) = empty
+  go (PredicateF _  ) = empty
+  go (AndF p1 p2    ) = p1 <|> p2
+  go (OrF  p1 p2    ) = p1 <|> p2
+  go (NotF p1       ) = p1
+  go (InfixF _ a b  ) = a <|> b
+  go (PatternF _ ps ) = asum ps
+  go (CollectionF ps) = asum ps

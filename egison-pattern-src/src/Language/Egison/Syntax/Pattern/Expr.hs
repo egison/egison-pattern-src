@@ -36,6 +36,8 @@ data Expr n v e
   | Or (Expr n v e) (Expr n v e)
   -- | Not pattern. Match when the given pattern does not match.
   | Not (Expr n v e)
+  -- | Collection pattern. Match with collections whose elements match with respective patterns.
+  | Collection [Expr n v e]
   -- | User-defined infix pattern.
   | Infix n (Expr n v e) (Expr n v e)
   -- | User-defined normal pattern.
