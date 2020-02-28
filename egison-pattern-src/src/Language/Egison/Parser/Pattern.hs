@@ -65,10 +65,10 @@ import           Language.Egison.Parser.Pattern.Combinator
                                                 )
 import           Language.Egison.Parser.Pattern.Expr
                                                 ( exprParser
+                                                , atomParser
                                                 , Table(..)
                                                 , initTable
                                                 , addInfix
-                                                , addPrefix
                                                 )
 import qualified Language.Egison.Parser.Pattern.Token
                                                as Token
@@ -87,10 +87,7 @@ primInfixes
   :: Source s
   => [(Precedence, Table (Parse n v e s) (ExprF n v e) (ExprL n v e))]
 primInfixes =
-  [ ( PrimOp.notPrecedence
-    , addPrefix (NotF <$ token Token.exclamation) initTable
-    )
-  , ( PrimOp.andPrecedence
+  [ ( PrimOp.andPrecedence
     , addInfix PrimOp.andAssociativity (AndF <$ token Token.and) initTable
     )
   , ( PrimOp.orPrecedence
@@ -132,11 +129,18 @@ collection = do
   token Token.bracketRight
   pure $ CollectionF es
 
+not_ :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
+not_ = do
+  token Token.exclamation
+  e <- atomParser atom
+  pure $ NotF e
+
 atom :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
 atom =
   try (unwrap <$> parens expr) -- discarding location once
     <|> wildcard
     <|> variable
+    <|> not_
     <|> value
     <|> collection
     <|> constr

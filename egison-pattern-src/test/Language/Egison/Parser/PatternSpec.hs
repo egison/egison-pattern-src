@@ -61,13 +61,20 @@ test_atom_patterns =
     "[_, [_, _], _]"
     (Collection [Wildcard, Collection [Wildcard, Wildcard], Wildcard])
   , testCase "nil collection pattern" $ assertParseExpr "[]" (Collection [])
+  , testCase "not pattern" $ assertParseExpr "!_" (Not Wildcard)
+  , testCase "not pattern in constructor arguments" $ assertParseExpr
+    "ctor !_ !_"
+    (Pattern (Name "ctor") [Not Wildcard, Not Wildcard])
+  , testCase "not pattern on constructor pattern" $ assertParseExpr
+    "!ctor _ _"
+    (Not (Pattern (Name "ctor") [Wildcard, Wildcard]))
+  , testCase "nested not patterns" $ assertParseExpr "!!_" (Not (Not Wildcard))
   ]
 
 test_primitive_pattern_operators :: [TestTree]
 test_primitive_pattern_operators =
   [ testCase "and pattern" $ assertParseExpr "_ & _" (And Wildcard Wildcard)
   , testCase "or pattern" $ assertParseExpr "_ | _" (Or Wildcard Wildcard)
-  , testCase "not pattern" $ assertParseExpr "!_" (Not Wildcard)
   -- associativity
   , testCase "nested and pattern"
     $ assertParseExpr "_ & _ & _" (And Wildcard (And Wildcard Wildcard))
@@ -81,9 +88,6 @@ test_primitive_pattern_operators =
     $ assertParseExpr "! _ | _" (Or (Not Wildcard) Wildcard)
   , testCase "nested not, and pattern"
     $ assertParseExpr "! _ & _" (And (Not Wildcard) Wildcard)
-  , testCase "not pattern in constructor arguments" $ assertParseExpr
-    "ctor !_ !_"
-    (Pattern (Name "ctor") [Not Wildcard, Not Wildcard])
   , testCase "constructor pattern in infix operands" $ assertParseExpr
     "_ & ctor _ _ | ctor _ _"
     (Or (And Wildcard (Pattern (Name "ctor") [Wildcard, Wildcard]))
