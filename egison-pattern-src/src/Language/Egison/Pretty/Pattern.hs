@@ -69,19 +69,26 @@ import qualified Language.Egison.Syntax.Pattern.Fixity.Primitive
 import           Language.Egison.Syntax.Pattern ( Expr(..) )
 
 
-smartParens :: Operator -> Doc -> Print n v e Doc
-smartParens opr doc = do
+parensIf :: Bool -> Doc -> Doc
+parensIf True  = parens
+parensIf False = id
+
+parensWhen :: (Context -> Bool) -> Doc -> Print n v e Doc
+parensWhen f doc = do
   ctx <- askContext
-  if check ctx opr then pure $ parens doc else pure doc
+  pure $ parensIf (f ctx) doc
+
+smartParens :: Operator -> Doc -> Print n v e Doc
+smartParens opr = parensWhen (check opr)
  where
-  check World               _          = False
-  check ConstructorArgument PrefixOp{} = False
-  check ConstructorArgument _          = True
-  check (Under uPrec side) InfixOp { precedence, associativity }
+  check _          World = False
+  check PrefixOp{} Atom  = False
+  check _          Atom  = True
+  check InfixOp { precedence, associativity } (Under uPrec side)
     | uPrec > precedence = True
     | uPrec == precedence && not (matching associativity side) = True
     | otherwise          = False
-  check (Under uPrec _) PrefixOp { precedence } | uPrec >= precedence = True
+  check PrefixOp { precedence } (Under uPrec _) | uPrec >= precedence = True
                                                 | otherwise           = False
   matching AssocRight RightSide = True
   matching AssocLeft  LeftSide  = True
@@ -117,9 +124,8 @@ expr (Or e1 e2) = do
                 , symbol        = "|"
                 }
 expr (Not e) = do
-  d <- withContext (Under PrimOp.notPrecedence RightSide) $ expr e
-  smartParens opr $ "!" <> d
-  where opr = PrefixOp { precedence = PrimOp.notPrecedence, symbol = "!" }
+  d <- withContext Atom $ expr e
+  pure $ "!" <> d
 expr (Collection es) = list <$> traverse expr es
 expr (Infix n e1 e2) = do
   opr <- operatorOf n
@@ -132,8 +138,11 @@ expr (Infix n e1 e2) = do
 expr (Pattern n []) = name n
 expr (Pattern n es) = do
   dn <- name n
-  ds <- withContext ConstructorArgument $ traverse expr es
-  pure . parens $ dn <+> hsep ds
+  ds <- withContext Atom $ traverse expr es
+  parensWhen check $ dn <+> hsep ds
+ where
+  check Atom = True
+  check _    = False
 
 -- | Pretty print 'Expr'.
 prettyExpr

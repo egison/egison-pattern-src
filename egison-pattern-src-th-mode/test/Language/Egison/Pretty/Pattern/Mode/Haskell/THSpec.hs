@@ -42,19 +42,19 @@ test_atom_patterns =
   , testCase "predicate pattern" $ assertPrintExpr (Predicate $ intE 10) "?10"
   , testCase "constructor pattern" $ assertPrintExpr
     (Pattern (name "ctor") [Wildcard, Wildcard, Wildcard])
-    "(ctor _ _ _)"
+    "ctor _ _ _"
   , testCase "constructor pattern with data constructor" $ assertPrintExpr
     (Pattern (name "Ctor") [Wildcard, Wildcard, Wildcard])
-    "(Ctor _ _ _)"
+    "Ctor _ _ _"
   , testCase "constructor pattern with qualified name" $ assertPrintExpr
     (Pattern (name "Mod.ctor") [Wildcard, Wildcard, Wildcard])
-    "(Mod.ctor _ _ _)"
+    "Mod.ctor _ _ _"
   , testCase "constructor pattern that the symbol is between parentheses"
-    $ assertPrintExpr (Pattern (sym "++") [Wildcard, Wildcard]) "((++) _ _)"
+    $ assertPrintExpr (Pattern (sym "++") [Wildcard, Wildcard]) "(++) _ _"
   , testCase
       "constructor pattern that the qualified symbol is between parentheses"
     $ assertPrintExpr (Pattern (sym "Mod.++") [Wildcard, Wildcard])
-                      "((Mod.++) _ _)"
+                      "(Mod.++) _ _"
   , testCase "constructor pattern without arguments"
     $ assertPrintExpr (Pattern (name "nil") []) "nil"
   , testCase "constructor pattern with qualified name without arguments"

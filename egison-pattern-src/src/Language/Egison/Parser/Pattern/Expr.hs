@@ -9,6 +9,7 @@
 module Language.Egison.Parser.Pattern.Expr
   ( ExprL
   , exprParser
+  , atomParser
   , Table(..)
   , initTable
   , addInfix
@@ -84,16 +85,17 @@ addInfix AssocNone op table@Table { infixNone } =
 addPrefix :: m (a -> f a) -> Table m f a -> Table m f a
 addPrefix op table@Table { prefix } = table { prefix = op : prefix }
 
+locate :: Locate m => m (f (Cofree f Location)) -> m (Cofree f Location)
+locate m = do
+  (x, loc) <- getLocation m
+  pure (loc :< x)
+
 makeExprParser
   :: (Alternative m, Locate m)
   => m (f (Cofree f Location))
   -> [Table m f (Cofree f Location)]
   -> m (Cofree f Location)
 makeExprParser atom = foldl addPrecLevel $ locate atom
- where
-  locate m = do
-    (x, loc) <- getLocation m
-    pure (loc :< x)
 
 addPrecLevel
   :: (Alternative m, Locate m)
@@ -159,7 +161,7 @@ buildOperatorTable primInfixes = do
   addPrecToTable prec f = adjustWithDefault f (f initTable) $ Prec.toInt prec
   adjustWithDefault f def = IntMap.alter (Just . maybe def f)
 
--- | Build an v expression parser with location information, from an atom parser.
+-- | Build an expression parser with location information, from an atom parser.
 exprParser
   :: Source s
   => [(Precedence, Table (Parse n v e s) (ExprF n v e) (ExprL n v e))]
@@ -168,3 +170,10 @@ exprParser
 exprParser primInfixes atom = do
   ops <- buildOperatorTable primInfixes
   makeExprParser atom ops
+
+-- | Build an atom parser with location information, from an atom parser. (i.e. just adds a location information)
+atomParser
+  :: Source s
+  => Parse n v e s (ExprF n v e (ExprL n v e))
+  -> Parse n v e s (ExprL n v e)
+atomParser = locate
