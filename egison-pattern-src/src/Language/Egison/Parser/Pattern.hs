@@ -119,7 +119,7 @@ predicate = do
 constr :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
 constr = do
   n  <- lexeme name
-  es <- many expr
+  es <- many $ atomParser atom
   pure $ PatternF n es
 
 collection :: Source s => Parse n v e s (ExprF n v e (ExprL n v e))
