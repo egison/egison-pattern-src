@@ -39,6 +39,7 @@ import           Language.Egison.Pretty.Pattern.Prim
                                                 ( Doc
                                                 , hsep
                                                 , list
+                                                , tupled
                                                 , text
                                                 , parens
                                                 , (<+>)
@@ -126,6 +127,7 @@ expr (Or e1 e2) = do
 expr (Not e) = do
   d <- withContext Atom $ expr e
   pure $ "!" <> d
+expr (Tuple      es) = tupled <$> traverse expr es
 expr (Collection es) = list <$> traverse expr es
 expr (Infix n e1 e2) = do
   opr <- operatorOf n
