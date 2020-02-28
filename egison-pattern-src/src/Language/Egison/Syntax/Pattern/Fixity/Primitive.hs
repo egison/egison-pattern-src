@@ -11,7 +11,6 @@ module Language.Egison.Syntax.Pattern.Fixity.Primitive
   , andAssociativity
   , orPrecedence
   , orAssociativity
-  , notPrecedence
   )
 where
 
@@ -32,6 +31,3 @@ andAssociativity = AssocRight
 
 orAssociativity :: Associativity
 orAssociativity = AssocRight
-
-notPrecedence :: Precedence
-notPrecedence = Precedence 5

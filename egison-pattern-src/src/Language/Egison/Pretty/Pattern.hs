@@ -74,9 +74,9 @@ smartParens opr doc = do
   ctx <- askContext
   if check ctx opr then pure $ parens doc else pure doc
  where
-  check World               _          = False
-  check ConstructorArgument PrefixOp{} = False
-  check ConstructorArgument _          = True
+  check World _          = False
+  check Atom  PrefixOp{} = False
+  check Atom  _          = True
   check (Under uPrec side) InfixOp { precedence, associativity }
     | uPrec > precedence = True
     | uPrec == precedence && not (matching associativity side) = True
@@ -117,9 +117,8 @@ expr (Or e1 e2) = do
                 , symbol        = "|"
                 }
 expr (Not e) = do
-  d <- withContext (Under PrimOp.notPrecedence RightSide) $ expr e
-  smartParens opr $ "!" <> d
-  where opr = PrefixOp { precedence = PrimOp.notPrecedence, symbol = "!" }
+  d <- withContext Atom $ expr e
+  pure $ "!" <> d
 expr (Collection es) = list <$> traverse expr es
 expr (Infix n e1 e2) = do
   opr <- operatorOf n
@@ -132,7 +131,7 @@ expr (Infix n e1 e2) = do
 expr (Pattern n []) = name n
 expr (Pattern n es) = do
   dn <- name n
-  ds <- withContext ConstructorArgument $ traverse expr es
+  ds <- withContext Atom $ traverse expr es
   pure . parens $ dn <+> hsep ds
 
 -- | Pretty print 'Expr'.

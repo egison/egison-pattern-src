@@ -18,7 +18,7 @@ import           Language.Egison.Syntax.Pattern.Fixity
 
 data Context
   = World
+  | Atom
   | Under Precedence Side
-  | ConstructorArgument
 
 data Side = LeftSide | RightSide
