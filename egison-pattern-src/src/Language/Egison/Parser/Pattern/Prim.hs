@@ -50,7 +50,6 @@ import           Text.Megaparsec               as X
                                                 )
 
 -- main
-import           Data.Proxy                     ( Proxy(..) )
 import           Control.Monad                  ( void )
 import           Control.Monad.Reader           ( ask )
 import           Control.Applicative            ( Alternative((<|>))
@@ -61,9 +60,6 @@ import qualified Text.Megaparsec               as Parsec
                                                 , takeWhileP
                                                 , manyTill
                                                 , chunk
-                                                , chunkToTokens
-                                                , tokensToChunk
-                                                , Stream(..)
                                                 , customFailure
                                                 , single
                                                 , anySingle
@@ -93,7 +89,7 @@ import           Language.Egison.Parser.Pattern.Prim.Error
                                                 )
 
 import           Language.Egison.Parser.Pattern.Prim.Source
-                                                ( Source
+                                                ( Source(..)
                                                 , Token
                                                 , Tokens
                                                 )
@@ -138,9 +134,7 @@ takeChunk = withParens <|> withoutParens
     ck   <- Parsec.takeWhileP (Just "lexical chunk (in parens)")
                               endOfChunkInParens
     right <- Parsec.single Token.parenRight
-    -- TODO: better solution?
-    let tk = left : Parsec.chunkToTokens (Proxy @s) ck ++ [right]
-    pure $ Parsec.tokensToChunk (Proxy @s) tk
+    pure $ consTokens @s left (snocTokens @s ck right)
   withoutParens = Parsec.takeWhileP (Just "lexical chunk") endOfChunk
   endOfChunkInParens x = x /= Token.parenRight
   endOfChunk x = not (Token.isSpace x) && x /= Token.parenRight
