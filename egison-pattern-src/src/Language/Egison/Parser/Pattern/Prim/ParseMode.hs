@@ -30,7 +30,8 @@ data ParseFixity n s =
 
 -- | Parser configuration.
 data ParseMode n v e s
-  = ParseMode { fixities        :: [ParseFixity n s]
+  = ParseMode { filename        :: FilePath
+              , fixities        :: [ParseFixity n s]
               , blockComment    :: Maybe (Tokens s, Tokens s)
               , lineComment     :: Maybe (Tokens s)
               , varNameParser   :: ExtParser s v

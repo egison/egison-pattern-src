@@ -22,6 +22,7 @@ import           Language.Egison.Syntax.Pattern
                                                as X
 
 -- main
+import           Data.Maybe                     ( mapMaybe )
 import           Data.Text                      ( Text )
 import           Control.Monad.Except           ( MonadError )
 
@@ -40,9 +41,12 @@ import           Language.Egison.Syntax.Pattern.Fixity
 import qualified Language.Egison.Parser.Pattern.Mode.Haskell
                                                as HaskellParseMode
                                                 ( Expr
+                                                , ParseMode(..)
+                                                , makeParseFixity
                                                 , parseExpr
-                                                , parseExprWithFixities
                                                 )
+import           Language.Egison.Parser.Pattern.Mode.Haskell
+                                                ( ParseMode(..) )
 import           Language.Egison.Pretty.Pattern ( Error )
 import qualified Language.Egison.Pretty.Pattern.Mode.Haskell
                                                as HaskellPrettyMode
@@ -53,7 +57,11 @@ import qualified Language.Egison.Pretty.Pattern.Mode.Haskell
 
 testParseExpr
   :: MonadError (Errors String) m => String -> m HaskellParseMode.Expr
-testParseExpr = HaskellParseMode.parseExpr Haskell.defaultParseMode
+testParseExpr = HaskellParseMode.parseExpr mode
+ where
+  mode = HaskellParseMode.ParseMode { haskellMode = Haskell.defaultParseMode
+                                    , fixities    = Nothing
+                                    }
 
 specialFixities :: [Fixity (QName ())]
 specialFixities =
@@ -69,9 +77,12 @@ specialFixities =
 
 testParseExprSpecialFixities
   :: MonadError (Errors String) m => String -> m HaskellParseMode.Expr
-testParseExprSpecialFixities = HaskellParseMode.parseExprWithFixities
-  Haskell.defaultParseMode
-  specialFixities
+testParseExprSpecialFixities = HaskellParseMode.parseExpr mode
+ where
+  fs   = mapMaybe HaskellParseMode.makeParseFixity specialFixities
+  mode = HaskellParseMode.ParseMode { haskellMode = Haskell.defaultParseMode
+                                    , fixities    = Just fs
+                                    }
 
 testPrintExpr
   :: MonadError (Error (QName ())) m => HaskellPrettyMode.Expr -> m Text

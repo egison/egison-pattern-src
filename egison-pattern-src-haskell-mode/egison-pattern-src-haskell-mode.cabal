@@ -51,7 +51,11 @@ library
   default-language:   Haskell2010
   default-extensions:
     FlexibleContexts
+    FlexibleInstances
+    MultiParamTypeClasses
     NamedFieldPuns
+    TypeApplications
+    TypeSynonymInstances
 
 test-suite test
   type:               exitcode-stdio-1.0
