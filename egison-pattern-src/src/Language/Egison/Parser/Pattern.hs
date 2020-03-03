@@ -6,10 +6,11 @@
 --
 -- A parser for Egison patterns.
 
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Language.Egison.Parser.Pattern
-  ( parseExprL
-  , parseExpr
-  -- * Re-exports
+  ( parseExpr
+  , parseExprL
   , module X
   )
 where
@@ -39,6 +40,9 @@ import           Language.Egison.Parser.Pattern.Expr
 import           Language.Egison.Parser.Pattern.Token
                                                as X
                                                 ( IsToken(..) )
+import           Language.Egison.Parser.Pattern.Parsable
+                                               as X
+                                                ( Parsable(..) )
 
 -- main
 import           Control.Monad.Except           ( MonadError )
@@ -78,8 +82,6 @@ import           Language.Egison.Syntax.Pattern.Expr
                                                 ( Expr )
 import           Language.Egison.Syntax.Pattern.Base
                                                 ( ExprF(..) )
-import           Language.Egison.Syntax.Pattern.Combinator
-                                                ( unAnnotate )
 
 
 primInfixes
@@ -156,20 +158,22 @@ atom =
 expr :: Source s => Parse n v e s (ExprL n v e)
 expr = exprParser primInfixes atom
 
+instance Source s => Parsable (Expr n v e) s (ParseMode n v e s) where
+  parseNonGreedyWithLocation = runParse (space *> expr)
+
 -- | Parse 'Expr' with locations annotated.
 parseExprL
-  :: (Source s, MonadError (Errors s) m)
+  :: forall m s n v e
+   . (Source s, MonadError (Errors s) m)
   => ParseMode n v e s
-  -> FilePath
   -> s
   -> m (ExprL n v e)
-parseExprL = runParse (space *> expr)
+parseExprL = parseWithLocation @(Expr n v e)
 
 -- | Parse 'Expr'.
 parseExpr
   :: (Source s, MonadError (Errors s) m)
   => ParseMode n v e s
-  -> FilePath
   -> s
   -> m (Expr n v e)
-parseExpr mode path = fmap unAnnotate . parseExprL mode path
+parseExpr = parse

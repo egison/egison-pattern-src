@@ -23,11 +23,16 @@ import           Control.Monad                  ( MonadPlus )
 
 import           Text.Megaparsec                ( Parsec
                                                 , MonadParsec
+                                                , State(..)
+                                                , PosState(..)
                                                 )
 import qualified Text.Megaparsec               as Parsec
                                                 ( Stream
-                                                , parse
-                                                , eof
+                                                , State(..)
+                                                , PosState(..)
+                                                , runParser'
+                                                , initialPos
+                                                , defaultTabWidth
                                                 , getSourcePos
                                                 )
 
@@ -38,7 +43,7 @@ import           Language.Egison.Parser.Pattern.Prim.Location
                                                 , fromSourcePos
                                                 )
 import           Language.Egison.Parser.Pattern.Prim.ParseMode
-                                                ( ParseMode )
+                                                ( ParseMode(..) )
 import           Language.Egison.Parser.Pattern.Prim.Error
                                                 ( Errors
                                                 , CustomError
@@ -61,13 +66,23 @@ runParse
   :: (Source s, MonadError (Errors s) m)
   => Parse n v e s a
   -> ParseMode n v e s
-  -> FilePath
   -> s
-  -> m a
-runParse parse mode filename content =
-  case Parsec.parse parsec filename content of
-    Left  bundle -> throwError $ fromParseErrorBundle bundle
-    Right e      -> pure e
+  -> m (a, s)
+runParse parser mode@ParseMode { filename } content =
+  case Parsec.runParser' parsec initState of
+    (_, Left bundle) -> throwError $ fromParseErrorBundle bundle
+    (Parsec.State { stateInput }, Right e) -> pure (e, stateInput)
  where
-  parsec = runReaderT (unParse file) mode
-  file   = parse <* Parsec.eof
+  parsec    = runReaderT (unParse parser) mode
+  initState = Parsec.State
+    { stateInput       = content
+    , stateOffset      = 0
+    , statePosState    = Parsec.PosState
+                           { pstateInput      = content
+                           , pstateOffset     = 0
+                           , pstateSourcePos  = Parsec.initialPos filename
+                           , pstateTabWidth   = Parsec.defaultTabWidth
+                           , pstateLinePrefix = ""
+                           }
+    , stateParseErrors = []
+    }
