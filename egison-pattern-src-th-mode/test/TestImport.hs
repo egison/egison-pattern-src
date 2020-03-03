@@ -35,8 +35,11 @@ import           Language.Egison.Syntax.Pattern.Fixity
 import qualified Language.Egison.Parser.Pattern.Mode.Haskell.TH
                                                as THParseMode
                                                 ( Expr
+                                                , ParseMode(..)
                                                 , parseExpr
                                                 )
+import           Language.Egison.Parser.Pattern.Mode.Haskell.TH
+                                                ( ParseMode(..) )
 import           Language.Egison.Pretty.Pattern ( Error )
 import qualified Language.Egison.Pretty.Pattern.Mode.Haskell.TH
                                                as THPrintMode
@@ -46,7 +49,11 @@ import qualified Language.Egison.Pretty.Pattern.Mode.Haskell.TH
 
 
 testParseExpr :: MonadError (Errors String) m => String -> m THParseMode.Expr
-testParseExpr = THParseMode.parseExpr Haskell.defaultParseMode
+testParseExpr = THParseMode.parseExpr mode
+ where
+  mode = THParseMode.ParseMode { haskellMode = Haskell.defaultParseMode
+                               , fixities    = Nothing
+                               }
 
 
 specialFixities :: [Fixity Name]
