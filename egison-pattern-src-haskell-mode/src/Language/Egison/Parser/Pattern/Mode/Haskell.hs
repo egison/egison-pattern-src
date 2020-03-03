@@ -21,14 +21,15 @@ module Language.Egison.Parser.Pattern.Mode.Haskell
   )
 where
 
-import           Data.Functor                   ( void )
+import           Data.Char                      ( isUpper )
 import           Data.Maybe                     ( mapMaybe )
+import           Data.Functor                   ( void )
 import           Control.Monad.Except           ( MonadError )
 
 import           Language.Haskell.Exts.Syntax   ( QName(..)
+                                                , QOp(..)
                                                 , Exp(..)
                                                 , Name(..)
-                                                , ModuleName(..)
                                                 , Exp
                                                 )
 import           Language.Haskell.Exts.SrcLoc   ( SrcSpanInfo )
@@ -36,6 +37,8 @@ import qualified Language.Haskell.Exts.Fixity  as Haskell
                                                 ( Fixity(..) )
 import qualified Language.Haskell.Exts.Syntax  as Haskell
                                                 ( Assoc(..) )
+import qualified Language.Haskell.Exts.Pretty  as Haskell
+                                                ( prettyPrint )
 import qualified Language.Haskell.Exts.Parser  as Haskell
                                                 ( parseExpWithMode
                                                 , ParseMode(..)
@@ -105,29 +108,22 @@ makeFixity (Haskell.Fixity assoc prec name) = fixity
   makeAssoc (Haskell.AssocNone  ()) = Egison.AssocNone
 
 -- | Build 'Egison.ParseFixity' using 'Egison.Fixity' to parse Haskell-style operators
--- Note that a built-in constructor with special syntax, that is represented as 'Special' in 'QName', is just ignored here.
 makeParseFixity
   :: Egison.Fixity (QName ()) -> Maybe (Egison.ParseFixity (QName ()) String)
-makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
+makeParseFixity fixity =
+  Egison.ParseFixity fixity . makeNameParser <$> nameOf symbol
  where
   Egison.Fixity { Egison.symbol } = fixity
-  makeNameParser (UnQual () (Ident () n)) = Just $ makeIdentOpParser Nothing n
-  makeNameParser (UnQual () (Symbol () n)) =
-    Just $ makeSymbolOpParser Nothing n
-  makeNameParser (Qual () (ModuleName () m) (Ident () n)) =
-    Just $ makeIdentOpParser (Just m) n
-  makeNameParser (Qual () (ModuleName () m) (Symbol () n)) =
-    Just $ makeSymbolOpParser (Just m) n
-  makeNameParser (Special () _) = Nothing  -- Skipping special built-in constructors
-  -- TODO: Maybe we could do better here
-  makeIdentOpParser mModName ident content
-    | content == printed = Right ()
-    | otherwise          = Left "not an operator name"
-    where printed = '`' : maybe ident (++ '.' : ident) mModName ++ "`"
-  makeSymbolOpParser mModName sym content
-    | content == printed = Right ()
-    | otherwise          = Left "not an operator name"
-    where printed = maybe sym (++ '.' : sym) mModName
+  nameOf q@(Qual () _ name) = Just (q, name)
+  nameOf q@(UnQual () name) = Just (q, name)
+  nameOf _                  = Nothing
+  makeNameParser (q, sym) | isCon sym = pparser (QConOp () q)
+                          | otherwise = pparser (QVarOp () q)
+  pparser op input | input == Haskell.prettyPrint op = Right ()
+                   | otherwise = Left "not an operator name"
+  isCon (Ident  () (c   : _)) = isUpper c
+  isCon (Symbol () (':' : _)) = True
+  isCon _                     = False
 
 -- | Build 'Egison.ParseMode' using 'Haskell.ParseMode' from @haskell-src-exts@.
 makeParseMode

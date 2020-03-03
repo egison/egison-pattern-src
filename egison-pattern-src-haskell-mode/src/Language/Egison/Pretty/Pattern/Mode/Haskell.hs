@@ -22,14 +22,15 @@ module Language.Egison.Pretty.Pattern.Mode.Haskell
   )
 where
 
+import           Data.Char                      ( isUpper )
 import           Data.Text                      ( Text
                                                 , pack
                                                 )
 import           Control.Monad.Except           ( MonadError )
 import           Language.Haskell.Exts.Syntax   ( QName(..)
+                                                , QOp(..)
                                                 , Exp
                                                 , Name(..)
-                                                , ModuleName(..)
                                                 )
 import qualified Language.Haskell.Exts.Pretty  as Haskell
                                                 ( Style(..)
@@ -78,13 +79,14 @@ makePrintFixity fixity@(Egison.Fixity _ _ sym) = Egison.PrintFixity
   , Egison.printed = pack $ printSym sym
   }
  where
-  printSym (UnQual () (Ident  () n)                ) = printIdentOp Nothing n
-  printSym (UnQual () (Symbol () n)                ) = printSymbolOp Nothing n
-  printSym (Qual () (ModuleName () m) (Ident  () n)) = printIdentOp (Just m) n
-  printSym (Qual () (ModuleName () m) (Symbol () n)) = printSymbolOp (Just m) n
-  printSym (Special () s                           ) = Haskell.prettyPrint s
-  printIdentOp mModName n = '`' : maybe n (++ '.' : n) mModName ++ "`"
-  printSymbolOp mModName n = maybe n (++ '.' : n) mModName
+  printSym q@(UnQual () name) = printName q name
+  printSym q@(Qual () _ name) = printName q name
+  printSym (  Special () s  ) = Haskell.prettyPrint s
+  printName q name | isCon name = Haskell.prettyPrint $ QConOp () q
+                   | otherwise  = Haskell.prettyPrint $ QVarOp () q
+  isCon (Ident  () (c   : _)) = isUpper c
+  isCon (Symbol () (':' : _)) = True
+  isCon _                     = False
 
 -- | Build 'PrintMode' using 'Haskell.Style' and 'Haskell.PPHsMode' from @haskell-src-exts@, and the list of fixities.
 makeHaskellMode :: Haskell.Style -> Haskell.PPHsMode -> [Fixity] -> PrintMode
