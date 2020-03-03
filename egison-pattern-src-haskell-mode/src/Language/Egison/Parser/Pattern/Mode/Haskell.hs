@@ -10,14 +10,12 @@ module Language.Egison.Parser.Pattern.Mode.Haskell
   (
   -- * Parsers
     Expr
+  , ExprL
+  , ParseMode(..)
   , parseExpr
-  , parseExprWithFixities
-  , parseExprWithParseFixities
+  , parseExprL
   -- * Converting @haskell-src-exts@'s entities
-  , ParseMode
-  , ParseFixity
-  , Fixity
-  , makeHaskellMode
+  , makeParseMode
   , makeFixity
   , makeParseFixity
   , makeParseFixities
@@ -50,13 +48,14 @@ import qualified Language.Egison.Syntax.Pattern
                                                 ( Expr )
 import qualified Language.Egison.Parser.Pattern
                                                as Egison
-                                                ( ParseMode(..)
+                                                ( ExprL
+                                                , ParseMode(..)
                                                 , ParseFixity(..)
                                                 , Fixity(..)
                                                 , Associativity(..)
-                                                , parseExpr
                                                 )
 import           Language.Egison.Parser.Pattern ( Precedence(..)
+                                                , Parsable(..)
                                                 , Errors
                                                 )
 
@@ -64,14 +63,19 @@ import           Language.Egison.Parser.Pattern ( Precedence(..)
 -- | Type synonym of 'Egison.Expr' to be parsed in Haskell's source code.
 type Expr = Egison.Expr (QName ()) (Name ()) (Exp SrcSpanInfo)
 
--- | Type synonym of 'Egison.ParseMode' to parse 'Expr'.
-type ParseMode = Egison.ParseMode (QName ()) (Name ()) (Exp SrcSpanInfo) String
+-- | Type synonym of 'Egison.ExprL' to be parsed in Haskell's source code.
+type ExprL = Egison.ExprL (QName ()) (Name ()) (Exp SrcSpanInfo)
 
--- | Type synonym of 'Egison.Fixity' to parse 'Expr'.
-type Fixity = Egison.Fixity (QName ())
-
--- | Type synonym of 'Egison.ParseFixity' to parse 'Expr'.
-type ParseFixity = Egison.ParseFixity (QName ()) String
+-- | Parser configuration in @egison-pattern-src-haskell-mode@.
+data ParseMode
+  = ParseMode {
+              -- | 'Haskell.ParseMode' from @haskell-src-exts@ for our parsers to base on.
+                haskellMode :: Haskell.ParseMode
+              -- | List of fixities to parse infix pattern operators.
+              -- If @fixities = Just xs@, @xs@ overrides fixities obtained from 'haskellMode'.
+              -- Otherwise, our parsers use fixities from 'haskellMode'.
+              , fixities :: Maybe [Egison.ParseFixity (QName ()) String]
+              }
 
 resultToEither :: Haskell.ParseResult a -> Either String a
 resultToEither (Haskell.ParseOk a      ) = Right a
@@ -93,7 +97,7 @@ parseNameWithMode mode content =
     Left  err          -> Left err
 
 -- | Build 'Egison.Fixity' using 'Haskell.Fixity' from @haskell-src-exts@.
-makeFixity :: Haskell.Fixity -> Fixity
+makeFixity :: Haskell.Fixity -> Egison.Fixity (QName ())
 makeFixity (Haskell.Fixity assoc prec name) = fixity
  where
   fixity = Egison.Fixity (makeAssoc assoc) (Precedence prec) name
@@ -103,7 +107,8 @@ makeFixity (Haskell.Fixity assoc prec name) = fixity
 
 -- | Build 'Egison.ParseFixity' using 'Egison.Fixity' to parse Haskell-style operators
 -- Note that a built-in constructor with special syntax, that is represented as 'Special' in 'QName', is just ignored here.
-makeParseFixity :: Fixity -> Maybe ParseFixity
+makeParseFixity
+  :: Egison.Fixity (QName ()) -> Maybe (Egison.ParseFixity (QName ()) String)
 makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
  where
   Egison.Fixity { Egison.symbol } = fixity
@@ -126,47 +131,37 @@ makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
     where printed = maybe sym (++ '.' : sym) mModName
 
 -- | @'makeParseFixities' = 'mapMaybe' $ 'makeParseFixity' . 'makeFixity'@
-makeParseFixities :: [Haskell.Fixity] -> [ParseFixity]
+makeParseFixities :: [Haskell.Fixity] -> [Egison.ParseFixity (QName ()) String]
 makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
 
--- | Build 'ParseMode' using 'Haskell.ParseMode' from @haskell-src-exts@.
-makeHaskellMode :: Haskell.ParseMode -> ParseMode
-makeHaskellMode mode@Haskell.ParseMode { Haskell.fixities } = Egison.ParseMode
-  { Egison.fixities        = maybe [] makeParseFixities fixities
-  , Egison.blockComment    = Just ("{-", "-}")
-  , Egison.lineComment     = Just "--"
-  , Egison.varNameParser   = parseVarNameWithMode mode
-  , Egison.nameParser      = parseNameWithMode mode
-  , Egison.valueExprParser = resultToEither . Haskell.parseExpWithMode mode
-  }
+-- | Build 'Egison.ParseMode' using 'Haskell.ParseMode' from @haskell-src-exts@.
+makeParseMode
+  :: Haskell.ParseMode
+  -> Egison.ParseMode (QName ()) (Name ()) (Exp SrcSpanInfo) String
+makeParseMode mode@Haskell.ParseMode { Haskell.parseFilename, Haskell.fixities }
+  = Egison.ParseMode
+    { Egison.filename        = parseFilename
+    , Egison.fixities        = maybe [] makeParseFixities fixities
+    , Egison.blockComment    = Just ("{-", "-}")
+    , Egison.lineComment     = Just "--"
+    , Egison.varNameParser   = parseVarNameWithMode mode
+    , Egison.nameParser      = parseNameWithMode mode
+    , Egison.valueExprParser = resultToEither . Haskell.parseExpWithMode mode
+    }
 
--- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@.
-parseExpr
-  :: MonadError (Errors String) m => Haskell.ParseMode -> String -> m Expr
-parseExpr mode@Haskell.ParseMode { Haskell.parseFilename } =
-  Egison.parseExpr (makeHaskellMode mode) parseFilename
+instance Parsable Expr String ParseMode where
+  parseNonGreedyWithLocation ParseMode { haskellMode, fixities } =
+    parseNonGreedyWithLocation @Expr mode'
+   where
+    mode  = makeParseMode haskellMode
+    mode' = case fixities of
+      Just xs -> mode { Egison.fixities = xs }
+      Nothing -> mode
 
--- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'Fixity'.
--- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
-parseExprWithFixities
-  :: MonadError (Errors String) m
-  => Haskell.ParseMode
-  -> [Fixity]
-  -> String
-  -> m Expr
-parseExprWithFixities mode =
-  parseExprWithParseFixities mode . mapMaybe makeParseFixity
+-- | Parse 'Expr' using 'ParseMode'.
+parseExpr :: MonadError (Errors String) m => ParseMode -> String -> m Expr
+parseExpr = parse @Expr
 
--- | Parse 'Expr' using 'Haskell.ParseMode' from @haskell-src-exts@, while supplying an explicit list of 'ParseFixity'.
--- Note that fixities obtained from 'Haskell.ParseMode' are just ignored here.
-parseExprWithParseFixities
-  :: MonadError (Errors String) m
-  => Haskell.ParseMode
-  -> [ParseFixity]
-  -> String
-  -> m Expr
-parseExprWithParseFixities mode@Haskell.ParseMode { Haskell.parseFilename } fixities
-  = Egison.parseExpr hsModeWithFixities parseFilename
- where
-  hsMode             = makeHaskellMode mode
-  hsModeWithFixities = hsMode { Egison.fixities }
+-- | Parse 'Expr' using 'ParseMode' with locations annotated.
+parseExprL :: MonadError (Errors String) m => ParseMode -> String -> m ExprL
+parseExprL = parseWithLocation @Expr
