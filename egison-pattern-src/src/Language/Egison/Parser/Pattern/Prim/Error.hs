@@ -71,6 +71,8 @@ data Error s
                   , input :: Tokens s
                   , message :: String
                   }
+  | UnexpectedEndOfFile { rest :: Tokens s
+                        }
 
 deriving instance Show (Tokens s) => Show (Error s)
 deriving instance Eq (Tokens s) => Eq (Error s)
