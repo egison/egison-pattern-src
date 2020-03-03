@@ -1,6 +1,6 @@
 cabal-version:      2.0
 name:               egison-pattern-src-haskell-mode
-version:            0.1.1.0
+version:            0.2.0.0
 synopsis:
   Parser and pretty printer for Egison pattern expressions in Haskell source code
 
@@ -31,7 +31,7 @@ source-repository head
 library
   build-depends:
       base                >=4.7    && <5
-    , egison-pattern-src  ^>=0.1.0
+    , egison-pattern-src  ^>=0.2.0
     , haskell-src-exts    >=1.11.1 && <1.24
     , mtl                 ^>=2.2.1
     , text                >=0.1.0  && <1.3
