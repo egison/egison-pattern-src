@@ -1,6 +1,9 @@
+# TODO: workaround for -XCPP
 .PHONY: fmt
 fmt:
-	find . -name '*.hs' -exec $(BRITTANY) --write-mode=inplace {} +
+	find . -name '*.hs' \
+		-not -path '*/Language/Egison/Parser/Pattern/Prim/Parse.hs' \
+		-exec $(BRITTANY) --write-mode=inplace {} +
 
 .PHONY: lint
 lint:

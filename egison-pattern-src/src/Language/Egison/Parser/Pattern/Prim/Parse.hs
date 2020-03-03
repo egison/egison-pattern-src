@@ -6,6 +6,8 @@
 --
 -- This module defines a parser monad 'Parse'.
 
+{-# LANGUAGE CPP #-}
+
 module Language.Egison.Parser.Pattern.Prim.Parse
   ( Parse
   , runParse
@@ -84,5 +86,7 @@ runParse parser mode@ParseMode { filename } content =
                            , pstateTabWidth   = Parsec.defaultTabWidth
                            , pstateLinePrefix = ""
                            }
+#if MIN_VERSION_megaparsec(8,0,0)
     , stateParseErrors = []
+#endif
     }
