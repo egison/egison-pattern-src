@@ -24,7 +24,7 @@ p ::= _                     (wildcard pattern)
     | p | p                 (or pattern)
     | !p                    (not pattern)
     | p op p                (user-defined infix pattern)
-    | (x p_1 p_2 ... p_n)   (constructor pattern)
+    | x p_1 p_2 ... p_n     (constructor pattern)
 ```
 
 ## Development
