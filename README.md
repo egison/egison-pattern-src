@@ -18,12 +18,13 @@ p ::= _                     (wildcard pattern)
     | $v                    (pattern variable)
     | #e                    (value pattern)
     | ?e                    (predicate pattern)
+    | (p_1, p_2, ..., p_n)  (tuple pattern)
+    | [p_1, p_2, ..., p_n]  (collection pattern)
     | p & p                 (and pattern)
     | p | p                 (or pattern)
     | !p                    (not pattern)
     | p op p                (user-defined infix pattern)
-    | x                     (constructor pattern without argument)
-    | (x p_1 p_2 ... p_n)   (constructor pattern with arguments)
+    | (x p_1 p_2 ... p_n)   (constructor pattern)
 ```
 
 ## Development
