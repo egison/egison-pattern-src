@@ -110,17 +110,16 @@ makeFixity (Haskell.Fixity assoc prec name) = fixity
 -- | Build 'Egison.ParseFixity' using 'Egison.Fixity' to parse Haskell-style operators
 makeParseFixity
   :: Egison.Fixity (QName ()) -> Maybe (Egison.ParseFixity (QName ()) String)
-makeParseFixity fixity =
-  Egison.ParseFixity fixity . makeNameParser <$> nameOf symbol
+makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
  where
   Egison.Fixity { Egison.symbol } = fixity
-  nameOf q@(Qual () _ name) = Just (q, name)
-  nameOf q@(UnQual () name) = Just (q, name)
-  nameOf _                  = Nothing
-  makeNameParser (q, sym) | isCon sym = pparser (QConOp () q)
-                          | otherwise = pparser (QVarOp () q)
-  pparser op input | input == Haskell.prettyPrint op = Right ()
-                   | otherwise = Left "not an operator name"
+  makeNameParser q@(Qual () _ name) = Just $ pparser q name
+  makeNameParser q@(UnQual () name) = Just $ pparser q name
+  makeNameParser _                  = Nothing
+  pparser q name input | input == printName q name = Right ()
+                       | otherwise                 = Left "not an operator name"
+  printName q name | isCon name = Haskell.prettyPrint $ QConOp () q
+                   | otherwise  = Haskell.prettyPrint $ QVarOp () q
   isCon (Ident  () (c   : _)) = isUpper c
   isCon (Symbol () (':' : _)) = True
   isCon _                     = False
