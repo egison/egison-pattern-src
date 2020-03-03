@@ -1,3 +1,11 @@
+-- |
+--
+-- Module:      Language.Egison.Parser.Pattern.Parsable
+-- Description: Type class providing functions for parsing
+-- Stability:   experimental
+--
+-- This module provides a type class for parsing many types.
+
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Language.Egison.Parser.Pattern.Parsable
@@ -29,10 +37,15 @@ import qualified Language.Egison.Parser.Pattern.Prim.Error
 unAnnotate :: (Recursive x, Corecursive x) => Cofree (Base x) a -> x
 unAnnotate = cata go where go (_ :< x) = embed x
 
+-- | Type class providing functions for parsing.
 class Source s => Parsable a s mode where
+  -- | Parse a source stream.
   parse :: MonadError (Errors s) m => mode -> s -> m a
+  -- | Parse a source stream with location annotations.
   parseWithLocation :: MonadError (Errors s) m => mode -> s -> m (Cofree (Base a) Location)
+  -- | Parse a source stream non-greedily. That is, this parser will only consume the input until a is fully parsed, and return the rest of the input.
   parseNonGreedy :: MonadError (Errors s) m => mode -> s -> m (a, s)
+  -- | Parse a source stream non-greedily with location annotations.
   parseNonGreedyWithLocation :: MonadError (Errors s) m => mode -> s -> m (Cofree (Base a) Location, s)
 
   parseWithLocation mode s = do

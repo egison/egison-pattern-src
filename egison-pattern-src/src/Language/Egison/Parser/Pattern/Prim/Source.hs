@@ -35,10 +35,15 @@ type Tokens s = Parsec.Tokens s
 
 
 -- | Constraint for the source of parser.
+-- TODO: Hide these methods in haddock (see haskell/haddock#330)
 class (Parsec.Stream s, IsToken (Token s)) => Source s where
+  -- | Check if the stream is null or not.
   eof :: s -> Bool
+  -- | Reify the input stream into a chunk of tokens.
   tokens :: s -> Tokens s
+  -- | Add a token to the front of a chunk.
   consTokens :: Token s -> Tokens s -> Tokens s
+  -- | Add a token to the back of a chunk.
   snocTokens :: Tokens s -> Token s -> Tokens s
 
 instance Source Text where
