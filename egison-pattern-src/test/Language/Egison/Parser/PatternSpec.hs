@@ -14,7 +14,7 @@ import           Test.Tasty.HUnit
 
 
 assertParseExpr :: String -> Expr Name Name ValueExpr -> Assertion
-assertParseExpr content expected = case testParseExpr content of
+assertParseExpr content expected = case parse testParseMode content of
   Left  err -> fail $ show err
   Right got -> assertEqual ("while parsing \"" ++ content ++ "\"") expected got
 

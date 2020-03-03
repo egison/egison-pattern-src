@@ -1,7 +1,6 @@
 module TestImport
-  ( testParseExpr
-  , testPrintExpr
-  , testParseMode
+  ( testParseMode
+  , testPrintMode
   , Name(..)
   , ValueExpr(..)
   -- * Re-exports
@@ -15,17 +14,17 @@ import           Language.Egison.Syntax.Pattern.Expr
 import           Language.Egison.Parser.Pattern
                                                as X
                                                 ( Parsable(..) )
+import           Language.Egison.Pretty.Pattern
+                                               as X
+                                                ( prettyExpr )
 
 -- main
-import           Data.Text                      ( Text
-                                                , pack
-                                                )
+import           Data.Text                      ( pack )
 import           Data.Functor                   ( void )
 import           Data.Void                      ( Void )
 import           Control.Applicative            ( (<|>)
                                                 , some
                                                 )
-import           Control.Monad.Except           ( MonadError )
 
 import           Text.Megaparsec                ( Parsec )
 import qualified Text.Megaparsec               as Parsec
@@ -45,13 +44,9 @@ import           Language.Egison.Parser.Pattern ( ParseMode(..)
                                                 , Fixity(..)
                                                 , Precedence(..)
                                                 , Associativity(..)
-                                                , Errors
-                                                , parseExpr
                                                 )
 import           Language.Egison.Pretty.Pattern ( PrintMode(..)
                                                 , PrintFixity(..)
-                                                , Error
-                                                , prettyExpr
                                                 )
 
 
@@ -120,10 +115,3 @@ testPrintMode = PrintMode { fixities         = map toPrintFixity testFixities
  where
   namePrinter (Name name) = pack name
   valueExprPrinter (ValueExprInt i) = pack $ show i
-
-testParseExpr
-  :: MonadError (Errors String) m => String -> m (Expr Name Name ValueExpr)
-testParseExpr = parseExpr testParseMode
-
-testPrintExpr :: MonadError (Error Name) m => Expr Name Name ValueExpr -> m Text
-testPrintExpr = prettyExpr testPrintMode

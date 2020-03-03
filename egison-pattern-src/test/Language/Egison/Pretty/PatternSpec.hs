@@ -13,7 +13,7 @@ import           Test.Tasty.HUnit
 
 
 assertPrintExpr :: Expr Name Name ValueExpr -> Text -> Assertion
-assertPrintExpr e expected = case testPrintExpr e of
+assertPrintExpr e expected = case prettyExpr testPrintMode e of
   Left  err -> fail $ show err
   Right got -> assertEqual ("while printing \"" ++ show e ++ "\"") expected got
 
