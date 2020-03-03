@@ -18,7 +18,6 @@ module Language.Egison.Parser.Pattern.Mode.Haskell
   , makeParseMode
   , makeFixity
   , makeParseFixity
-  , makeParseFixities
   )
 where
 
@@ -130,10 +129,6 @@ makeParseFixity fixity = Egison.ParseFixity fixity <$> makeNameParser symbol
     | otherwise          = Left "not an operator name"
     where printed = maybe sym (++ '.' : sym) mModName
 
--- | @'makeParseFixities' = 'mapMaybe' $ 'makeParseFixity' . 'makeFixity'@
-makeParseFixities :: [Haskell.Fixity] -> [Egison.ParseFixity (QName ()) String]
-makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
-
 -- | Build 'Egison.ParseMode' using 'Haskell.ParseMode' from @haskell-src-exts@.
 makeParseMode
   :: Haskell.ParseMode
@@ -148,6 +143,10 @@ makeParseMode mode@Haskell.ParseMode { Haskell.parseFilename, Haskell.fixities }
     , Egison.nameParser      = parseNameWithMode mode
     , Egison.valueExprParser = resultToEither . Haskell.parseExpWithMode mode
     }
+ where
+  makeParseFixities
+    :: [Haskell.Fixity] -> [Egison.ParseFixity (QName ()) String]
+  makeParseFixities = mapMaybe $ makeParseFixity . makeFixity
 
 instance Parsable Expr String ParseMode where
   parseNonGreedyWithLocation ParseMode { haskellMode, fixities } =
