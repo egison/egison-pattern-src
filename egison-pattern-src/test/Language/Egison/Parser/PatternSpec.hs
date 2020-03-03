@@ -3,6 +3,7 @@ module Language.Egison.Parser.PatternSpec
   , test_primitive_pattern_operators
   , test_user_defined_pattern_operators
   , test_user_defined_comments
+  , test_non_greedy
   )
 where
 
@@ -16,6 +17,17 @@ assertParseExpr :: String -> Expr Name Name ValueExpr -> Assertion
 assertParseExpr content expected = case testParseExpr content of
   Left  err -> fail $ show err
   Right got -> assertEqual ("while parsing \"" ++ content ++ "\"") expected got
+
+assertParseExprNonGreedy
+  :: String -> Expr Name Name ValueExpr -> String -> Assertion
+assertParseExprNonGreedy content expectedExpr expectedRest =
+  case parseNonGreedy testParseMode content of
+    Left  err         -> fail $ show err
+    Right (got, rest) -> do
+      assertEqual ("while parsing \"" ++ content ++ "\"") expectedExpr got
+      assertEqual ("while taking the parsed rest of \"" ++ content ++ "\"")
+                  expectedRest
+                  rest
 
 test_atom_patterns :: [TestTree]
 test_atom_patterns =
@@ -144,4 +156,12 @@ test_user_defined_comments =
     $ assertParseExpr "_-- comment -- yeah" Wildcard
   , testCase "ignore a line comment at beginning of line"
     $ assertParseExpr "-- comment -- yeah \n_-- comment" Wildcard
+  ]
+
+test_non_greedy :: [TestTree]
+test_non_greedy =
+  [ testCase "preserve the rest of input stream" $ assertParseExprNonGreedy
+      "$x : _ -> x"
+      (Infix (Name ":") (Variable (Name "x")) Wildcard)
+      "-> x"
   ]

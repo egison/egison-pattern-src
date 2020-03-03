@@ -1,6 +1,7 @@
 module TestImport
   ( testParseExpr
   , testPrintExpr
+  , testParseMode
   , Name(..)
   , ValueExpr(..)
   -- * Re-exports
@@ -11,6 +12,9 @@ where
 -- re-exports
 import           Language.Egison.Syntax.Pattern.Expr
                                                as X
+import           Language.Egison.Parser.Pattern
+                                               as X
+                                                ( Parsable(..) )
 
 -- main
 import           Data.Text                      ( Text
