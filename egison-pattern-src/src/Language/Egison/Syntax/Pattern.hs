@@ -4,7 +4,7 @@
 -- Description: Manipulating Egison patterns: abstract syntax, parser, and pretty-printer
 -- Stability:   experimental
 --
--- This package provides a standalone syntax definition for patterns in [Egison programming language](https://www.egison.org/).
+-- This package provides a standalone syntax definition for patterns in [the Egison programming language](https://www.egison.org/).
 
 module Language.Egison.Syntax.Pattern
   ( module X
