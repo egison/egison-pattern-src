@@ -1,3 +1,9 @@
+## 0.2.1.0
+
+- Fix use of external parsers to delimit input with `,`, `)`, or `]` (change in `egison-pattern-src`)
+- Enable to parse value expression in the form of `#[1, 2, 3]` without parentheses (change in `egison-pattern-src`)
+  * Now you can pass list literal directly to value patterns
+
 ## 0.2.0.0
 
 Breaking changes:

@@ -1,3 +1,8 @@
+## 0.2.1.0
+
+- Fix use of external parsers to delimit input with `,`, `)`, or `]`
+- Enable to parse value expression in the form of `#[1, 2, 3]` without parentheses
+
 ## 0.2.0.0
 
 Breaking changes:
