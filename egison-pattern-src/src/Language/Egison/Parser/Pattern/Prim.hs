@@ -75,6 +75,7 @@ import qualified Language.Egison.Parser.Pattern.Token
                                                 , comma
                                                 , parenLeft
                                                 , parenRight
+                                                , bracketLeft
                                                 , bracketRight
                                                 , newline
                                                 )
@@ -129,16 +130,21 @@ space = do
 
 -- | Parse a lexical chunk.
 takeChunk :: forall n v e s . Source s => Parse n v e s (Tokens s)
-takeChunk = withParens <|> withoutParens
+takeChunk = withParens <|> withBrackets <|> withoutParens
  where
   withParens = do
     left <- Parsec.single Token.parenLeft
     ck   <- Parsec.takeWhileP (Just "lexical chunk (in parens)")
-                              endOfChunkInParens
+                              (/= Token.parenRight)
     right <- Parsec.single Token.parenRight
     pure $ consTokens @s left (snocTokens @s ck right)
+  withBrackets = do
+    left <- Parsec.single Token.bracketLeft
+    ck   <- Parsec.takeWhileP (Just "lexical chunk (in brackets)")
+                              (/= Token.bracketRight)
+    right <- Parsec.single Token.bracketRight
+    pure $ consTokens @s left (snocTokens @s ck right)
   withoutParens = Parsec.takeWhileP (Just "lexical chunk") endOfChunk
-  endOfChunkInParens x = x /= Token.parenRight
   endOfChunk x = not (isDelimiter x) && x /= Token.parenRight
   isDelimiter x =
     Token.isSpace x
