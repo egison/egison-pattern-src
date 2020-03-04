@@ -15,6 +15,7 @@ import           Language.Haskell.Exts.Build    ( name
                                                 , op
                                                 , infixApp
                                                 , intE
+                                                , listE
                                                 )
 
 
@@ -43,6 +44,8 @@ test_atom_patterns =
   , testCase "variable pattern of symbols"
     $ assertPrintExpr (Variable $ sym "%") "$(%)"
   , testCase "value pattern" $ assertPrintExpr (Value $ intE 10) "#10"
+  , testCase "value pattern with brackets"
+    $ assertPrintExpr (Value $ listE [intE 1, intE 2]) "#[1, 2]"
   , testCase "value pattern between parentheses" $ assertPrintExpr
     (Value $ infixApp (intE 1) (op $ sym "+") (intE 2))
     "#(1 + 2)"

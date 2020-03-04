@@ -32,32 +32,35 @@ import           Language.Egison.Pretty.Pattern.PrintMode
                                                 ( PrintMode(..) )
 
 
--- | Check whether the string is surrounded by parentheses.
+-- | Check whether the string is surrounded by something.
 --
--- >>> surroundedByParens "(Hello, World)"
+-- >>> let parens = ('(', ')')
+-- >>> surroundedBy parens "(Hello, World)"
 -- True
 --
--- >>> surroundedByParens "Hello, World"
+-- >>> surroundedBy parens "Hello, World"
 -- False
 --
--- >>> surroundedByParens "(Hello)(World)"
+-- >>> surroundedBy parens "(Hello)(World)"
 -- False
-surroundedByParens :: String -> Bool
-surroundedByParens ('(' : (reverse -> (')' : body))) = foldr go 0 body == 0
+surroundedBy :: (Char, Char) -> String -> Bool
+surroundedBy (begin, end) (h : (reverse -> (l : body)))
+  | h == begin && l == end = foldr go 0 body == 0
  where
   go :: Char -> Int -> Int
-  go '(' = (+) 1
-  go ')' = (-) 1
-  go _   = id
-surroundedByParens _ = False
+  go c | c == begin = (+) 1
+       | c == end   = (-) 1
+       | otherwise  = id
+surroundedBy _ _ = False
 
 lexicalChunk :: Text -> Doc
 lexicalChunk txt
-  | containSpace str && not (surroundedByParens str) = parens $ text txt
+  | containsDelimiter str && not (checkSurrounding str) = parens $ text txt
   | otherwise = text txt
  where
-  containSpace = elem ' '
-  str          = unpack txt
+  containsDelimiter x = elem ' ' x || elem ',' x || elem ')' x || elem ']' x
+  checkSurrounding x = surroundedBy ('(', ')') x || surroundedBy ('[', ']') x
+  str = unpack txt
 
 varName :: v -> Print n v e Doc
 varName v = do
