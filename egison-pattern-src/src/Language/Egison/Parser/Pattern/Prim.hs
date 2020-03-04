@@ -72,8 +72,10 @@ import qualified Text.Megaparsec.Char.Lexer    as L
 import qualified Language.Egison.Parser.Pattern.Token
                                                as Token
                                                 ( isSpace
+                                                , comma
                                                 , parenLeft
                                                 , parenRight
+                                                , bracketRight
                                                 , newline
                                                 )
 import           Language.Egison.Parser.Pattern.Prim.Location
@@ -137,7 +139,15 @@ takeChunk = withParens <|> withoutParens
     pure $ consTokens @s left (snocTokens @s ck right)
   withoutParens = Parsec.takeWhileP (Just "lexical chunk") endOfChunk
   endOfChunkInParens x = x /= Token.parenRight
-  endOfChunk x = not (Token.isSpace x) && x /= Token.parenRight
+  endOfChunk x = not (isDelimiter x) && x /= Token.parenRight
+  isDelimiter x =
+    Token.isSpace x
+      || Token.comma
+      == x
+      || Token.parenRight
+      == x
+      || Token.bracketRight
+      == x
 
 -- | Apply an external parser.
 extParser :: Source s => ExtParser s a -> Parse n v e s a

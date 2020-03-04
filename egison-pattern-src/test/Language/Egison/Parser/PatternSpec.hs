@@ -89,6 +89,12 @@ test_atom_patterns =
     "!ctor _ _"
     (Not (Pattern (Name "ctor") [Wildcard, Wildcard]))
   , testCase "nested not patterns" $ assertParseExpr "!!_" (Not (Not Wildcard))
+  , testCase "tuple pattern that contains value pattern" $ assertParseExpr
+    "(#1, #2)"
+    (Tuple [Value (ValueExprInt 1), Value (ValueExprInt 2)])
+  , testCase "collection pattern that contains value pattern" $ assertParseExpr
+    "[#1, #2]"
+    (Collection [Value (ValueExprInt 1), Value (ValueExprInt 2)])
   ]
 
 test_primitive_pattern_operators :: [TestTree]
