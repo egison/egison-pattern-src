@@ -8,7 +8,7 @@ function main() {
 
   local -r release_badge="[![release](${repo_url}/workflows/${GITHUB_WORKFLOW}/badge.svg)](${repo_url}/actions/runs/${GITHUB_RUN_ID})"
   local release_message
-  release_message="$(git show -s --format=%b ${GITHUB_SHA})"
+  release_message="$(git tag -l --format='$(contents)' v${version})"
 
   local package_messages=''
 
