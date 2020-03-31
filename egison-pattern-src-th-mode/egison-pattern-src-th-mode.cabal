@@ -74,7 +74,7 @@ test-suite test
     , mtl
     , tasty
     , tasty-hunit
-    , template-haskell            >=2.6.0 && <2.15
+    , template-haskell
     , text
 
   default-extensions: FlexibleContexts
