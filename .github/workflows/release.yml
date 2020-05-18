@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@master
         with:
           path: src
-      - uses: actions/setup-haskell@v1
+      - uses: actions/setup-haskell@v1.1
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@master
-      - uses: actions/setup-haskell@v1
+      - uses: actions/setup-haskell@v1.1
       - run: |
           for pkg in egison-pattern-src*; do
             pushd "$pkg"
@@ -82,6 +82,6 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@master
-      - uses: actions/setup-haskell@v1
+      - uses: actions/setup-haskell@v1.1
       - run: mkdir sdist; cabal new-sdist all -o sdist
       - run: cabal upload --publish -u '${{ secrets.HACKAGE_USERNAME }}' -p '${{ secrets.HACKAGE_PASSWORD }}' sdist/*.tar.gz
