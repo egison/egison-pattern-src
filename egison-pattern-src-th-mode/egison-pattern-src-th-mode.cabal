@@ -36,7 +36,7 @@ library
     , haskell-src-meta    >=0.0.0  && <0.9
     , mtl                 ^>=2.2.1
     , pretty              >=1.0.0  && <1.2
-    , template-haskell    >=2.2.0  && <2.16
+    , template-haskell    >=2.2.0  && <2.17
     , text                >=0.1.0  && <1.3
 
   hs-source-dirs:     src
