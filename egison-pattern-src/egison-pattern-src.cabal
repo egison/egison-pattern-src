@@ -1,6 +1,6 @@
 cabal-version:      2.0
 name:               egison-pattern-src
-version:            0.2.1.1
+version:            0.2.1.2
 synopsis:
   Manipulating Egison patterns: abstract syntax, parser, and pretty-printer
 
@@ -37,8 +37,8 @@ library
     , megaparsec          >=7.0.0 && <10.0
     , mtl                 ^>=2.2.1
     , parser-combinators  >=1.0.0 && <1.3
-    , prettyprinter       >=1.0.0
-    , recursion-schemes   >=5.0.2
+    , prettyprinter       >=1.0.0 && <2.0
+    , recursion-schemes   >=5.0.2 && <5.3
     , text                >=0.1.0 && <1.3
 
   hs-source-dirs:     src

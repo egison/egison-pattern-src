@@ -1,3 +1,11 @@
+## 0.2.1.2
+
+- Nothing changed (updated as `egison-pattern-src`)
+
+## 0.2.1.1
+
+- Nothing changed (updated as `egison-pattern-src`)
+
 ## 0.2.1.0
 
 - Fix use of external parsers to delimit input with `,`, `)`, or `]` (change in `egison-pattern-src`)
