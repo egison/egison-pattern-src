@@ -1,3 +1,9 @@
+## 0.2.1.2
+- Support megaparsec >= 9.0.0 [#25](https://github.com/egison/egison-pattern-src/issues/25)
+
+## 0.2.1.1
+- Relax version upper bound for prettyprinter and recursion-scheme.
+
 ## 0.2.1.0
 
 - Fix use of external parsers to delimit input with `,`, `)`, or `]`
