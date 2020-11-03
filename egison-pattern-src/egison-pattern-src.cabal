@@ -1,6 +1,6 @@
 cabal-version:      2.0
 name:               egison-pattern-src
-version:            0.2.1.1
+version:            0.2.1.2
 synopsis:
   Manipulating Egison patterns: abstract syntax, parser, and pretty-printer
 
