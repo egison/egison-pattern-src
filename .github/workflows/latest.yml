@@ -44,7 +44,10 @@ jobs:
       # TODO: workaround for -XCPP
       - run: |
           find . -name '*.hs' \
+            -not -path '*/Language/Egison/Parser/Pattern/Prim/Error.hs' \
+            -not -path '*/Language/Egison/Parser/Pattern/Prim/Location.hs' \
             -not -path '*/Language/Egison/Parser/Pattern/Prim/Parse.hs' \
+            -not -path '*/Language/Egison/Parser/Pattern/Prim/Source.hs' \
             -exec docker run -v $(pwd):/work herpinc/brittany:0.12.1.1 brittany --check-mode {} +
   cabal-fmt:
     name: check .cabal style

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                  #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 -- |
@@ -43,6 +44,9 @@ import qualified Text.Megaparsec               as Parsec
                                                 , ErrorItem(..)
                                                 , ErrorFancy(..)
                                                 , SourcePos
+#if MIN_VERSION_megaparsec(9,0,0)
+                                                , TraversableStream (..)
+#endif
                                                 , ParseError(..)
                                                 , ParseErrorBundle(..)
                                                 , attachSourcePos
@@ -126,7 +130,11 @@ makeError _ = error "unreachable: unused error"
 
 -- | Convert 'Parsec.ParseErrorBundle' to 'Errors'.
 fromParseErrorBundle
+#if MIN_VERSION_megaparsec(9,0,0)
+  :: Parsec.TraversableStream s => Parsec.ParseErrorBundle s (CustomError s) -> Errors s
+#else
   :: Parsec.Stream s => Parsec.ParseErrorBundle s (CustomError s) -> Errors s
+#endif
 fromParseErrorBundle Parsec.ParseErrorBundle { Parsec.bundleErrors = errors, Parsec.bundlePosState = posState }
   = fmap makeError errorsWithPos
  where

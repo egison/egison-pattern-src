@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- |
 --
 -- Module:      Language.Egison.Parser.Pattern.Prim.Location
@@ -5,6 +7,7 @@
 -- Stability:   experimental
 --
 -- A helper module to handle source code locations during parsing.
+
 
 module Language.Egison.Parser.Pattern.Prim.Location
   ( Location(..)
