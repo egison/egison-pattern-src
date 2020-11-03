@@ -22,7 +22,9 @@ import qualified Data.Text                     as T
                                                 , snoc
                                                 )
 import qualified Text.Megaparsec               as Parsec
-                                                ( Stream(..) )
+                                                ( Stream(..)
+                                                , TraversableStream(..)
+                                                )
 
 import           Language.Egison.Parser.Pattern.Token
                                                 ( IsToken )
@@ -36,7 +38,7 @@ type Tokens s = Parsec.Tokens s
 
 -- | Constraint for the source of parser.
 -- TODO: Hide these methods in haddock (see haskell/haddock#330)
-class (Parsec.Stream s, IsToken (Token s)) => Source s where
+class (Parsec.TraversableStream s, IsToken (Token s)) => Source s where
   -- | Check if the stream is null or not.
   eof :: s -> Bool
   -- | Reify the input stream into a chunk of tokens.

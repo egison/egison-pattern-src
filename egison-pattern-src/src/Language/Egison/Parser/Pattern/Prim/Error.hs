@@ -43,6 +43,7 @@ import qualified Text.Megaparsec               as Parsec
                                                 , ErrorItem(..)
                                                 , ErrorFancy(..)
                                                 , SourcePos
+                                                , TraversableStream (..)
                                                 , ParseError(..)
                                                 , ParseErrorBundle(..)
                                                 , attachSourcePos
@@ -126,7 +127,7 @@ makeError _ = error "unreachable: unused error"
 
 -- | Convert 'Parsec.ParseErrorBundle' to 'Errors'.
 fromParseErrorBundle
-  :: Parsec.Stream s => Parsec.ParseErrorBundle s (CustomError s) -> Errors s
+  :: Parsec.TraversableStream s => Parsec.ParseErrorBundle s (CustomError s) -> Errors s
 fromParseErrorBundle Parsec.ParseErrorBundle { Parsec.bundleErrors = errors, Parsec.bundlePosState = posState }
   = fmap makeError errorsWithPos
  where

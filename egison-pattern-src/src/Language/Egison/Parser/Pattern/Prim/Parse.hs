@@ -31,6 +31,7 @@ import           Text.Megaparsec                ( Parsec
 import qualified Text.Megaparsec               as Parsec
                                                 ( Stream
                                                 , State(..)
+                                                , TraversableStream(..)
                                                 , PosState(..)
                                                 , runParser'
                                                 , initialPos
@@ -59,7 +60,7 @@ newtype Parse n v e s a = Parse { unParse :: ReaderT (ParseMode n v e s) (Parsec
   deriving newtype (MonadReader (ParseMode n v e s))
   deriving newtype (MonadParsec (CustomError s) s)
 
-instance Parsec.Stream s => Locate (Parse n v e s) where
+instance Parsec.TraversableStream s => Locate (Parse n v e s) where
   getPosition = fromSourcePos <$> Parsec.getSourcePos
 
 
