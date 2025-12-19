@@ -1,3 +1,7 @@
+## 0.2.2.0
+
+- Support GHC 9.10.1
+
 ## 0.2.1.2
 
 - Support megaparsec >= 9.0.0 [#25](https://github.com/egison/egison-pattern-src/issues/25)

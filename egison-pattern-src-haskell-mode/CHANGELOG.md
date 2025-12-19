@@ -1,3 +1,7 @@
+## 0.2.2.0
+
+- Support GHC 9.10.1
+
 ## 0.2.1.2
 
 - Nothing changed (updated as `egison-pattern-src`)
