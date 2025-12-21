@@ -5,17 +5,16 @@
 -- Stability:   experimental
 --
 -- An associativity of infix operators.
-
 module Language.Egison.Syntax.Pattern.Fixity.Associativity
-  ( Associativity(..)
+  ( Associativity (..),
   )
 where
 
-import           GHC.Generics                   ( Generic )
-import           Data.Data                      ( Data
-                                                , Typeable
-                                                )
-
+import Data.Data
+  ( Data,
+    Typeable,
+  )
+import GHC.Generics (Generic)
 
 -- | Associativity of infix operators.
 data Associativity = AssocLeft | AssocRight | AssocNone

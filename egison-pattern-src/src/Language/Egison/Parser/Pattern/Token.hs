@@ -5,15 +5,14 @@
 -- Stability:   experimental
 --
 -- This module defines a set of tokens for token types.
-
 module Language.Egison.Parser.Pattern.Token
-  ( IsToken(..)
+  ( IsToken (..),
   )
 where
 
-import qualified Data.Char                     as Char
-                                                ( isSpace )
-
+import Data.Char qualified as Char
+  ( isSpace,
+  )
 
 -- | Provide a set of tokens needed to parse pattern expressions.
 class IsToken c where
@@ -33,17 +32,17 @@ class IsToken c where
   comma :: c
 
 instance IsToken Char where
-  isSpace      = Char.isSpace
-  newline      = '\n'
-  parenLeft    = '('
-  parenRight   = ')'
-  underscore   = '_'
-  hash         = '#'
-  question     = '?'
-  exclamation  = '!'
-  and          = '&'
-  vertical     = '|'
-  dollar       = '$'
-  bracketLeft  = '['
+  isSpace = Char.isSpace
+  newline = '\n'
+  parenLeft = '('
+  parenRight = ')'
+  underscore = '_'
+  hash = '#'
+  question = '?'
+  exclamation = '!'
+  and = '&'
+  vertical = '|'
+  dollar = '$'
+  bracketLeft = '['
   bracketRight = ']'
-  comma        = ','
+  comma = ','

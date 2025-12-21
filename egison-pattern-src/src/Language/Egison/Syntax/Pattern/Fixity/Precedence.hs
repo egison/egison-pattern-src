@@ -5,18 +5,17 @@
 -- Stability:   experimental
 --
 -- A precedence of infix operators.
-
 module Language.Egison.Syntax.Pattern.Fixity.Precedence
-  ( Precedence(..)
-  , toInt
+  ( Precedence (..),
+    toInt,
   )
 where
 
-import           GHC.Generics                   ( Generic )
-import           Data.Data                      ( Data
-                                                , Typeable
-                                                )
-
+import Data.Data
+  ( Data,
+    Typeable,
+  )
+import GHC.Generics (Generic)
 
 -- | A precedence of infix operators.
 newtype Precedence = Precedence Int

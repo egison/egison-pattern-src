@@ -5,20 +5,20 @@
 -- Stability:   experimental
 --
 -- This internal module defines fixities of primitive operators.
-
 module Language.Egison.Syntax.Pattern.Fixity.Primitive
-  ( andPrecedence
-  , andAssociativity
-  , orPrecedence
-  , orAssociativity
+  ( andPrecedence,
+    andAssociativity,
+    orPrecedence,
+    orAssociativity,
   )
 where
 
-import           Language.Egison.Syntax.Pattern.Fixity.Precedence
-                                                ( Precedence(..) )
-import           Language.Egison.Syntax.Pattern.Fixity.Associativity
-                                                ( Associativity(..) )
-
+import Language.Egison.Syntax.Pattern.Fixity.Associativity
+  ( Associativity (..),
+  )
+import Language.Egison.Syntax.Pattern.Fixity.Precedence
+  ( Precedence (..),
+  )
 
 andPrecedence :: Precedence
 andPrecedence = Precedence 3

@@ -5,16 +5,15 @@
 -- Stability:   experimental
 --
 -- A pretty-printing context, utilized to control parentheses in infix expressions
-
 module Language.Egison.Pretty.Pattern.Context
-  ( Context(..)
-  , Side(..)
+  ( Context (..),
+    Side (..),
   )
 where
 
-import           Language.Egison.Syntax.Pattern.Fixity
-                                                ( Precedence )
-
+import Language.Egison.Syntax.Pattern.Fixity
+  ( Precedence,
+  )
 
 data Context
   = World
