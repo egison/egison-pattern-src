@@ -5,54 +5,42 @@ name: latest
 jobs:
   test:
     name: test
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ghc:
-          - '8.2.2'
-          - '8.4.4'
-          - '8.6.5'
-          - '8.8.3'
-          - '8.10.1'
+          - '9.10.1'
         cabal:
-          - '2.4'
-          - '3.2'
-        exclude:
-          - ghc: '8.8.3'
-            cabal: '2.4'
-          - ghc: '8.10.1'
-            cabal: '2.4'
+          - '3.12'
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-haskell@v1.1
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
-      - run: cabal new-update
-      - run: cabal new-test all
+      - run: cabal update
+      - run: cabal test all
   hlint:
     name: lint .hs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - run: docker run -v $(pwd):/work coorde/hlint:2.2.11 hlint --git
-  hs-fmt:
-    name: check .hs style
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/hlint-setup@v2
+        with:
+          version: '3.8'
+      - uses: haskell-actions/hlint-run@v2
+        with:
+          path: '["egison-pattern-src/", "egison-pattern-src-haskell-mode/", "egison-pattern-src-th-mode/"]'
+          fail-on: warning
+  ormolu:
+    name: check .hs format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      # TODO: workaround for -XCPP
-      - run: |
-          find . -name '*.hs' \
-            -not -path '*/Language/Egison/Parser/Pattern/Prim/Error.hs' \
-            -not -path '*/Language/Egison/Parser/Pattern/Prim/Location.hs' \
-            -not -path '*/Language/Egison/Parser/Pattern/Prim/Parse.hs' \
-            -not -path '*/Language/Egison/Parser/Pattern/Prim/Source.hs' \
-            -exec docker run -v $(pwd):/work herpinc/brittany:0.12.1.1 brittany --check-mode {} +
-  cabal-fmt:
-    name: check .cabal style
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - run: find . -name '*.cabal' -exec docker run -v $(pwd):/work coorde/cabal-fmt:0.1.2 cabal-fmt -i {} +
-      - run: git diff --exit-code
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/run-ormolu@v16
+        with:
+          version: '0.7.7.0'
+          pattern: |
+            egison-pattern-src/**/*.hs
+            egison-pattern-src-haskell-mode/**/*.hs
+            egison-pattern-src-th-mode/**/*.hs
