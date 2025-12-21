@@ -23,6 +23,7 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
+          ghcup-release-channel: https://raw.githubusercontent.com/haskell/ghcup-metadata/master/ghcup-0.0.8.yaml
       - run: cd src; cabal update
       - run: |
           cd src
@@ -42,6 +43,7 @@ jobs:
         with:
           ghc-version: '9.10.1'
           cabal-version: '3.12'
+          ghcup-release-channel: https://raw.githubusercontent.com/haskell/ghcup-metadata/master/ghcup-0.0.8.yaml
       - run: |
           for pkg in egison-pattern-src*; do
             pushd "$pkg"
@@ -79,5 +81,6 @@ jobs:
         with:
           ghc-version: '9.10.1'
           cabal-version: '3.12'
+          ghcup-release-channel: https://raw.githubusercontent.com/haskell/ghcup-metadata/master/ghcup-0.0.8.yaml
       - run: mkdir sdist; cabal sdist all -o sdist
       - run: cabal upload --publish -u '${{ secrets.HACKAGE_USERNAME }}' -p '${{ secrets.HACKAGE_PASSWORD }}' sdist/*.tar.gz
