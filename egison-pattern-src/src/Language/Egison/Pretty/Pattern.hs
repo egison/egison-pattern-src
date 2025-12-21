@@ -32,7 +32,6 @@ import           Language.Egison.Syntax.Pattern.Fixity
                                                 )
 
 -- main
-import           Data.Semigroup                 ( (<>) )
 import           Data.Text                      ( Text )
 import           Control.Monad.Except           ( MonadError(..) )
 import           Language.Egison.Pretty.Pattern.Prim
@@ -45,8 +44,6 @@ import           Language.Egison.Pretty.Pattern.Prim
                                                 , (<+>)
                                                 , renderDoc
                                                 )
-import           Language.Egison.Pretty.Pattern.Error
-                                                ( Error(UnknownInfixOperator) )
 import           Language.Egison.Pretty.Pattern.External
                                                 ( name
                                                 , varName

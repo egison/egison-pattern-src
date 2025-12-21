@@ -40,11 +40,6 @@ import           Control.Applicative.Combinators
 
 import           Language.Egison.Syntax.Pattern.Base
                                                 ( ExprF(..) )
-import           Language.Egison.Syntax.Pattern.Fixity
-                                                ( Fixity(..)
-                                                , Precedence(..)
-                                                , Associativity(..)
-                                                )
 import qualified Language.Egison.Syntax.Pattern.Fixity.Precedence
                                                as Prec
                                                 ( toInt )

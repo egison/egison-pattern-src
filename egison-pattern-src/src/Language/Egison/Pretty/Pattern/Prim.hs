@@ -18,7 +18,7 @@ module Language.Egison.Pretty.Pattern.Prim
 where
 
 -- re-exports
-import           Data.Text.Prettyprint.Doc     as X
+import           Prettyprinter                 as X
                                                 ( parens
                                                 , hsep
                                                 , list
@@ -30,15 +30,14 @@ import           Data.Text.Prettyprint.Doc     as X
 import           Data.Void                      ( Void )
 import           Data.Text                      ( Text )
 
-import qualified Data.Text.Prettyprint.Doc     as PP
+import qualified Prettyprinter                 as PP
                                                 ( Doc
                                                 , PageWidth(..)
                                                 , LayoutOptions(..)
                                                 , pretty
                                                 , layoutPretty
                                                 )
-import qualified Data.Text.Prettyprint.Doc.Render.Text
-                                               as PP
+import qualified Prettyprinter.Render.Text     as PP
                                                 ( renderStrict )
 
 import           Language.Egison.Pretty.Pattern.PrintMode

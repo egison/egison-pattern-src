@@ -20,7 +20,6 @@ import           Control.Monad.Reader           ( ReaderT
                                                 , MonadReader(..)
                                                 , runReaderT
                                                 )
-import           Control.Monad.Fail             ( MonadFail )
 import           Control.Monad                  ( MonadPlus )
 
 import           Text.Megaparsec                ( Parsec
